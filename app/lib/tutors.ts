@@ -16,6 +16,12 @@ export type Tutor = {
   approach: string[];
   availability: string[];
   availabilityGroups: Array<"Today" | "Tomorrow" | "Weekdays" | "Weekend">;
+  introVideo: string;
+  resume: {
+    education: string[];
+    experience: Array<{ role: string; organisation: string; period: string }>;
+    certifications: string[];
+  };
 };
 
 type TutorSeed = Pick<Tutor, "id" | "name" | "examination" | "subject" | "rating" | "lessons" | "price" | "color" | "image" | "location" | "availability" | "availabilityGroups">;
@@ -26,7 +32,16 @@ const subjectTutor = (seed: TutorSeed): Tutor => ({
   headline: `Focused ${seed.examination} ${seed.subject} support with clear explanations and exam-style practice.`,
   about: `I help learners understand ${seed.subject} concepts, correct common mistakes, and build a reliable method for answering ${seed.examination} questions. Each tutorial is adjusted to the learner's current level and revision goals.`,
   specialties: [`${seed.subject} foundations`, "Structured questions", "Exam technique", "Revision planning"],
-  approach: ["Identify the learner's priority topics", "Explain with worked examples", `Practise ${seed.examination}-style questions`, "Finish with feedback and a revision task"]
+  approach: ["Identify the learner's priority topics", "Explain with worked examples", `Practise ${seed.examination}-style questions`, "Finish with feedback and a revision task"],
+  introVideo: "https://assets.mixkit.co/videos/50130/50130-720.mp4",
+  resume: {
+    education: ["Bachelor of Education · University of Botswana"],
+    experience: [
+      { role: `${seed.examination} ${seed.subject} Tutor`, organisation: "Studacad", period: "2021–present" },
+      { role: `${seed.subject} Classroom Teacher`, organisation: "Botswana", period: "2019–present" }
+    ],
+    certifications: ["Botswana Teaching Council registered", "Child safeguarding", "Online tutoring methodology"]
+  }
 });
 
 export const tutors: Tutor[] = [
@@ -47,7 +62,16 @@ export const tutors: Tutor[] = [
     specialties: ["Fractions & percentages", "Measurement & geometry", "Word problems", "Exam technique"],
     approach: ["Begin with a short skills check", "Explain one method at a time", "Practise with PSLE-style questions", "Finish with a revision task and checkpoint"],
     availability: ["Today · 17:00", "Tomorrow · 16:30", "Sat · 10:00", "Sun · 14:00"],
-    availabilityGroups: ["Today", "Tomorrow", "Weekend"]
+    availabilityGroups: ["Today", "Tomorrow", "Weekend"],
+    introVideo: "https://assets.mixkit.co/videos/50130/50130-720.mp4",
+    resume: {
+      education: ["Bachelor of Education (Primary) · University of Botswana"],
+      experience: [
+        { role: "PSLE Mathematics Tutor", organisation: "Studacad", period: "2021–present" },
+        { role: "Upper Primary Teacher", organisation: "Gaborone", period: "2018–2024" }
+      ],
+      certifications: ["Botswana Teaching Council registered", "Child safeguarding", "Digital teaching methods"]
+    }
   },
   {
     id: "thabo",
@@ -66,7 +90,16 @@ export const tutors: Tutor[] = [
     specialties: ["Cells & body systems", "Matter & particles", "Forces & energy", "Scientific investigations"],
     approach: ["Identify the learner's weakest topic", "Use diagrams and real-world examples", "Model a complete examination answer", "Check retention with multiple-choice questions"],
     availability: ["Today · 18:00", "Thu · 17:30", "Sat · 09:00", "Sun · 15:30"],
-    availabilityGroups: ["Today", "Weekdays", "Weekend"]
+    availabilityGroups: ["Today", "Weekdays", "Weekend"],
+    introVideo: "https://assets.mixkit.co/videos/50130/50130-720.mp4",
+    resume: {
+      education: ["Bachelor of Education (Science) · University of Botswana"],
+      experience: [
+        { role: "JCE General Science Tutor", organisation: "Studacad", period: "2020–present" },
+        { role: "Science Department Lead", organisation: "Francistown", period: "2017–2024" }
+      ],
+      certifications: ["Botswana Teaching Council registered", "Practical science instruction", "Child safeguarding"]
+    }
   },
   {
     id: "keneilwe",
@@ -85,7 +118,16 @@ export const tutors: Tutor[] = [
     specialties: ["Cell biology", "Genetics & inheritance", "Human physiology", "Ecology"],
     approach: ["Connect new ideas to prior knowledge", "Build accurate scientific vocabulary", "Practise structured BGCSE responses", "Create a focused revision plan"],
     availability: ["Tomorrow · 17:00", "Fri · 16:00", "Sat · 11:30", "Sun · 13:00"],
-    availabilityGroups: ["Tomorrow", "Weekdays", "Weekend"]
+    availabilityGroups: ["Tomorrow", "Weekdays", "Weekend"],
+    introVideo: "https://assets.mixkit.co/videos/50130/50130-720.mp4",
+    resume: {
+      education: ["Bachelor of Science Education · University of Botswana"],
+      experience: [
+        { role: "BGCSE Biology Tutor", organisation: "Studacad", period: "2021–present" },
+        { role: "Senior Biology Teacher", organisation: "Maun", period: "2017–present" }
+      ],
+      certifications: ["Botswana Teaching Council registered", "Laboratory safety", "Online assessment design"]
+    }
   },
   subjectTutor({ id: "kabelo", name: "Kabelo", examination: "PSLE", subject: "Mathematics", rating: "4.8", lessons: "735 lessons", price: 19, color: "blue", image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=900&q=88", location: "Molepolole, Botswana", availability: ["Today · 19:00", "Wed · 16:00", "Sat · 12:00"], availabilityGroups: ["Today", "Weekdays", "Weekend"] }),
   subjectTutor({ id: "naledi", name: "Naledi", examination: "PSLE", subject: "English", rating: "4.9", lessons: "1,088 lessons", price: 21, color: "yellow", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=88", location: "Gaborone, Botswana", availability: ["Tomorrow · 15:30", "Thu · 17:00", "Sun · 10:00"], availabilityGroups: ["Tomorrow", "Weekdays", "Weekend"] }),
