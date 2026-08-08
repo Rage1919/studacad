@@ -13,11 +13,11 @@ const ShareIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12
 
 type SessionFormat = Tutor["sessionFormats"][number];
 
-const sessionOptions: Array<{ id: SessionFormat; label: string; description: string }> = [
-  { id: "online-1to1", label: "Online 1-to-1", description: "Private video tutorial · Google Meet" },
-  { id: "online-group", label: "Online group", description: "Up to 6 learners · Google Meet" },
-  { id: "tutor-place", label: "At tutor's place", description: "In-person private tutorial" },
-  { id: "student-place", label: "At student's place", description: "Tutor travels to the learner" }
+const sessionOptions: Array<{ id: SessionFormat; label: string }> = [
+  { id: "online-1to1", label: "Online private" },
+  { id: "online-group", label: "Online group" },
+  { id: "tutor-place", label: "At tutor's place" },
+  { id: "student-place", label: "At student's place" }
 ];
 
 export default function TutorProfilePage() {
@@ -51,7 +51,7 @@ export default function TutorProfilePage() {
   const isFavourite = favouriteIds.includes(tutor.id);
   const availableSessions = sessionOptions.filter(option => tutor.sessionFormats.includes(option.id));
   const session = availableSessions.find(option => option.id === selectedFormat) ?? availableSessions[0];
-  const sessionPrice = tutor.price;
+  const sessionPrice = selectedFormat === "online-group" ? Math.max(1, Math.round(tutor.price * .6)) : tutor.price;
   const isOnlineSession = selectedFormat === "online-1to1" || selectedFormat === "online-group";
 
   const confirmBooking = async () => {
@@ -190,10 +190,10 @@ export default function TutorProfilePage() {
 
       <aside className="booking-card">
         <p className="eyebrow">Choose how to learn</p>
-        <div className="booking-price"><strong>{sessionPrice}</strong><span>credits<br />{selectedFormat === "online-group" ? "per learner" : "for 50 minutes"}</span></div>
+        <div className="booking-price"><strong>{sessionPrice}</strong><span>credits<br />{selectedFormat === "online-group" ? "group rate · 40% less" : "for 50 minutes"}</span></div>
         <div className="booking-balance"><span>Your wallet</span><b>{credits.toLocaleString()} credits</b></div>
         <button className="message-before-booking" type="button" onClick={() => { setMessageOpen(true); setMessageNotice(""); }}><MessageIcon /> Message before booking</button>
-        <fieldset className="session-format-fieldset"><legend>Session format</legend>{availableSessions.map(option => <label key={option.id} className={selectedFormat === option.id ? "selected" : ""}><input type="radio" name="session-format" checked={selectedFormat === option.id} onChange={() => { setSelectedFormat(option.id); setNotice(""); setBooked(false); setMeetUrl(""); }} /><span className="session-format-copy"><strong>{option.label}</strong><small>{option.description}</small></span></label>)}</fieldset>
+        <fieldset className="session-format-fieldset"><legend>Session format</legend>{availableSessions.map(option => <label key={option.id} className={selectedFormat === option.id ? "selected" : ""}><input type="radio" name="session-format" checked={selectedFormat === option.id} onChange={() => { setSelectedFormat(option.id); setNotice(""); setBooked(false); setMeetUrl(""); }} /><span className="session-format-copy"><strong>{option.label}{option.id === "online-group" && <em>40% less</em>}</strong></span></label>)}</fieldset>
         {isOnlineSession && <div className="session-venue google-meet-venue"><span>G</span><div><strong>Google Meet included</strong><small>A secure meeting space is prepared after booking.</small></div></div>}
         {selectedFormat === "tutor-place" && <div className="session-venue"><span>⌂</span><div><strong>{tutor.location}</strong><small>The exact address is shared after confirmation.</small></div></div>}
         {selectedFormat === "student-place" && <label className="student-address"><span>Learner&apos;s address</span><input value={studentAddress} onChange={event => { setStudentAddress(event.target.value); setNotice(""); }} placeholder="Street and area" /></label>}

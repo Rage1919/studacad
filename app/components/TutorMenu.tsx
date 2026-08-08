@@ -7,7 +7,7 @@ export function TutorMenu() {
   const [open, setOpen] = useState(false);
 
   return <div className={`tutor-menu ${open ? "open" : ""}`} onMouseLeave={() => setOpen(false)}>
-    <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(value => !value)}>Find tutors <span>⌄</span></button>
+    <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(value => !value)}>Find tutors</button>
     <div className="tutor-menu-panel" role="menu">
       <Link role="menuitem" href="/tutors"><span>All</span><b>Browse every tutor</b></Link>
       <Link role="menuitem" href="/favourites"><span>♥</span><b>Favourite tutors</b></Link>

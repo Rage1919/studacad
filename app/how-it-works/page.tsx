@@ -13,7 +13,7 @@ const directory = [
   ["Tutor discovery", "Exam-level submenus, subject cards, search, availability, rating, and credit-price filters."],
   ["Complete profiles", "Biography, specialties, introduction video, résumé, reviews, availability, and lesson price."],
   ["Before booking", "Free tutor messaging, persistent favourites, profile sharing, and a personal shortlist."],
-  ["Flexible sessions", "Online 1-to-1, online groups of up to six, tutor-hosted, or learner-home tutorials."],
+  ["Flexible sessions", "Online private, discounted online groups, tutor-hosted, or learner-home tutorials."],
   ["Google Meet", "Online bookings prepare a Google Meet space and place the joining link in the confirmation."],
   ["Credits wallet", "Top up once, pay tutors or purchase learning programmes, and review every transaction."],
   ["Learning library", "Purchased courses appear under My learning with progress, lesson lists, and completion status."],
@@ -78,11 +78,11 @@ export default function HowItWorksPage() {
       <div className="how-section-heading"><p className="eyebrow">Flexible tutorials</p><h2>Choose where and how the lesson happens.</h2><p>Availability and delivery format are selected together before credits are deducted.</p></div>
       <div className="how-session-layout">
         <div className="how-booking-visual">
-          <div className="how-session-grid"><div className="selected"><b>Online 1-to-1</b><small>Private · Google Meet</small></div><div><b>Online group</b><small>Up to 6 learners</small></div><div><b>At tutor&apos;s place</b><small>Private in-person</small></div><div><b>At student&apos;s place</b><small>Tutor travels</small></div></div>
+          <div className="how-session-grid"><div className="selected"><b>Online private</b></div><div><b>Online group</b><em>40% less</em></div><div><b>At tutor&apos;s place</b></div><div><b>At student&apos;s place</b></div></div>
           <p>Choose a time</p>
           <div className="how-time-grid"><span className="selected">Today · 17:00</span><span>Tomorrow · 16:30</span><span>Sat · 10:00</span><span>Sun · 14:00</span></div>
         </div>
-        <div className="how-session-notes"><article><span>1</span><div><h3>Online private</h3><p>A focused 50-minute lesson for one learner. Studacad prepares the Google Meet step after booking.</p></div></article><article><span>2</span><div><h3>Online group</h3><p>Up to six learners can attend the same online tutorial while each learner books with credits.</p></div></article><article><span>3</span><div><h3>Tutor&apos;s place</h3><p>The tutor&apos;s general location is visible first; the exact address is shared after confirmation.</p></div></article><article><span>4</span><div><h3>Student&apos;s place</h3><p>The learner enters an address before booking so the tutor can confirm the home visit.</p></div></article></div>
+        <div className="how-session-notes"><article><span>1</span><div><h3>Online private</h3><p>A focused 50-minute lesson for one learner. Studacad prepares the Google Meet step after booking.</p></div></article><article><span>2</span><div><h3>Online group</h3><p>Up to six learners attend together and each learner pays 40% less than the tutor&apos;s private rate.</p></div></article><article><span>3</span><div><h3>Tutor&apos;s place</h3><p>The tutor&apos;s general location is visible first; the exact address is shared after confirmation.</p></div></article><article><span>4</span><div><h3>Student&apos;s place</h3><p>The learner enters an address before booking so the tutor can confirm the home visit.</p></div></article></div>
       </div>
     </section>
 
