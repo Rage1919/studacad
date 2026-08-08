@@ -6,6 +6,7 @@ import { Course, CreditTransaction, initialLmsState, Lesson, LmsState } from "..
 type LmsContextValue = LmsState & {
   ready: boolean;
   topUp: (amount: number) => void;
+  bookTutor: (tutorName: string, price: number, slot: string) => { ok: boolean; message: string };
   purchaseCourse: (courseId: string) => { ok: boolean; message: string };
   recordQuiz: (lessonId: string, score: number) => void;
   addCourse: (course: Course) => void;
@@ -52,6 +53,15 @@ export function LmsProvider({ children }: { children: React.ReactNode }) {
       credits: current.credits + amount,
       transactions: [transaction("topup", `Wallet top-up · ${amount} credits`, amount), ...current.transactions]
     })),
+    bookTutor: (tutorName, price, slot) => {
+      if (state.credits < price) return { ok: false, message: "Not enough credits. Top up your wallet first." };
+      setState(current => ({
+        ...current,
+        credits: current.credits - price,
+        transactions: [transaction("purchase", `Lesson with ${tutorName} · ${slot}`, -price), ...current.transactions]
+      }));
+      return { ok: true, message: `Lesson with ${tutorName} booked for ${slot}.` };
+    },
     purchaseCourse: (courseId) => {
       const course = state.courses.find(item => item.id === courseId);
       if (!course) return { ok: false, message: "Course not found." };

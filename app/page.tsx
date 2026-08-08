@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useLms } from "./components/LmsProvider";
+import { tutors } from "./lib/tutors";
 
 const Arrow = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5" /></svg>;
 const Star = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.5 6.3-.9L12 2.8Z" /></svg>;
@@ -24,12 +25,6 @@ const subjects = [
   { name: "Accounting", exam: "BGCSE", count: "22", code: "F5" },
   { name: "Geography", exam: "BGCSE", count: "19", code: "F5" },
   { name: "Business Studies", exam: "BGCSE", count: "21", code: "F5" }
-];
-
-const tutors = [
-  { name: "Masego", subject: "PSLE Mathematics", rating: "4.9", lessons: "1,184 lessons", price: "22", color: "peach", image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=700&q=85" },
-  { name: "Thabo", subject: "JCE General Science", rating: "5.0", lessons: "946 lessons", price: "24", color: "blue", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=85" },
-  { name: "Keneilwe", subject: "BGCSE Biology", rating: "4.9", lessons: "817 lessons", price: "27", color: "yellow", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=700&q=85" }
 ];
 
 export default function Home() {
@@ -138,12 +133,12 @@ export default function Home() {
         <div className="tutor-grid">
           {tutors.map(tutor => (
             <article className="tutor-card" key={tutor.name}>
-              <div className={`tutor-photo ${tutor.color}`}><img src={tutor.image} alt={`${tutor.name}, ${tutor.subject} tutor`} /><button aria-label={`Save ${tutor.name}`}>♡</button><span>Available today</span></div>
+              <div className={`tutor-photo ${tutor.color}`}><img src={tutor.image} alt={`${tutor.name}, ${tutor.examination} ${tutor.subject} tutor`} /><button aria-label={`Save ${tutor.name}`}>♡</button><span>Available today</span></div>
               <div className="tutor-info">
-                <div><h3>{tutor.name} <i>✓</i></h3><p>{tutor.subject} tutor</p></div>
+                <div><h3>{tutor.name} <i>✓</i></h3><p>{tutor.examination} {tutor.subject} tutor</p></div>
                 <div className="rating"><Star /><strong>{tutor.rating}</strong><small>{tutor.lessons}</small></div>
-                <p className="bio">Patient, experienced support with clear explanations, exam-style practice, and a plan based on the learner&apos;s weak areas.</p>
-                <div className="price"><span><strong>{tutor.price}</strong> credits / 50-min lesson</span><button onClick={() => setModal("search")}>View profile</button></div>
+                <p className="bio">{tutor.headline}</p>
+                <div className="price"><span><strong>{tutor.price}</strong> credits / 50-min lesson</span><Link href={`/tutor?id=${tutor.id}`}>View profile</Link></div>
               </div>
             </article>
           ))}
