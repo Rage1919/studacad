@@ -2,10 +2,11 @@
   "name": "lingolift-tutor-marketplace",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build && node scripts/copy-output.mjs",
-    "start": "next start",
+    "build": "vinext build && node scripts/prepare-sites.mjs",
+    "start": "vinext start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -17,6 +18,8 @@
     "@types/node": "24.2.1",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
-    "typescript": "5.9.2"
+    "@vitejs/plugin-rsc": "0.5.34",
+    "typescript": "5.9.2",
+    "vinext": "0.2.1"
   }
 }
