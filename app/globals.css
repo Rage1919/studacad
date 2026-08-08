@@ -53,6 +53,9 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .primary { min-height: 54px; border: 2px solid var(--ink); border-radius: 7px; padding: 0 25px; display: inline-flex; align-items: center; justify-content: center; gap: 18px; background: var(--ink); color: white; font-weight: 800; cursor: pointer; box-shadow: 0 0 0 var(--ink); transition: transform .2s, box-shadow .2s; }
 .primary:hover { transform: translate(-3px, -3px); box-shadow: 5px 5px 0 rgba(20,20,20,.35); }
 .hero-cta { width: 315px; margin-top: 44px; }
+.hero-actions { align-items: center; margin-top: 44px; }
+.hero-actions .hero-cta { width: auto; margin-top: 0; }
+.hero-actions .outline { min-height: 54px; background: rgba(255,255,255,.28); }
 .mini-proof { margin-top: 25px; display: flex; align-items: center; gap: 12px; font-size: 13px; }
 .faces { display: flex; }
 .faces img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid var(--pink); margin-left: -8px; }
@@ -78,6 +81,8 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .section-heading { display: grid; grid-template-columns: 1fr minmax(280px, 410px); align-items: end; gap: 60px; margin-bottom: 48px; }
 .section-heading h2, .how h2 { margin: 0; font-size: clamp(40px, 5vw, 65px); line-height: 1; }
 .section-heading > p { margin: 0 0 4px; color: #545454; font-size: 18px; line-height: 1.55; }
+.exam-anchor-row { margin: -20px 0 28px; display: flex; flex-wrap: wrap; gap: 9px; }
+.exam-anchor-row span { padding: 8px 12px; border: 1px solid var(--ink); border-radius: 999px; background: white; font-size: 12px; font-weight: 800; scroll-margin-top: 90px; }
 .language-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .language-card { min-height: 112px; display: grid; grid-template-columns: 45px 1fr 22px; align-items: center; text-align: left; gap: 15px; padding: 20px; border: 2px solid var(--ink); border-radius: 7px; cursor: pointer; transition: transform .2s, box-shadow .2s; }
 .language-card:hover { transform: translate(-4px,-4px); box-shadow: 5px 5px 0 var(--ink); }
@@ -146,7 +151,7 @@ footer { padding: 65px clamp(30px, 7vw, 110px) 25px; background: var(--ink); col
 @media (max-width: 760px) {
   .support-strip { height: 40px; font-size: 12px; }.support-strip span:nth-child(2) { display: none; }
   .nav { height: 66px; padding: 0 17px; }.brand { font-size: 23px; }.currency, .help { display: none; }.login { height: 39px; padding: 0 12px; }
-  .hero { min-height: auto; padding: 52px 22px 45px; grid-template-columns: 1fr; gap: 47px; }.hero h1 { font-size: clamp(45px, 13vw, 61px); }.hero-cta { width: 100%; margin-top: 31px; }.hero-visual { min-height: auto; }.video-card { width: 93%; }.echo-one { width: 88%; }.echo-two { display: none; }
+  .hero { min-height: auto; padding: 52px 22px 45px; grid-template-columns: 1fr; gap: 47px; }.hero h1 { font-size: clamp(45px, 13vw, 61px); }.hero-cta { width: 100%; margin-top: 31px; }.hero-actions { margin-top: 31px; }.hero-actions .hero-cta { width: 100%; margin-top: 0; }.hero-visual { min-height: auto; }.video-card { width: 93%; }.echo-one { width: 88%; }.echo-two { display: none; }
   .metrics { padding: 30px 18px; grid-template-columns: repeat(2, 1fr); row-gap: 25px; }.metrics div:nth-child(3) { display: none; }.metrics strong { font-size: 23px; }
   .language-section, .tutor-showcase, .how { padding: 72px 20px; }.section-heading, .section-heading.compact { display: block; }.section-heading > p { margin-top: 20px; }.section-heading h2, .how h2 { font-size: 43px; letter-spacing: -2px; }.section-heading.compact .outline { margin-top: 24px; }
   .language-grid, .tutor-grid, .steps { grid-template-columns: 1fr; }.language-card { min-height: 92px; }.tutor-card:last-child { display: block; }.tutor-photo { height: 330px; }.steps { gap: 50px; }.step-art { height: 260px; }

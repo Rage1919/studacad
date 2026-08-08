@@ -13,7 +13,7 @@ type LmsContextValue = LmsState & {
   resetDemo: () => void;
 };
 
-const STORAGE_KEY = "lingolift-lms-v1";
+const STORAGE_KEY = "studacad-lms-v2";
 const LmsContext = createContext<LmsContextValue | null>(null);
 
 const transaction = (type: CreditTransaction["type"], label: string, amount: number): CreditTransaction => ({
@@ -95,4 +95,3 @@ export function useLms() {
   if (!context) throw new Error("useLms must be used inside LmsProvider");
   return context;
 }
-
