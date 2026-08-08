@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLms } from "./LmsProvider";
+import { TutorMenu } from "./TutorMenu";
 
 export function LmsHeader({ current }: { current?: "learn" | "wallet" }) {
   const { credits } = useLms();
@@ -9,7 +10,7 @@ export function LmsHeader({ current }: { current?: "learn" | "wallet" }) {
     <header className="lms-header">
       <Link className="brand" href="/"><span>Studacad</span><i className="brand-mark"><b /><b /><b /></i></Link>
       <nav aria-label="Learning navigation">
-        <Link href="/#tutors">Find tutors</Link>
+        <TutorMenu />
         <Link className={current === "learn" ? "active" : ""} href="/learn">My learning</Link>
       </nav>
       <Link className={`wallet-pill ${current === "wallet" ? "active" : ""}`} href="/wallet">

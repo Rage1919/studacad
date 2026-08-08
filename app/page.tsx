@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useLms } from "./components/LmsProvider";
+import { TutorMenu } from "./components/TutorMenu";
 import { tutors } from "./lib/tutors";
 
 const Arrow = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5" /></svg>;
@@ -36,15 +37,9 @@ export default function Home() {
   const visibleSubjects = useMemo(() => showAll ? subjects : subjects.slice(0, 9), [showAll]);
   const examSubjects = useMemo(() => Array.from(new Set(subjects.filter(item => item.exam === examination).map(item => item.name))), [examination]);
 
-  const chooseSubject = (exam: string, name: string) => {
-    setExamination(exam);
-    setSubject(name);
-    setModal("search");
-  };
-
   const beginSearch = () => {
     setModal(null);
-    document.getElementById("tutor-results")?.scrollIntoView({ behavior: "smooth" });
+    window.location.href = `/tutors?exam=${encodeURIComponent(examination)}&subject=${encodeURIComponent(subject)}`;
   };
 
   return (
@@ -60,10 +55,7 @@ export default function Home() {
           <span>Studacad</span><i className="brand-mark"><b /><b /><b /></i>
         </a>
         <nav aria-label="Main navigation">
-          <a href="#tutors">Find tutors</a>
-          <a href="#psle">PSLE</a>
-          <a href="#jce">JCE</a>
-          <a href="#bgcse">BGCSE</a>
+          <TutorMenu />
           <Link href="/learn">My learning</Link>
         </nav>
         <div className="nav-actions">
@@ -115,11 +107,11 @@ export default function Home() {
         <div className="exam-anchor-row" aria-label="Examination levels"><span id="psle">PSLE · Standard 7</span><span id="jce">JCE · Form 3</span><span id="bgcse">BGCSE · Form 5</span></div>
         <div className="language-grid">
           {visibleSubjects.map((item, index) => (
-            <button key={`${item.exam}-${item.name}`} className={`language-card color-${index % 5}`} onClick={() => chooseSubject(item.exam, item.name)}>
+            <Link key={`${item.exam}-${item.name}`} className={`language-card color-${index % 5}`} href={`/tutors?exam=${encodeURIComponent(item.exam)}&subject=${encodeURIComponent(item.name)}`}>
               <span className="flag">{item.code}</span>
               <span><strong>{item.name}</strong><small>{item.exam} · {item.count} tutors</small></span>
               <Arrow />
-            </button>
+            </Link>
           ))}
         </div>
         <button className="outline show-more" onClick={() => setShowAll(value => !value)}>{showAll ? "Show fewer subjects" : "Show all subjects"} <Chevron /></button>
@@ -128,7 +120,7 @@ export default function Home() {
       <section className="tutor-showcase" id="tutor-results">
         <div className="section-heading compact">
           <div><p className="eyebrow">Popular Botswana exam tutors</p><h2>Meet tutors who know the syllabus.</h2></div>
-          <button className="outline" onClick={() => setModal("search")}>Browse all tutors <Arrow /></button>
+          <Link className="outline" href="/tutors">Browse all tutors <Arrow /></Link>
         </div>
         <div className="tutor-grid">
           {tutors.map(tutor => (
