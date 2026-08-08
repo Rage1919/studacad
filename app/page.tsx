@@ -56,6 +56,7 @@ export default function Home() {
         </a>
         <nav aria-label="Main navigation">
           <TutorMenu />
+          <Link href="/how-it-works">How it works</Link>
           <Link href="/learn">My learning</Link>
         </nav>
         <div className="nav-actions">
@@ -165,7 +166,7 @@ export default function Home() {
 
       <footer>
         <div className="footer-top"><a className="brand footer-brand" href="#top"><span>Studacad</span><i className="brand-mark"><b /><b /><b /></i></a><p>Botswana tutors, courses, revision papers, and tests in one place.</p><div className="socials"><button>in</button><button>◎</button><button>▶</button><button>f</button></div></div>
-        <div className="footer-links"><div><h4>About Studacad</h4><a href="#how">How it works</a><a href="#schools">For schools</a><a href="#">Reviews</a><a href="#">Careers</a></div><div><h4>For students</h4><a href="#tutors">Find tutors</a><Link href="/learn">My learning</Link><Link href="/wallet">Credits wallet</Link><a href="#tutors">Browse subjects</a></div><div><h4>Exam pathways</h4><a href="#psle">PSLE subjects</a><a href="#jce">JCE subjects</a><a href="#bgcse">BGCSE subjects</a><a href="#teach">Become a tutor</a></div><div><h4>Learning tools</h4><Link href="/learn">Tutorial videos</Link><Link href="/learn">Revision papers</Link><Link href="/learn">Lesson tests</Link><a href="#schools">School support</a></div><div><h4>Support</h4><a href="#">Help centre</a><a href="#">Contact us</a><a href="#">Safety</a><a href="#">Community guidelines</a></div></div>
+        <div className="footer-links"><div><h4>About Studacad</h4><Link href="/how-it-works">How it works</Link><a href="#schools">For schools</a><a href="#">Reviews</a><a href="#">Careers</a></div><div><h4>For students</h4><a href="#tutors">Find tutors</a><Link href="/learn">My learning</Link><Link href="/wallet">Credits wallet</Link><a href="#tutors">Browse subjects</a></div><div><h4>Exam pathways</h4><a href="#psle">PSLE subjects</a><a href="#jce">JCE subjects</a><a href="#bgcse">BGCSE subjects</a><a href="#teach">Become a tutor</a></div><div><h4>Learning tools</h4><Link href="/learn">Tutorial videos</Link><Link href="/learn">Revision papers</Link><Link href="/learn">Lesson tests</Link><a href="#schools">School support</a></div><div><h4>Support</h4><a href="#">Help centre</a><a href="#">Contact us</a><a href="#">Safety</a><a href="#">Community guidelines</a></div></div>
         <div className="footer-bottom"><span>© 2026 Studacad. Demo experience.</span><div><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Accessibility</a></div></div>
       </footer>
 

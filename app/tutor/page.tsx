@@ -13,11 +13,11 @@ const ShareIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12
 
 type SessionFormat = Tutor["sessionFormats"][number];
 
-const sessionOptions: Array<{ id: SessionFormat; label: string; description: string; icon: string }> = [
-  { id: "online-1to1", label: "Online 1-to-1", description: "Private video tutorial · Google Meet", icon: "◉" },
-  { id: "online-group", label: "Online group", description: "Up to 6 learners · Google Meet", icon: "●●" },
-  { id: "tutor-place", label: "At tutor's place", description: "In-person private tutorial", icon: "⌂" },
-  { id: "student-place", label: "At student's place", description: "Tutor travels to the learner", icon: "⌖" }
+const sessionOptions: Array<{ id: SessionFormat; label: string; description: string }> = [
+  { id: "online-1to1", label: "Online 1-to-1", description: "Private video tutorial · Google Meet" },
+  { id: "online-group", label: "Online group", description: "Up to 6 learners · Google Meet" },
+  { id: "tutor-place", label: "At tutor's place", description: "In-person private tutorial" },
+  { id: "student-place", label: "At student's place", description: "Tutor travels to the learner" }
 ];
 
 export default function TutorProfilePage() {
@@ -193,11 +193,11 @@ export default function TutorProfilePage() {
         <div className="booking-price"><strong>{sessionPrice}</strong><span>credits<br />{selectedFormat === "online-group" ? "per learner" : "for 50 minutes"}</span></div>
         <div className="booking-balance"><span>Your wallet</span><b>{credits.toLocaleString()} credits</b></div>
         <button className="message-before-booking" type="button" onClick={() => { setMessageOpen(true); setMessageNotice(""); }}><MessageIcon /> Message before booking</button>
-        <fieldset className="session-format-fieldset"><legend>Session format</legend>{availableSessions.map(option => <label key={option.id} className={selectedFormat === option.id ? "selected" : ""}><input type="radio" name="session-format" checked={selectedFormat === option.id} onChange={() => { setSelectedFormat(option.id); setNotice(""); setBooked(false); setMeetUrl(""); }} /><span className="session-format-icon">{option.icon}</span><span className="session-format-copy"><strong>{option.label}</strong><small>{option.description}</small></span></label>)}</fieldset>
+        <fieldset className="session-format-fieldset"><legend>Session format</legend>{availableSessions.map(option => <label key={option.id} className={selectedFormat === option.id ? "selected" : ""}><input type="radio" name="session-format" checked={selectedFormat === option.id} onChange={() => { setSelectedFormat(option.id); setNotice(""); setBooked(false); setMeetUrl(""); }} /><span className="session-format-copy"><strong>{option.label}</strong><small>{option.description}</small></span></label>)}</fieldset>
         {isOnlineSession && <div className="session-venue google-meet-venue"><span>G</span><div><strong>Google Meet included</strong><small>A secure meeting space is prepared after booking.</small></div></div>}
         {selectedFormat === "tutor-place" && <div className="session-venue"><span>⌂</span><div><strong>{tutor.location}</strong><small>The exact address is shared after confirmation.</small></div></div>}
         {selectedFormat === "student-place" && <label className="student-address"><span>Learner&apos;s address</span><input value={studentAddress} onChange={event => { setStudentAddress(event.target.value); setNotice(""); }} placeholder="Street and area" /></label>}
-        <fieldset><legend>Choose a time</legend>{tutor.availability.map(slot => <label key={slot} className={selectedSlot === slot ? "selected" : ""}><input type="radio" name="lesson-slot" checked={selectedSlot === slot} onChange={() => { setSelectedSlot(slot); setNotice(""); setBooked(false); }} /><span>{slot}</span></label>)}</fieldset>
+        <fieldset className="time-slot-fieldset"><legend>Choose a time</legend>{tutor.availability.map(slot => <label key={slot} className={selectedSlot === slot ? "selected" : ""}><input type="radio" name="lesson-slot" checked={selectedSlot === slot} onChange={() => { setSelectedSlot(slot); setNotice(""); setBooked(false); }} /><span>{slot}</span></label>)}</fieldset>
         {!booked ? <button className="primary booking-button" onClick={confirmBooking} disabled={!selectedSlot || credits < sessionPrice}>{credits < sessionPrice ? "Top up to book" : `Book ${session.label}`}</button> : <div className="booking-success"><span>✓</span><div><strong>{session.label} booked</strong><p>{selectedSlot}</p>{meetLoading && <small>Creating your Google Meet space…</small>}{meetUrl && <a href={meetUrl} target="_blank" rel="noreferrer">{meetDemo ? "Open Google Meet setup →" : "Join Google Meet →"}</a>}{!isOnlineSession && <small>{selectedFormat === "student-place" ? studentAddress : "Venue details will be shared in your messages."}</small>}</div></div>}
         {notice && <p className={booked ? "booking-notice success" : "booking-notice"} role="status">{notice}</p>}
         {credits < sessionPrice && <Link className="booking-topup" href="/wallet">Top up your Studacad wallet →</Link>}
