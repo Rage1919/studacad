@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./lms.css";
 import { LmsProvider } from "./components/LmsProvider";
+import { StudacadFooter } from "./components/StudacadFooter";
 
 export const metadata: Metadata = {
   title: "Studacad — Botswana tutors and exam preparation",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body><LmsProvider>{children}</LmsProvider></body>
+      <body><LmsProvider>{children}<StudacadFooter /></LmsProvider></body>
     </html>
   );
 }
