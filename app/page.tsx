@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useLms } from "./components/LmsProvider";
 
 const Arrow = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5" /></svg>;
 const Star = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.5 6.3-.9L12 2.8Z" /></svg>;
@@ -14,12 +16,13 @@ const languages = [
 ];
 
 const tutors = [
-  { name: "Amara", subject: "English tutor", rating: "4.9", lessons: "2,147 lessons", price: "$24", color: "peach", image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=700&q=85" },
-  { name: "Mateo", subject: "Spanish tutor", rating: "5.0", lessons: "1,684 lessons", price: "$19", color: "blue", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=85" },
-  { name: "Camille", subject: "French tutor", rating: "4.9", lessons: "983 lessons", price: "$27", color: "yellow", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=700&q=85" }
+  { name: "Amara", subject: "English tutor", rating: "4.9", lessons: "2,147 lessons", price: "24", color: "peach", image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=700&q=85" },
+  { name: "Mateo", subject: "Spanish tutor", rating: "5.0", lessons: "1,684 lessons", price: "19", color: "blue", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=85" },
+  { name: "Camille", subject: "French tutor", rating: "4.9", lessons: "983 lessons", price: "27", color: "yellow", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=700&q=85" }
 ];
 
 export default function Home() {
+  const { credits } = useLms();
   const [showAll, setShowAll] = useState(false);
   const [modal, setModal] = useState<"search" | "login" | null>(null);
   const [language, setLanguage] = useState("English");
@@ -48,9 +51,10 @@ export default function Home() {
           <a href="#business">For business</a>
           <a href="#teach">Become a tutor</a>
           <a href="#progress">How it works</a>
+          <Link href="/learn">Learning hub</Link>
         </nav>
         <div className="nav-actions">
-          <button className="currency">English, USD <Chevron /></button>
+          <Link className="currency wallet-nav" href="/wallet">◆ {credits.toLocaleString()} credits</Link>
           <button className="help" aria-label="Help">?</button>
           <button className="login" onClick={() => setModal("login")}>↪ <span>Log in</span></button>
         </div>
@@ -75,6 +79,11 @@ export default function Home() {
             <div className="call-controls"><button>⌁</button><button>●</button><button className="end">×</button></div>
           </div>
         </div>
+      </section>
+
+      <section className="lms-promo">
+        <div className="lms-promo-copy"><p className="eyebrow">New · LingoLift learning hub</p><h2>Lessons don’t end<br />when the call does.</h2><p>Keep learning with tutor-led videos, downloadable revision papers, and short multiple-choice tests that help knowledge stick.</p><div className="button-row"><Link className="primary" href="/learn">Open learning hub <Arrow /></Link><Link className="outline" href="/admin">Explore admin studio</Link></div></div>
+        <div className="lms-promo-board"><div className="promo-top"><span>My learning</span><b>2 lessons this week</b></div><div className="promo-module video-module"><i>▶</i><span><small>Video lesson</small><strong>Speak with confidence</strong></span><b>14 min</b></div><div className="promo-module"><i>▤</i><span><small>Revision paper</small><strong>Conversation quick guide</strong></span><b>PDF</b></div><div className="promo-module quiz-module"><i>✓</i><span><small>Checkpoint passed</small><strong>Retention score</strong></span><b>90%</b></div></div>
       </section>
 
       <section className="metrics" aria-label="Platform statistics">
@@ -115,7 +124,7 @@ export default function Home() {
                 <div><h3>{tutor.name} <i>✓</i></h3><p>{tutor.subject}</p></div>
                 <div className="rating"><Star /><strong>{tutor.rating}</strong><small>{tutor.lessons}</small></div>
                 <p className="bio">Friendly, certified tutor who makes every lesson practical, encouraging, and focused on your real-life goals.</p>
-                <div className="price"><span><strong>{tutor.price}</strong> / 50-min lesson</span><button onClick={() => setModal("search")}>View profile</button></div>
+                <div className="price"><span><strong>{tutor.price}</strong> credits / 50-min lesson</span><button onClick={() => setModal("search")}>View profile</button></div>
               </div>
             </article>
           ))}
@@ -138,7 +147,7 @@ export default function Home() {
 
       <section className="split-cta teach" id="teach">
         <div><p className="eyebrow">Teach from anywhere</p><h2>Share what you know.<br />Earn on your terms.</h2><p>Join a worldwide community of tutors and grow your independent teaching business.</p><ul><li>Find students from around the world</li><li>Set your own price and schedule</li><li>Get paid securely</li></ul><button className="primary">Become a tutor <Arrow /></button></div>
-        <div className="cta-image tutor-desk"><img src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=1000&q=85" alt="Tutor teaching from home" /><span className="income-card"><small>This month</small><strong>$2,840</strong><i>↑ 18% from last month</i></span></div>
+        <div className="cta-image tutor-desk"><img src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=1000&q=85" alt="Tutor teaching from home" /><span className="income-card"><small>This month</small><strong>2,840 credits</strong><i>↑ 18% from last month</i></span></div>
       </section>
 
       <section className="split-cta business" id="business">
@@ -150,7 +159,7 @@ export default function Home() {
 
       <footer>
         <div className="footer-top"><a className="brand footer-brand" href="#top"><span>LingoLift</span><i className="brand-mark"><b /><b /><b /></i></a><p>Human connection is the fastest way to a new language.</p><div className="socials"><button>in</button><button>◎</button><button>▶</button><button>f</button></div></div>
-        <div className="footer-links"><div><h4>About us</h4><a href="#mission">Who we are</a><a href="#progress">How it works</a><a href="#">Reviews</a><a href="#">Careers</a></div><div><h4>For students</h4><a href="#tutors">Find tutors</a><a href="#">Learning blog</a><a href="#">Language tests</a><a href="#">Student discount</a></div><div><h4>For tutors</h4><a href="#teach">Become a tutor</a><a href="#">Teaching resources</a><a href="#">Tutor community</a><a href="#">Online tutoring jobs</a></div><div><h4>For companies</h4><a href="#business">Team training</a><a href="#">English for teams</a><a href="#">Resource center</a><a href="#">Contact sales</a></div><div><h4>Support</h4><a href="#">Help center</a><a href="#">Contact us</a><a href="#">Safety</a><a href="#">Community guidelines</a></div></div>
+        <div className="footer-links"><div><h4>About us</h4><a href="#mission">Who we are</a><a href="#progress">How it works</a><a href="#">Reviews</a><a href="#">Careers</a></div><div><h4>For students</h4><a href="#tutors">Find tutors</a><Link href="/learn">Learning hub</Link><Link href="/wallet">Credits wallet</Link><a href="#">Language tests</a></div><div><h4>For tutors</h4><a href="#teach">Become a tutor</a><Link href="/admin">Admin studio</Link><a href="#">Tutor community</a><a href="#">Online tutoring jobs</a></div><div><h4>For companies</h4><a href="#business">Team training</a><a href="#">English for teams</a><a href="#">Resource center</a><a href="#">Contact sales</a></div><div><h4>Support</h4><a href="#">Help center</a><a href="#">Contact us</a><a href="#">Safety</a><a href="#">Community guidelines</a></div></div>
         <div className="footer-bottom"><span>© 2026 LingoLift. Demo experience.</span><div><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Accessibility</a></div></div>
       </footer>
 

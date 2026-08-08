@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./lms.css";
+import { LmsProvider } from "./components/LmsProvider";
 
 export const metadata: Metadata = {
   title: "LingoLift — Learn with your perfect tutor",
@@ -9,7 +11,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body><LmsProvider>{children}</LmsProvider></body>
     </html>
   );
 }

@@ -32,13 +32,14 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .brand-mark { width: 20px; height: 25px; display: inline-flex; align-items: flex-end; gap: 2px; transform: rotate(-28deg); }
 .brand-mark b { display: block; background: currentColor; width: 5px; border-radius: 4px; }
 .brand-mark b:nth-child(1) { height: 11px; }.brand-mark b:nth-child(2) { height: 19px; }.brand-mark b:nth-child(3) { height: 14px; }
-.nav nav { display: flex; align-items: center; gap: 28px; font-weight: 600; }
+.nav nav { display: flex; align-items: center; gap: 22px; font-weight: 600; }
 .nav nav a { padding: 10px 0; position: relative; }
 .nav nav a:after { content: ""; position: absolute; left: 0; right: 100%; bottom: 4px; height: 2px; background: var(--ink); transition: right .2s ease; }
 .nav nav a:hover:after { right: 0; }
 .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
 .currency, .help { border: 0; background: transparent; cursor: pointer; font-weight: 600; }
 .currency { display: flex; align-items: center; gap: 8px; }
+.wallet-nav { padding: 9px 12px; border: 2px solid var(--ink); border-radius: 7px; background: var(--yellow); font-size: 13px; white-space: nowrap; }
 .currency svg { width: 17px; }
 .help { border: 2px solid var(--ink); width: 28px; height: 28px; border-radius: 50%; }
 .login { height: 44px; display: flex; gap: 8px; align-items: center; padding: 0 18px; border: 2px solid var(--ink); border-radius: 8px; background: transparent; font-weight: 700; cursor: pointer; transition: .2s; }
@@ -87,6 +88,11 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .outline:hover { color: white; background: var(--ink); }
 .show-more { margin-top: 26px; }.show-more svg { width: 17px; }
 
+.lms-promo { padding: 95px clamp(35px, 8vw, 130px); display: grid; grid-template-columns: 1fr .95fr; gap: 90px; align-items: center; background: var(--lime); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+.lms-promo h2 { margin: 0 0 22px; font-size: clamp(43px, 5vw, 68px); line-height: 1; }.lms-promo-copy > p:not(.eyebrow) { max-width: 600px; color: #3f3f3f; font-size: 18px; line-height: 1.55; }.lms-promo .button-row { margin-top: 30px; }
+.lms-promo-board { padding: 22px; border: 2px solid var(--ink); border-radius: 10px; background: white; box-shadow: 9px 9px 0 var(--ink); transform: rotate(1deg); }.promo-top { margin-bottom: 17px; display: flex; justify-content: space-between; align-items: center; }.promo-top span { font-family: "Manrope"; font-size: 23px; font-weight: 800; }.promo-top b { padding: 5px 8px; border-radius: 20px; background: #eee; font-size: 10px; }
+.promo-module { margin-top: 11px; padding: 15px; display: grid; grid-template-columns: 45px 1fr auto; gap: 13px; align-items: center; border: 2px solid var(--ink); border-radius: 7px; background: var(--cream); }.promo-module > i { width: 43px; height: 43px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: white; font-style: normal; }.promo-module small, .promo-module strong { display: block; }.promo-module small { color: #686868; }.promo-module strong { margin-top: 3px; }.promo-module > b { font-size: 12px; }.video-module { background: var(--pink-soft); }.quiz-module { background: #dcd1ff; }.quiz-module > i { background: var(--violet); }
+
 .tutor-showcase { background: white; }
 .section-heading.compact { grid-template-columns: 1fr auto; align-items: end; }
 .tutor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
@@ -134,7 +140,7 @@ footer { padding: 65px clamp(30px, 7vw, 110px) 25px; background: var(--ink); col
   .metrics { grid-template-columns: repeat(3, 1fr); }.metrics div:nth-child(4), .metrics div:nth-child(5) { display: none; }
   .tutor-grid { grid-template-columns: repeat(2, 1fr); }.tutor-card:last-child { display: none; }
   .steps { gap: 15px; }.step-art { height: 220px; }
-  .split-cta, .guarantee { gap: 50px; }.footer-links { grid-template-columns: repeat(3, 1fr); }
+  .split-cta, .guarantee { gap: 50px; }.footer-links { grid-template-columns: repeat(3, 1fr); }.lms-promo { gap: 50px; }
 }
 
 @media (max-width: 760px) {
@@ -144,6 +150,7 @@ footer { padding: 65px clamp(30px, 7vw, 110px) 25px; background: var(--ink); col
   .metrics { padding: 30px 18px; grid-template-columns: repeat(2, 1fr); row-gap: 25px; }.metrics div:nth-child(3) { display: none; }.metrics strong { font-size: 23px; }
   .language-section, .tutor-showcase, .how { padding: 72px 20px; }.section-heading, .section-heading.compact { display: block; }.section-heading > p { margin-top: 20px; }.section-heading h2, .how h2 { font-size: 43px; letter-spacing: -2px; }.section-heading.compact .outline { margin-top: 24px; }
   .language-grid, .tutor-grid, .steps { grid-template-columns: 1fr; }.language-card { min-height: 92px; }.tutor-card:last-child { display: block; }.tutor-photo { height: 330px; }.steps { gap: 50px; }.step-art { height: 260px; }
+  .lms-promo { padding: 72px 20px; grid-template-columns: 1fr; gap: 50px; }.lms-promo .button-row { flex-direction: column; }.lms-promo-board { padding: 14px; box-shadow: 6px 6px 0 var(--ink); }.promo-module { grid-template-columns: 40px 1fr auto; padding: 12px; }.promo-module > i { width: 38px; height: 38px; }.promo-top b { display: none; }
   .guarantee, .split-cta { padding: 72px 20px; grid-template-columns: 1fr; gap: 48px; }.guarantee { gap: 55px; }.quote-card { padding: 30px; }.quote-card blockquote { font-size: 24px; }.teach > div:first-child { order: 1; }.teach .cta-image { order: 2; }.cta-image, .business-art { height: 390px; }.business-art { order: 2; }.business > div:last-child { order: 1; }.button-row { flex-direction: column; }
   .final-cta { padding: 60px 20px; display: block; }.final-cta .primary { margin-top: 30px; width: 100%; }
   footer { padding: 50px 22px 25px; }.footer-top { grid-template-columns: 1fr; gap: 18px; }.footer-links { grid-template-columns: repeat(2, 1fr); }.footer-links > div:last-child { display: none; }.footer-bottom { display: block; }.footer-bottom div { margin-top: 15px; flex-wrap: wrap; }
