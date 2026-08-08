@@ -16,6 +16,7 @@ export type Tutor = {
   approach: string[];
   availability: string[];
   availabilityGroups: Array<"Today" | "Tomorrow" | "Weekdays" | "Weekend">;
+  sessionFormats: Array<"online-1to1" | "online-group" | "tutor-place" | "student-place">;
   introVideo: string;
   resume: {
     education: string[];
@@ -33,6 +34,7 @@ const subjectTutor = (seed: TutorSeed): Tutor => ({
   about: `I help learners understand ${seed.subject} concepts, correct common mistakes, and build a reliable method for answering ${seed.examination} questions. Each tutorial is adjusted to the learner's current level and revision goals.`,
   specialties: [`${seed.subject} foundations`, "Structured questions", "Exam technique", "Revision planning"],
   approach: ["Identify the learner's priority topics", "Explain with worked examples", `Practise ${seed.examination}-style questions`, "Finish with feedback and a revision task"],
+  sessionFormats: ["online-1to1", "online-group", "tutor-place", "student-place"],
   introVideo: "https://assets.mixkit.co/videos/50130/50130-720.mp4",
   resume: {
     education: ["Bachelor of Education · University of Botswana"],
@@ -63,6 +65,7 @@ export const tutors: Tutor[] = [
     approach: ["Begin with a short skills check", "Explain one method at a time", "Practise with PSLE-style questions", "Finish with a revision task and checkpoint"],
     availability: ["Today · 17:00", "Tomorrow · 16:30", "Sat · 10:00", "Sun · 14:00"],
     availabilityGroups: ["Today", "Tomorrow", "Weekend"],
+    sessionFormats: ["online-1to1", "online-group", "tutor-place", "student-place"],
     introVideo: "https://assets.mixkit.co/videos/50130/50130-720.mp4",
     resume: {
       education: ["Bachelor of Education (Primary) · University of Botswana"],
@@ -91,6 +94,7 @@ export const tutors: Tutor[] = [
     approach: ["Identify the learner's weakest topic", "Use diagrams and real-world examples", "Model a complete examination answer", "Check retention with multiple-choice questions"],
     availability: ["Today · 18:00", "Thu · 17:30", "Sat · 09:00", "Sun · 15:30"],
     availabilityGroups: ["Today", "Weekdays", "Weekend"],
+    sessionFormats: ["online-1to1", "online-group", "tutor-place", "student-place"],
     introVideo: "https://assets.mixkit.co/videos/50130/50130-720.mp4",
     resume: {
       education: ["Bachelor of Education (Science) · University of Botswana"],
@@ -119,6 +123,7 @@ export const tutors: Tutor[] = [
     approach: ["Connect new ideas to prior knowledge", "Build accurate scientific vocabulary", "Practise structured BGCSE responses", "Create a focused revision plan"],
     availability: ["Tomorrow · 17:00", "Fri · 16:00", "Sat · 11:30", "Sun · 13:00"],
     availabilityGroups: ["Tomorrow", "Weekdays", "Weekend"],
+    sessionFormats: ["online-1to1", "online-group", "tutor-place", "student-place"],
     introVideo: "https://assets.mixkit.co/videos/50130/50130-720.mp4",
     resume: {
       education: ["Bachelor of Science Education · University of Botswana"],

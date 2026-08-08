@@ -11,6 +11,15 @@ const MessageIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M
 const HeartIcon = ({ filled = false }: { filled?: boolean }) => <svg viewBox="0 0 24 24" aria-hidden="true" className={filled ? "filled" : ""}><path d="M12 20s-7-4.3-7-10a4 4 0 0 1 7-2.7A4 4 0 0 1 19 10c0 5.7-7 10-7 10Z" /></svg>;
 const ShareIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V3m0 0L8 7m4-4 4 4" /><path d="M7 10H5v10h14V10h-2" /></svg>;
 
+type SessionFormat = Tutor["sessionFormats"][number];
+
+const sessionOptions: Array<{ id: SessionFormat; label: string; description: string; icon: string }> = [
+  { id: "online-1to1", label: "Online 1-to-1", description: "Private video tutorial · Google Meet", icon: "◉" },
+  { id: "online-group", label: "Online group", description: "Up to 6 learners · Google Meet", icon: "●●" },
+  { id: "tutor-place", label: "At tutor's place", description: "In-person private tutorial", icon: "⌂" },
+  { id: "student-place", label: "At student's place", description: "Tutor travels to the learner", icon: "⌖" }
+];
+
 export default function TutorProfilePage() {
   const { credits, bookTutor } = useLms();
   const { favouriteIds, ready: favouritesReady, toggleFavourite } = useTutorFavourites();
@@ -18,6 +27,11 @@ export default function TutorProfilePage() {
   const [selectedSlot, setSelectedSlot] = useState("");
   const [notice, setNotice] = useState("");
   const [booked, setBooked] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState<SessionFormat>("online-1to1");
+  const [studentAddress, setStudentAddress] = useState("");
+  const [meetUrl, setMeetUrl] = useState("");
+  const [meetDemo, setMeetDemo] = useState(false);
+  const [meetLoading, setMeetLoading] = useState(false);
   const [messageOpen, setMessageOpen] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [messageNotice, setMessageNotice] = useState("");
@@ -35,11 +49,34 @@ export default function TutorProfilePage() {
   if (!tutor) return <main className="lms-page"><LmsHeader /><section className="locked-state"><span>?</span><h1>Tutor not found.</h1><p>This tutor profile may no longer be available.</p><Link className="primary" href="/tutors">Browse Studacad tutors</Link></section></main>;
 
   const isFavourite = favouriteIds.includes(tutor.id);
+  const availableSessions = sessionOptions.filter(option => tutor.sessionFormats.includes(option.id));
+  const session = availableSessions.find(option => option.id === selectedFormat) ?? availableSessions[0];
+  const sessionPrice = tutor.price;
+  const isOnlineSession = selectedFormat === "online-1to1" || selectedFormat === "online-group";
 
-  const confirmBooking = () => {
-    const result = bookTutor(tutor.name, tutor.price, selectedSlot);
+  const confirmBooking = async () => {
+    if (selectedFormat === "student-place" && !studentAddress.trim()) {
+      setNotice("Add the learner's address before booking an at-home tutorial.");
+      return;
+    }
+    const result = bookTutor(tutor.name, sessionPrice, selectedSlot, session.label);
     setNotice(result.message);
     setBooked(result.ok);
+    setMeetUrl("");
+    if (result.ok && isOnlineSession) {
+      setMeetLoading(true);
+      try {
+        const response = await fetch("/api/meet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tutorId: tutor.id, format: selectedFormat, slot: selectedSlot }) });
+        const meeting = await response.json();
+        if (!response.ok) throw new Error(meeting.error ?? "Unable to create the Google Meet space.");
+        setMeetUrl(meeting.meetingUri);
+        setMeetDemo(Boolean(meeting.demo));
+      } catch {
+        setNotice(`${result.message} The Google Meet link will be added when the tutor confirms.`);
+      } finally {
+        setMeetLoading(false);
+      }
+    }
   };
 
   const handleFavourite = () => {
@@ -103,9 +140,9 @@ export default function TutorProfilePage() {
         </section>
 
         <div className="profile-actions" aria-label="Tutor profile actions">
-          <button type="button" onClick={() => { setMessageOpen(true); setMessageNotice(""); }}><MessageIcon /><span>Message {tutor.name}</span></button>
-          <button type="button" className={isFavourite ? "active" : ""} onClick={handleFavourite} disabled={!favouritesReady}><HeartIcon filled={isFavourite} /><span>{isFavourite ? "Saved to favourites" : "Add to favourites"}</span></button>
-          <button type="button" onClick={shareTutor}><ShareIcon /><span>Share profile</span></button>
+          <button type="button" aria-label={`Message ${tutor.name}`} title={`Message ${tutor.name}`} onClick={() => { setMessageOpen(true); setMessageNotice(""); }}><MessageIcon /><span className="sr-only">Message {tutor.name}</span></button>
+          <button type="button" aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"} title={isFavourite ? "Remove from favourites" : "Add to favourites"} className={isFavourite ? "active" : ""} onClick={handleFavourite} disabled={!favouritesReady}><HeartIcon filled={isFavourite} /><span className="sr-only">{isFavourite ? "Saved to favourites" : "Add to favourites"}</span></button>
+          <button type="button" aria-label="Share profile" title="Share profile" onClick={shareTutor}><ShareIcon /><span className="sr-only">Share profile</span></button>
         </div>
         {actionNotice && <p className="profile-action-notice" role="status">{actionNotice} {isFavourite && <Link href="/favourites">View favourites →</Link>}</p>}
 
@@ -152,14 +189,18 @@ export default function TutorProfilePage() {
       </div>
 
       <aside className="booking-card">
-        <p className="eyebrow">Book a 1-to-1 tutorial</p>
-        <div className="booking-price"><strong>{tutor.price}</strong><span>credits<br />for 50 minutes</span></div>
+        <p className="eyebrow">Choose how to learn</p>
+        <div className="booking-price"><strong>{sessionPrice}</strong><span>credits<br />{selectedFormat === "online-group" ? "per learner" : "for 50 minutes"}</span></div>
         <div className="booking-balance"><span>Your wallet</span><b>{credits.toLocaleString()} credits</b></div>
         <button className="message-before-booking" type="button" onClick={() => { setMessageOpen(true); setMessageNotice(""); }}><MessageIcon /> Message before booking</button>
+        <fieldset className="session-format-fieldset"><legend>Session format</legend>{availableSessions.map(option => <label key={option.id} className={selectedFormat === option.id ? "selected" : ""}><input type="radio" name="session-format" checked={selectedFormat === option.id} onChange={() => { setSelectedFormat(option.id); setNotice(""); setBooked(false); setMeetUrl(""); }} /><span className="session-format-icon">{option.icon}</span><span className="session-format-copy"><strong>{option.label}</strong><small>{option.description}</small></span></label>)}</fieldset>
+        {isOnlineSession && <div className="session-venue google-meet-venue"><span>G</span><div><strong>Google Meet included</strong><small>A secure meeting space is prepared after booking.</small></div></div>}
+        {selectedFormat === "tutor-place" && <div className="session-venue"><span>⌂</span><div><strong>{tutor.location}</strong><small>The exact address is shared after confirmation.</small></div></div>}
+        {selectedFormat === "student-place" && <label className="student-address"><span>Learner&apos;s address</span><input value={studentAddress} onChange={event => { setStudentAddress(event.target.value); setNotice(""); }} placeholder="Street and area" /></label>}
         <fieldset><legend>Choose a time</legend>{tutor.availability.map(slot => <label key={slot} className={selectedSlot === slot ? "selected" : ""}><input type="radio" name="lesson-slot" checked={selectedSlot === slot} onChange={() => { setSelectedSlot(slot); setNotice(""); setBooked(false); }} /><span>{slot}</span></label>)}</fieldset>
-        {!booked ? <button className="primary booking-button" onClick={confirmBooking} disabled={!selectedSlot || credits < tutor.price}>{credits < tutor.price ? "Top up to book" : `Book with ${tutor.name}`}</button> : <div className="booking-success"><span>✓</span><div><strong>Lesson booked</strong><p>{selectedSlot}</p></div></div>}
+        {!booked ? <button className="primary booking-button" onClick={confirmBooking} disabled={!selectedSlot || credits < sessionPrice}>{credits < sessionPrice ? "Top up to book" : `Book ${session.label}`}</button> : <div className="booking-success"><span>✓</span><div><strong>{session.label} booked</strong><p>{selectedSlot}</p>{meetLoading && <small>Creating your Google Meet space…</small>}{meetUrl && <a href={meetUrl} target="_blank" rel="noreferrer">{meetDemo ? "Open Google Meet setup →" : "Join Google Meet →"}</a>}{!isOnlineSession && <small>{selectedFormat === "student-place" ? studentAddress : "Venue details will be shared in your messages."}</small>}</div></div>}
         {notice && <p className={booked ? "booking-notice success" : "booking-notice"} role="status">{notice}</p>}
-        {credits < tutor.price && <Link className="booking-topup" href="/wallet">Top up your Studacad wallet →</Link>}
+        {credits < sessionPrice && <Link className="booking-topup" href="/wallet">Top up your Studacad wallet →</Link>}
         <small>Demo booking. Credits are deducted immediately and the transaction appears in your wallet.</small>
       </aside>
     </div>
