@@ -24,12 +24,14 @@ const sessionOptions: Array<{ id: SessionFormat; label: string }> = [
 ];
 
 export default function TutorProfilePage() {
-  const { credits, bookTutor } = useLms();
+  const { credits, bookTutor, referredBy, visitorId } = useLms();
   const { favouriteIds, ready: favouritesReady, toggleFavourite } = useTutorFavourites();
   const [tutor, setTutor] = useState<Tutor | null | undefined>(undefined);
   const [selectedSlot, setSelectedSlot] = useState("");
   const [notice, setNotice] = useState("");
   const [booked, setBooked] = useState(false);
+  const [bookedLabel, setBookedLabel] = useState("");
+  const [bookedDuration, setBookedDuration] = useState("");
   const [selectedFormat, setSelectedFormat] = useState<SessionFormat>("online-1to1");
   const [studentAddress, setStudentAddress] = useState("");
   const [meetUrl, setMeetUrl] = useState("");
@@ -58,6 +60,7 @@ export default function TutorProfilePage() {
   const availableSessions = sessionOptions.filter(option => tutor.sessionFormats.includes(option.id));
   const session = availableSessions.find(option => option.id === selectedFormat) ?? availableSessions[0];
   const sessionPrice = selectedFormat === "online-group" ? Math.max(1, Math.round(tutor.price * .6)) : tutor.price;
+  const trialPrice = Math.max(1, Math.round(tutor.price * .4));
   const isOnlineSession = selectedFormat === "online-1to1" || selectedFormat === "online-group";
 
   const confirmBooking = async () => {
@@ -68,6 +71,8 @@ export default function TutorProfilePage() {
     const result = bookTutor(tutor.name, sessionPrice, selectedSlot, session.label);
     setNotice(result.message);
     setBooked(result.ok);
+    setBookedLabel(result.ok ? session.label : "");
+    setBookedDuration(result.ok ? "50 minutes" : "");
     setMeetUrl("");
     if (result.ok && isOnlineSession) {
       setMeetLoading(true);
@@ -82,6 +87,48 @@ export default function TutorProfilePage() {
       } finally {
         setMeetLoading(false);
       }
+    }
+  };
+
+  const confirmTrialBooking = async () => {
+    const trialBookingId = `trial-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const result = bookTutor(tutor.name, trialPrice, selectedSlot, "20 minute online private trial lesson");
+    setNotice(result.message);
+    setBooked(result.ok);
+    setBookedLabel(result.ok ? "Online private trial lesson" : "");
+    setBookedDuration(result.ok ? "20 minutes" : "");
+    setMeetUrl("");
+    if (!result.ok) return;
+
+    if (referredBy && visitorId) {
+      try {
+        const referralResponse = await fetch("/api/referrals", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ referralCode: referredBy, visitorId, trialBookingId, tutorId: tutor.id })
+        });
+        const referral = await referralResponse.json() as { created?: boolean };
+        if (referralResponse.ok) {
+          setNotice(referral.created
+            ? `${result.message} Your referrer will receive 50 credits.`
+            : `${result.message} The referral reward for this learner was already issued.`);
+        }
+      } catch {
+        setNotice(`${result.message} Referral confirmation will be retried when the connection is restored.`);
+      }
+    }
+
+    setMeetLoading(true);
+    try {
+      const response = await fetch("/api/meet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tutorId: tutor.id, format: "online-1to1", slot: selectedSlot, duration: 20 }) });
+      const meeting = await response.json();
+      if (!response.ok) throw new Error(meeting.error ?? "Unable to create the Google Meet space.");
+      setMeetUrl(meeting.meetingUri);
+      setMeetDemo(Boolean(meeting.demo));
+    } catch {
+      setNotice(current => current || `${result.message} The Google Meet link will be added when the tutor confirms.`);
+    } finally {
+      setMeetLoading(false);
     }
   };
 
@@ -232,10 +279,10 @@ export default function TutorProfilePage() {
         {selectedFormat === "tutor-place" && <div className="session-venue"><span>⌂</span><div><strong>{tutor.location}</strong><small>The exact address is shared after confirmation.</small></div></div>}
         {selectedFormat === "student-place" && <label className="student-address"><span>Learner&apos;s address</span><input value={studentAddress} onChange={event => { setStudentAddress(event.target.value); setNotice(""); }} placeholder="Street and area" /></label>}
         <fieldset className="time-slot-fieldset"><legend>Choose a time</legend>{tutor.availability.map(slot => <label key={slot} className={selectedSlot === slot ? "selected" : ""}><input type="radio" name="lesson-slot" checked={selectedSlot === slot} onChange={() => { setSelectedSlot(slot); setNotice(""); setBooked(false); }} /><span>{slot}</span></label>)}</fieldset>
-        {!booked ? <button className="primary booking-button" onClick={confirmBooking} disabled={!selectedSlot || credits < sessionPrice}>{credits < sessionPrice ? "Top up to book" : `Book ${session.label}`}</button> : <div className="booking-success"><span>✓</span><div><strong>{session.label} booked</strong><p>{selectedSlot}</p>{meetLoading && <small>Creating your Google Meet space…</small>}{meetUrl && <a href={meetUrl} target="_blank" rel="noreferrer">{meetDemo ? "Open Google Meet setup →" : "Join Google Meet →"}</a>}{!isOnlineSession && <small>{selectedFormat === "student-place" ? studentAddress : "Venue details will be shared in your messages."}</small>}</div></div>}
+        {!booked ? <div className="booking-actions"><button className="trial-booking-button" onClick={() => void confirmTrialBooking()} disabled={!selectedSlot || credits < trialPrice}><span>Book trial lesson</span><small>20 minutes · {trialPrice} credits · Online private</small></button><button className="primary booking-button" onClick={confirmBooking} disabled={!selectedSlot || credits < sessionPrice}>{credits < sessionPrice ? "Top up to book" : `Book ${session.label}`}</button></div> : <div className="booking-success"><span>✓</span><div><strong>{bookedLabel || session.label} booked</strong><p>{selectedSlot} · {bookedDuration}</p>{meetLoading && <small>Creating your Google Meet space…</small>}{meetUrl && <a href={meetUrl} target="_blank" rel="noreferrer">{meetDemo ? "Open Google Meet setup →" : "Join Google Meet →"}</a>}{!meetUrl && !meetLoading && !bookedLabel.includes("trial") && !isOnlineSession && <small>{selectedFormat === "student-place" ? studentAddress : "Venue details will be shared in your messages."}</small>}</div></div>}
         {notice && <p className={booked ? "booking-notice success" : "booking-notice"} role="status">{notice}</p>}
-        {credits < sessionPrice && <Link className="booking-topup" href="/wallet">Top up your Studacad wallet →</Link>}
-        <small>Demo booking. Credits are deducted immediately and the transaction appears in your wallet.</small>
+        {credits < Math.min(sessionPrice, trialPrice) && <Link className="booking-topup" href="/wallet">Top up your Studacad wallet →</Link>}
+        <small>Trial lessons are 20 minute online private sessions. Standard sessions are 50 minutes. Credits are deducted immediately.</small>
       </aside>
     </div>
 

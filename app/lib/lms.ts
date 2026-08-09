@@ -1,3 +1,5 @@
+import type { ReferralRewardEvent } from "./referrals";
+
 export type QuizQuestion = {
   id: string;
   prompt: string;
@@ -45,6 +47,8 @@ export type LmsState = {
   completedLessonIds: string[];
   quizScores: Record<string, number>;
   transactions: CreditTransaction[];
+  appliedReferralRewardIds: string[];
+  referralRewards: ReferralRewardEvent[];
 };
 
 const q = (id: string, prompt: string, options: string[], correctIndex: number): QuizQuestion => ({ id, prompt, options, correctIndex });
@@ -301,6 +305,8 @@ export const initialLmsState: LmsState = {
   purchasedCourseIds: ["psle-mathematics"],
   completedLessonIds: [],
   quizScores: {},
+  appliedReferralRewardIds: [],
+  referralRewards: [],
   transactions: [
     { id: "welcome-credit", type: "topup", label: "Studacad demo wallet funded", amount: 850, createdAt: new Date().toISOString() }
   ]

@@ -66,6 +66,7 @@ export default function Home() {
           <Link href="/learn">My learning</Link>
         </nav>
         <div className="nav-actions">
+          <Link className="referral-nav" href="/referral">Refer a friend</Link>
           <Link className="currency wallet-nav" href="/wallet">◆ {credits.toLocaleString()} credits</Link>
           <button className="help" aria-label="Help">?</button>
           <button className="login" onClick={() => setModal("login")}>↪ <span>Log in</span></button>
