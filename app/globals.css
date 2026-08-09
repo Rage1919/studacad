@@ -1,33 +1,85 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
 
 :root {
-  --ink: #141414;
-  --pink: #ff72b6;
-  --pink-soft: #ffc1df;
-  --cream: #f7f5f0;
-  --lime: #c9fa78;
-  --violet: #7555e9;
-  --blue: #aee4ff;
-  --yellow: #ffe56c;
-  --line: #d9d7d1;
+  --ink: #0b022b;
+  --pink: #fff4cf;
+  --pink-soft: #fff9e9;
+  --cream: #ffffff;
+  --lime: #ffc43d;
+  --violet: #0b022b;
+  --blue: #fff4cf;
+  --yellow: #ffc43d;
+  --line: #d8dce5;
   --white: #ffffff;
-  --shadow: 0 14px 45px rgba(20, 20, 20, .13);
+  --shadow: none;
 }
 
-* { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; border-width: 1px !important; border-color: var(--line) !important; box-shadow: none !important; text-shadow: none !important; }
 html { scroll-behavior: smooth; }
-body { margin: 0; color: var(--ink); background: var(--cream); font-family: "DM Sans", Arial, sans-serif; }
+body { margin: 0; color: var(--ink); background: var(--white); font-family: "DM Sans", Arial, sans-serif; }
+:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
 button, select, input { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { color: inherit; }
 a { color: inherit; text-decoration: none; }
 svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
+/* Shared navy, yellow, and white platform theme. */
+.tutor-cta,
+.tutor-apply-panel,
+.referral-hero,
+.credit-art,
+.onboarding-complete,
+.onboarding-progress-card li.complete button > span:first-child,
+.onboarding-form-heading i { background: var(--yellow) !important; color: var(--ink) !important; }
+
+.quiz-module,
+.how,
+.lms-hero,
+.lesson-sidebar,
+.business,
+.color-0,
+.color-1,
+.color-3,
+.color-4,
+.tutor-photo.peach,
+.echo-two,
+.quiz-card fieldset > label.selected,
+.option-grid label.correct-option,
+.profile-action-notice,
+.booking-success,
+.message-status.success,
+.how-transaction.reward,
+.message-channel,
+.thread-message.outbound,
+.messages-hero,
+.inbox-thread > header > span,
+.resume-education em,
+.schedule-timezone-note,
+.onboarding-form-error,
+.onboarding-help-card { background: var(--pink-soft) !important; color: var(--ink) !important; }
+
+.tutor-info h3 i,
+.search-tutor-name h3 i,
+.profile-summary h1 i,
+.share-art i,
+.call-controls .end,
+.video-fallback { background: var(--ink) !important; color: white !important; }
+
+.live-dot { background: var(--yellow) !important; }
+.video-card { background: white !important; }
+.tutor-onboarding-page,
+.onboarding-form-heading,
+.onboarding-form-actions { background: white !important; }
+.how-video-mock small,
+.wallet-card small { color: white !important; opacity: .82; }
+.onboarding-help-card p { color: var(--ink) !important; opacity: .72; }
+
 .support-strip { height: 48px; display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--ink); color: white; font-size: 14px; font-weight: 600; }
 .support-strip .heart { color: var(--pink); font-size: 18px; }
 .support-strip a { border-bottom: 1px solid white; }
 
-.nav { height: 80px; padding: 0 26px; display: flex; align-items: center; gap: 32px; background: var(--pink); position: relative; z-index: 10; }
+.nav { height: 80px; padding: 0 26px; display: flex; align-items: center; gap: 32px; border-bottom: 1px solid var(--line); background: white; position: relative; z-index: 10; }
 .brand { font-family: "Manrope", sans-serif; display: inline-flex; align-items: center; gap: 8px; font-size: 26px; font-weight: 800; letter-spacing: -1.3px; white-space: nowrap; }
 .brand-mark { width: 20px; height: 25px; display: inline-flex; align-items: flex-end; gap: 2px; transform: rotate(-28deg); }
 .brand-mark b { display: block; background: currentColor; width: 5px; border-radius: 4px; }
@@ -39,8 +91,8 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .tutor-menu { position: relative; }.tutor-menu > a { color: inherit; font-weight: 700; cursor: pointer; }
 .tutor-menu-panel { width: 245px; position: absolute; left: -16px; top: calc(100% + 8px); z-index: 60; padding: 9px; display: grid; gap: 4px; border: 2px solid var(--ink); border-radius: 8px; background: white; box-shadow: 6px 6px 0 var(--ink); opacity: 0; visibility: hidden; transform: translateY(-7px); transition: opacity .18s, transform .18s, visibility .18s; }.tutor-menu:hover .tutor-menu-panel, .tutor-menu:focus-within .tutor-menu-panel { opacity: 1; visibility: visible; transform: none; }.tutor-menu-panel a { padding: 11px 12px !important; display: grid; grid-template-columns: 1fr; align-items: center; border-radius: 5px; color: var(--ink) !important; }.tutor-menu-panel a:hover { background: var(--cream); }.tutor-menu-panel a:after { display: none !important; }.tutor-menu-panel span { display: none; }.tutor-menu-panel b { font-size: 13px; }
 .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.referral-nav { min-height: 40px; padding: 0 12px; display: inline-flex; align-items: center; gap: 7px; border: 2px solid var(--ink); border-radius: 7px; background: var(--yellow); font-size: 12px; font-weight: 800; }
-.referral-nav .referral-icon { width: 20px; height: 20px; }.referral-nav strong { font-size: 12px; }
+.referral-nav { min-height: 40px; padding: 0 12px; display: inline-flex; align-items: center; gap: 7px; border: 2px solid var(--ink); border-radius: 7px; background: var(--yellow); font-size: 13px; font-weight: 800; }
+.referral-nav .referral-icon { width: 20px; height: 20px; }.referral-nav strong { font-size: 13px; }
 .referral-nav:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--ink); }
 .message-nav { width: 40px; height: 40px; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: 7px; background: white; }
 .message-nav:hover { background: var(--blue); }.message-nav svg { width: 18px; height: 18px; }

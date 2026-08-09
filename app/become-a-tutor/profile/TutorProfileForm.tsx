@@ -3,10 +3,10 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 
 const steps = [
-  ["About you", "Contact and profile"],
-  ["Teaching", "Experience and subjects"],
-  ["Lessons", "Formats and availability"],
-  ["Verification", "Documents and review"]
+  "About you",
+  "Teaching",
+  "Lessons",
+  "Verification"
 ];
 
 const subjects = ["Mathematics", "English", "Setswana", "Integrated Science", "Biology", "Chemistry", "Physics", "Accounting", "Business Studies", "Geography"];
@@ -118,11 +118,11 @@ export function TutorProfileForm() {
         <p className="onboarding-eyebrow">Tutor application</p>
         <h2>Build a profile learners can trust</h2>
         <ol>
-          {steps.map(([title, description], index) => (
+          {steps.map((title, index) => (
             <li className={index === step ? "active" : index < step ? "complete" : ""} key={title}>
               <button type="button" disabled={index > step} onClick={() => { setStep(index); setSectionError(""); }}>
                 <span>{index < step ? "✓" : index + 1}</span>
-                <span><strong>{title}</strong><small>{description}</small></span>
+                <span><strong>{title}</strong></span>
               </button>
             </li>
           ))}
