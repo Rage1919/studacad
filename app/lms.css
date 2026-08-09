@@ -3,10 +3,10 @@
 .lms-header nav { display: flex; align-items: center; gap: 10px; }
 .lms-header nav > a, .lms-header nav > .tutor-menu > button { padding: 10px 14px; border-radius: 6px; font-weight: 700; color: #555; }
 .lms-header nav > a:hover, .lms-header nav > a.active, .lms-header nav > .tutor-menu > button:hover { background: var(--cream); color: var(--ink); }
-.wallet-pill { margin-left: auto; min-width: 170px; padding: 8px 14px; display: flex; align-items: center; gap: 10px; border: 2px solid var(--ink); border-radius: 8px; background: var(--lime); transition: transform .2s, box-shadow .2s; }
+.wallet-pill { margin-left: auto; min-width: 0; padding: 8px 14px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 2px solid var(--ink); border-radius: 8px; background: var(--lime); transition: transform .2s, box-shadow .2s; }
 .wallet-pill:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink); }
-.wallet-pill .coin { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--lime); }
-.wallet-pill small, .wallet-pill strong { display: block; }.wallet-pill small { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }.wallet-pill strong { font-size: 14px; }
+.wallet-pill .wallet-icon { width: 22px; height: 22px; }
+.wallet-pill strong { display: block; font-size: 15px; }
 .toast { position: fixed; right: 24px; top: 92px; z-index: 80; max-width: 410px; padding: 15px 19px; border: 2px solid var(--ink); border-radius: 7px; background: var(--lime); box-shadow: 5px 5px 0 var(--ink); font-weight: 700; animation: modal-in .2s ease-out; }
 
 .lms-hero { padding: 80px clamp(28px, 7vw, 110px); display: grid; grid-template-columns: 1.1fr .9fr; align-items: end; gap: 80px; background: #dcd1ff; border-bottom: 2px solid var(--ink); }
@@ -89,7 +89,7 @@
 }
 
 @media (max-width: 760px) {
-  .lms-header { min-height: 68px; padding: 0 15px; }.lms-header .brand { font-size: 21px; }.lms-header nav { display: none; }.wallet-pill { min-width: 0; padding: 7px 10px; }.wallet-pill .coin, .wallet-pill small { display: none; }.wallet-pill strong { font-size: 12px; }
+  .lms-header { min-height: 68px; padding: 0 15px; }.lms-header .brand { font-size: 21px; }.lms-header nav { display: none; }.wallet-pill { min-width: 0; padding: 7px 10px; }.wallet-pill .wallet-icon { width: 19px; height: 19px; }.wallet-pill strong { font-size: 12px; }
   .toast { left: 15px; right: 15px; top: 82px; }
   .lms-hero, .admin-hero { padding: 55px 20px; gap: 40px; }.lms-hero h1, .wallet-hero h1, .admin-hero h1 { font-size: 50px; letter-spacing: -3px; }.learning-stats { grid-template-columns: 1fr; }.learning-stats div { border-right: 0; border-bottom: 1px solid var(--line); }.admin-stats { box-shadow: 5px 5px 0 var(--ink); }.admin-stats div { padding: 15px 10px; }.admin-stats strong { font-size: 25px; }
   .lms-section { padding: 60px 20px; }.lms-section-heading { display: block; }.lms-section-heading .outline, .lms-section-heading > p { margin-top: 18px; }.lms-section-heading h2 { font-size: 40px; }.course-grid, .discover-grid { grid-template-columns: 1fr; }.discover-grid .course-body h3, .discover-grid .course-body > p:not(.course-author) { min-height: 0; }

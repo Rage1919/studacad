@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useLms } from "./components/LmsProvider";
 import { TutorMenu } from "./components/TutorMenu";
+import { WalletIcon } from "./components/WalletIcon";
 import { tutors } from "./lib/tutors";
 
 const Arrow = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5" /></svg>;
@@ -69,7 +70,14 @@ export default function Home() {
         <div className="nav-actions">
           <Link className="message-nav" href="/messages" aria-label="Messages" title="Messages"><MessageIcon /></Link>
           <Link className="referral-nav" href="/referral">Refer a friend</Link>
-          <Link className="currency wallet-nav" href="/wallet">◆ {credits.toLocaleString()}</Link>
+          <Link
+            className="currency wallet-nav"
+            href="/wallet"
+            aria-label={`Wallet balance: ${credits.toLocaleString()} credits`}
+            title="Wallet"
+          >
+            <WalletIcon /><strong>{credits.toLocaleString()}</strong>
+          </Link>
           <button className="help" aria-label="Help">?</button>
           <button className="login" onClick={() => setModal("login")}>↪ <span>Log in</span></button>
         </div>
