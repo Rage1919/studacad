@@ -46,6 +46,8 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .currency, .help { border: 0; background: transparent; cursor: pointer; font-weight: 600; }
 .currency { display: flex; align-items: center; gap: 8px; }
 .wallet-nav { padding: 9px 12px; border: 2px solid var(--ink); border-radius: 7px; background: var(--yellow); font-size: 13px; white-space: nowrap; }
+.wallet-nav .wallet-icon { width: 20px; height: 20px; }
+.wallet-nav strong { font-size: 13px; }
 .currency svg { width: 17px; }
 .help { border: 2px solid var(--ink); width: 28px; height: 28px; border-radius: 50%; }
 .login { height: 44px; display: flex; gap: 8px; align-items: center; padding: 0 18px; border: 2px solid var(--ink); border-radius: 8px; background: transparent; font-weight: 700; cursor: pointer; transition: .2s; }
