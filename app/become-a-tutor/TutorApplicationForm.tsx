@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 
 export function TutorApplicationForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -22,7 +23,12 @@ export function TutorApplicationForm() {
       </div>
       <button type="submit">Create a tutor profile <span aria-hidden="true">→</span></button>
       <p className="tutor-form-note">Demo application — no information is sent or stored.</p>
-      {submitted && <p className="tutor-form-success" role="status">Your demo profile is ready to continue. We&apos;ll add the full onboarding flow next.</p>}
+      {submitted && (
+        <div className="tutor-form-success" role="status">
+          <span>Your starter profile is ready. Complete the remaining details to continue.</span>
+          <Link href="/become-a-tutor/profile">Continue profile <span aria-hidden="true">→</span></Link>
+        </div>
+      )}
     </form>
   );
 }

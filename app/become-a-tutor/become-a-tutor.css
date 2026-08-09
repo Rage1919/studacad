@@ -59,7 +59,7 @@
 .tutor-application-form label { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .7px; }
 .tutor-application-form input, .tutor-application-form select { width: 100%; height: 46px; margin-top: 6px; padding: 0 11px; border: 2px solid var(--ink); border-radius: 5px; background: white; font: inherit; font-size: 12px; }
 .tutor-application-form button { min-height: 48px; margin-top: 3px; display: flex; align-items: center; justify-content: center; gap: 12px; border: 2px solid var(--ink); border-radius: 5px; background: var(--ink); color: white; font-weight: 900; cursor: pointer; }
-.tutor-application-form button:hover { background: var(--violet); }.tutor-form-note { margin: -2px 0 0 !important; font-size: 9px !important; }.tutor-form-success { margin: 0 !important; padding: 10px 12px; border: 2px solid var(--ink); border-radius: 5px; background: var(--lime); font-size: 11px !important; font-weight: 800; }
+.tutor-application-form button:hover { background: var(--violet); }.tutor-form-note { margin: -2px 0 0 !important; font-size: 9px !important; }.tutor-form-success { margin: 0 !important; padding: 11px 12px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; border: 2px solid var(--ink); border-radius: 5px; background: var(--lime); font-size: 11px !important; font-weight: 800; }.tutor-form-success > a { min-height: 36px; padding: 0 11px; display: inline-flex; align-items: center; gap: 8px; border: 2px solid var(--ink); border-radius: 4px; background: var(--ink); color: white; font-size: 10px; white-space: nowrap; }.tutor-form-success > a:hover { background: var(--violet); }
 
 @media (max-width: 1050px) {
   .tutor-join-shell { grid-template-columns: 1fr 420px; gap: 45px; }.tutor-journey-steps { gap: 12px; }.tutor-hero-media { min-height: 455px; }
@@ -73,5 +73,5 @@
   .tutor-reach-section { padding: 70px 20px; grid-template-columns: 1fr; gap: 50px; }.tutor-reach-copy h2 { font-size: 40px; letter-spacing: -2px; }.tutor-reach-media { min-height: 390px; }.tutor-reach-media > span { right: 0; }
   .tutor-story-section { width: calc(100% - 40px); padding: 75px 0; grid-template-columns: 1fr; gap: 45px; }.tutor-story-media { min-height: 370px; }.tutor-story-copy blockquote { font-size: 37px; letter-spacing: -2px; }
   .tutor-faq-section { padding: 70px 20px 80px; }.tutor-faq-section > h2 { font-size: 39px; letter-spacing: -2px; }
-  .tutor-apply-panel { width: calc(100% - 40px); margin-bottom: 75px; grid-template-columns: 1fr; }.tutor-apply-photo { min-height: 300px; }.tutor-apply-copy { padding: 35px 22px 40px; }.tutor-apply-copy h2 { font-size: 40px; letter-spacing: -2px; }.tutor-form-row { grid-template-columns: 1fr; }
+  .tutor-apply-panel { width: calc(100% - 40px); margin-bottom: 75px; grid-template-columns: 1fr; }.tutor-apply-photo { min-height: 300px; }.tutor-apply-copy { padding: 35px 22px 40px; }.tutor-apply-copy h2 { font-size: 40px; letter-spacing: -2px; }.tutor-form-row { grid-template-columns: 1fr; }.tutor-form-success { grid-template-columns: 1fr; }.tutor-form-success > a { justify-content: center; }
 }
