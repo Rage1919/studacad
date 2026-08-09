@@ -86,7 +86,7 @@ export default function TutorsPage() {
       <label>Examination<select value={exam} onChange={event => changeExam(event.target.value)}><option>All</option><option>PSLE</option><option>JCE</option><option>BGCSE</option></select></label>
       <label>Subject<select value={subject} onChange={event => setSubject(event.target.value)}><option>All</option>{subjectOptions.map(item => <option key={item}>{item}</option>)}</select></label>
       <label>Availability<select value={availability} onChange={event => setAvailability(event.target.value)}><option>Any time</option><option>Today</option><option>Tomorrow</option><option>Weekdays</option><option>Weekend</option></select></label>
-      <label>Maximum price<select value={maxPrice} onChange={event => setMaxPrice(event.target.value)}><option>Any price</option><option value="20">20 credits</option><option value="25">25 credits</option><option value="30">30 credits</option></select></label>
+      <label>Maximum price<select value={maxPrice} onChange={event => setMaxPrice(event.target.value)}><option>Any price</option><option value="75">75 credits</option><option value="100">100 credits</option><option value="150">150 credits</option><option value="200">200 credits</option></select></label>
       <label>Minimum rating<select value={minimumRating} onChange={event => setMinimumRating(event.target.value)}><option>Any rating</option><option value="4.8">4.8+</option><option value="4.9">4.9+</option><option value="5">5.0</option></select></label>
     </section>
 

@@ -300,7 +300,7 @@ export default function TutorProfilePage() {
           <p className="eyebrow">Qualifications and experience</p>
           <h2>{tutor.name}&apos;s résumé</h2>
           <div className="resume-simple">
-            <div><h3>Education</h3><div>{tutor.resume.education.map(item => <p key={item}>{item}</p>)}</div></div>
+            <div><h3>Education</h3><div>{tutor.resume.education.map(item => <p className="resume-education" key={item}><span>{item}</span><em><i>✓</i> Verified</em></p>)}</div></div>
             <div><h3>Experience</h3><div>{tutor.resume.experience.map(item => <p className="resume-role" key={`${item.role}-${item.period}`}><strong>{item.role}</strong><span>{item.organisation} · {item.period}</span></p>)}</div></div>
             <div><h3>Credentials</h3><ul>{tutor.resume.certifications.map(item => <li key={item}>{item}</li>)}</ul></div>
           </div>

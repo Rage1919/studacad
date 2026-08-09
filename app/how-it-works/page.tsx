@@ -60,7 +60,7 @@ export default function HowItWorksPage() {
       <div className="how-market-visual">
         <div className="how-filter-row"><span>PSLE</span><span>Mathematics</span><span>Today</span></div>
         <div className="how-results-count"><b>2</b><small>matching tutors</small></div>
-        <div className="how-result-cards"><article><div className="how-avatar pink">M</div><strong>Masego ✓</strong><span>PSLE Mathematics</span><small>★ 4.9 · 22 credits</small></article><article><div className="how-avatar blue">K</div><strong>Kabelo ✓</strong><span>PSLE Mathematics</span><small>★ 4.8 · 19 credits</small></article></div>
+        <div className="how-result-cards"><article><div className="how-avatar pink">M</div><strong>Masego ✓</strong><span>PSLE Mathematics</span><small>★ 4.9 · 80 credits</small></article><article><div className="how-avatar blue">K</div><strong>Kabelo ✓</strong><span>PSLE Mathematics</span><small>★ 4.8 · 70 credits</small></article></div>
       </div>
     </section>
 
