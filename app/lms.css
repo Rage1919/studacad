@@ -1,6 +1,6 @@
 .lms-page { min-height: 100vh; background: var(--cream); }
 .lms-header { min-height: 76px; padding: 0 clamp(22px, 5vw, 76px); display: flex; align-items: center; gap: 45px; border-bottom: 2px solid var(--ink); background: white; position: relative; z-index: 20; }
-.lms-header nav { display: flex; align-items: center; gap: 10px; }
+.lms-header nav { display: flex; align-items: center; gap: 10px; font-size: 13px; }
 .lms-header nav > a, .lms-header nav > .tutor-menu > button { padding: 10px 14px; border-radius: 6px; font-weight: 700; color: #555; }
 .lms-header nav > a:hover, .lms-header nav > a.active, .lms-header nav > .tutor-menu > button:hover { background: var(--cream); color: var(--ink); }
 .wallet-pill { margin-left: auto; min-width: 0; padding: 8px 14px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 2px solid var(--ink); border-radius: 8px; background: var(--lime); transition: transform .2s, box-shadow .2s; }

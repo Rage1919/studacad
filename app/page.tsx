@@ -65,6 +65,7 @@ export default function Home() {
         <nav aria-label="Main navigation">
           <TutorMenu />
           <Link href="/how-it-works">How it works</Link>
+          <Link href="/become-a-tutor">Become a tutor</Link>
           <Link href="/learn">My learning</Link>
         </nav>
         <div className="nav-actions">
@@ -172,7 +173,7 @@ export default function Home() {
       </section>
 
       <section className="split-cta teach" id="teach">
-        <div><p className="eyebrow">Teach Botswana learners</p><h2>Turn subject knowledge<br />into real progress</h2><p>Join Studacad as a PSLE, JCE, or BGCSE tutor and support learners across Botswana.</p><ul><li>Teach your strongest examination subjects</li><li>Set your own credit price and schedule</li><li>Support lessons with revision and quizzes</li></ul><button className="primary">Become a tutor <Arrow /></button></div>
+        <div><p className="eyebrow">Teach Botswana learners</p><h2>Turn subject knowledge<br />into real progress</h2><p>Join Studacad as a PSLE, JCE, or BGCSE tutor and support learners across Botswana.</p><ul><li>Teach your strongest examination subjects</li><li>Set your own credit price and schedule</li><li>Support lessons with revision and quizzes</li></ul><Link className="primary" href="/become-a-tutor">Become a tutor <Arrow /></Link></div>
         <div className="cta-image tutor-desk"><img src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=1000&q=85" alt="Subject tutor teaching online" /><span className="income-card"><small>This month</small><strong>2,840 credits</strong><i>↑ 18% from last month</i></span></div>
       </section>
 

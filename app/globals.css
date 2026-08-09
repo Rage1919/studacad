@@ -32,7 +32,7 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .brand-mark { width: 20px; height: 25px; display: inline-flex; align-items: flex-end; gap: 2px; transform: rotate(-28deg); }
 .brand-mark b { display: block; background: currentColor; width: 5px; border-radius: 4px; }
 .brand-mark b:nth-child(1) { height: 11px; }.brand-mark b:nth-child(2) { height: 19px; }.brand-mark b:nth-child(3) { height: 14px; }
-.nav nav { display: flex; align-items: center; gap: 22px; font-weight: 600; }
+.nav nav { display: flex; align-items: center; gap: 22px; font-size: 13px; font-weight: 600; }
 .nav nav > a, .nav nav > .tutor-menu > button { padding: 10px 0; position: relative; }
 .nav nav > a:after, .nav nav > .tutor-menu > button:after { content: ""; position: absolute; left: 0; right: 100%; bottom: 4px; height: 2px; background: var(--ink); transition: right .2s ease; }
 .nav nav > a:hover:after, .nav nav > .tutor-menu > button:hover:after { right: 0; }
