@@ -98,7 +98,7 @@ export default function TutorsPage() {
           <div className="search-tutor-body"><div className="search-tutor-name"><div><h3>{tutor.name} <i>✓</i></h3><p>{tutor.examination} · {tutor.subject}</p></div><span><b>★ {tutor.rating}</b><small>{tutor.lessons}</small></span></div><p className="search-tutor-headline">{tutor.headline}</p><div className="search-specialties">{tutor.specialties.slice(0, 3).map(item => <span key={item}>{item}</span>)}</div><div className="search-card-footer"><span><strong>{tutor.price}</strong> credits / 50 min</span><Link href={`/tutor?id=${tutor.id}`}>View profile →</Link></div></div>
         </article>)}
       </div>
-      {ready && filteredTutors.length === 0 && <div className="no-tutor-results"><span>⌕</span><h2>No tutors match every filter.</h2><p>Try another availability, price, or subject.</p><button className="primary" onClick={clearFilters}>Clear all filters</button></div>}
+      {ready && filteredTutors.length === 0 && <div className="no-tutor-results"><span>⌕</span><h2>No tutors match every filter</h2><p>Try another availability, price, or subject.</p><button className="primary" onClick={clearFilters}>Clear all filters</button></div>}
     </section>
   </main>;
 }

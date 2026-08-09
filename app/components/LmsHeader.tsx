@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useLms } from "./LmsProvider";
 import { TutorMenu } from "./TutorMenu";
 
-export function LmsHeader({ current }: { current?: "learn" | "wallet" | "how" }) {
+export function LmsHeader({ current }: { current?: "learn" | "wallet" | "how" | "messages" }) {
   const { credits } = useLms();
   return (
     <header className="lms-header">
@@ -13,6 +13,7 @@ export function LmsHeader({ current }: { current?: "learn" | "wallet" | "how" })
         <TutorMenu />
         <Link className={current === "how" ? "active" : ""} href="/how-it-works">How it works</Link>
         <Link className={current === "learn" ? "active" : ""} href="/learn">My learning</Link>
+        <Link className={current === "messages" ? "active" : ""} href="/messages">Messages</Link>
       </nav>
       <Link className={`wallet-pill ${current === "wallet" ? "active" : ""}`} href="/wallet">
         <span className="coin">◆</span><span><small>Wallet</small><strong>{credits.toLocaleString()} credits</strong></span>

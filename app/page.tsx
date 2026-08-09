@@ -75,7 +75,7 @@ export default function Home() {
       <section className="hero" id="top">
         <div className="hero-copy">
           <p className="eyebrow">Botswana&apos;s tutoring and exam-prep platform</p>
-          <h1>Get exam-ready<br />with the right<br />support.</h1>
+          <h1>Get exam ready<br />with the right<br />support</h1>
           <div className="button-row hero-actions"><button className="primary hero-cta" onClick={() => setModal("search")}>Find a subject tutor <Arrow /></button><Link className="outline" href="/learn">Browse courses</Link></div>
           <div className="mini-proof">
             <div className="faces"><img src={tutors[0].image} alt="" /><img src={tutors[1].image} alt="" /><img src={tutors[2].image} alt="" /></div>
@@ -94,7 +94,7 @@ export default function Home() {
       </section>
 
       <section className="lms-promo">
-        <div className="lms-promo-copy"><p className="eyebrow">One Studacad account</p><h2>Your tutor and revision plan<br />work together.</h2><p>Book a subject tutor, continue with syllabus-focused tutorial videos, download revision papers, and complete an end-of-lesson multiple-choice test—all with the same wallet and learning record.</p><div className="button-row"><Link className="primary" href="/learn">Open my learning <Arrow /></Link><a className="outline" href="#tutors">Meet subject tutors</a></div></div>
+        <div className="lms-promo-copy"><p className="eyebrow">One Studacad account</p><h2>Your tutor and revision plan<br />work together</h2><p>Book a subject tutor, continue with syllabus-focused tutorial videos, download revision papers, and complete an end-of-lesson multiple-choice test—all with the same wallet and learning record.</p><div className="button-row"><Link className="primary" href="/learn">Open my learning <Arrow /></Link><a className="outline" href="#tutors">Meet subject tutors</a></div></div>
         <div className="lms-promo-board"><div className="promo-top"><span>My BGCSE plan</span><b>3 activities this week</b></div><div className="promo-module video-module"><i>▶</i><span><small>Tutor tutorial</small><strong>Factorise quadratic expressions</strong></span><b>24 min</b></div><div className="promo-module"><i>▤</i><span><small>Revision paper</small><strong>Quadratics practice set</strong></span><b>PDF</b></div><div className="promo-module quiz-module"><i>✓</i><span><small>Checkpoint passed</small><strong>Retention score</strong></span><b>90%</b></div></div>
       </section>
 
@@ -113,7 +113,7 @@ export default function Home() {
         </div>
         <div className="popular-subject-rows">
           {popularSubjectRows.map((row, rowIndex) => <div className="popular-subject-row" key={row.exam}>
-            <div className="popular-subject-label" id={row.exam.toLowerCase()}><span>Popular {row.exam} subjects</span><small>Top 3</small></div>
+            <div className="popular-subject-label" id={row.exam.toLowerCase()}><span>Popular {row.exam} subjects</span></div>
             <div className="language-grid">
               {row.subjects.map((item, subjectIndex) => (
                 <Link key={`${item.exam}-${item.name}`} className={`language-card color-${(rowIndex * 3 + subjectIndex) % 5}`} href={`/tutors?exam=${encodeURIComponent(item.exam)}&subject=${encodeURIComponent(item.name)}`}>
@@ -128,7 +128,7 @@ export default function Home() {
 
       <section className="tutor-showcase" id="tutor-results">
         <div className="section-heading compact">
-          <div><p className="eyebrow">Featured Botswana exam tutors</p><h2>Meet tutors who know the syllabus.</h2></div>
+          <div><p className="eyebrow">Featured Botswana exam tutors</p><h2>Meet tutors who know the syllabus</h2></div>
           <Link className="outline" href="/tutors">Browse all tutors <Arrow /></Link>
         </div>
         <div className="tutor-grid">
@@ -147,27 +147,27 @@ export default function Home() {
       </section>
 
       <section className="how" id="how">
-        <p className="eyebrow">One connected learning journey</p><h2>How Studacad works:</h2>
+        <p className="eyebrow">One connected learning journey</p><h2>How Studacad works</h2>
         <div className="steps">
-          <article><span className="step-number">1</span><div className="step-art art-one"><div className="search-chip">⌕ BGCSE Maths · today</div><div className="mini-profile"><img src={tutors[0].image} alt="" /><span><strong>Masego</strong><small>Mathematics · 4.9 ★</small></span></div></div><h3>Find subject support.</h3><p>Choose your examination and subject, then match with a tutor by price, availability, and teaching style.</p></article>
-          <article><span className="step-number">2</span><div className="step-art art-two"><div className="bubble b1">Let&apos;s factorise x² + 5x + 6.</div><div className="bubble b2">I get it now! ✨</div><div className="sound-wave">▂▄▆▃▇▄▂</div></div><h3>Learn live and online.</h3><p>Use credits to book focused one-to-one tutorials built around your PSLE, JCE, or BGCSE goals.</p></article>
-          <article><span className="step-number">3</span><div className="step-art art-three"><div className="streak"><strong>86%</strong><span>quiz score</span></div><div className="chart"><i /><i /><i /><i /><i /></div></div><h3>Revise and test.</h3><p>Continue in My Learning with videos, revision papers, and short tests that record progress and reward mastery.</p></article>
+          <article><span className="step-number">1</span><div className="step-art art-one"><div className="search-chip">⌕ BGCSE Maths · today</div><div className="mini-profile"><img src={tutors[0].image} alt="" /><span><strong>Masego</strong><small>Mathematics · 4.9 ★</small></span></div></div><h3>Find subject support</h3><p>Choose your examination and subject, then match with a tutor by price, availability, and teaching style.</p></article>
+          <article><span className="step-number">2</span><div className="step-art art-two"><div className="bubble b1">Let&apos;s factorise x² + 5x + 6.</div><div className="bubble b2">I get it now! ✨</div><div className="sound-wave">▂▄▆▃▇▄▂</div></div><h3>Learn live and online</h3><p>Use credits to book focused one-to-one tutorials built around your PSLE, JCE, or BGCSE goals.</p></article>
+          <article><span className="step-number">3</span><div className="step-art art-three"><div className="streak"><strong>86%</strong><span>quiz score</span></div><div className="chart"><i /><i /><i /><i /><i /></div></div><h3>Revise and test</h3><p>Continue in My Learning with videos, revision papers, and short tests that record progress and reward mastery.</p></article>
         </div>
       </section>
 
       <section className="guarantee">
-        <div className="guarantee-copy"><span className="spark">✦</span><h2>Support for the exam<br />in front of you.</h2><p>Switch tutors if your first match is not right and keep every purchased course in your library.</p><button className="primary" onClick={() => setModal("search")}>Find a tutor <Arrow /></button></div>
+        <div className="guarantee-copy"><span className="spark">✦</span><h2>Support for the exam<br />in front of you</h2><p>Switch tutors if your first match is not right and keep every purchased course in your library.</p><button className="primary" onClick={() => setModal("search")}>Find a tutor <Arrow /></button></div>
         <div className="quote-card"><div className="quote-stars">★★★★★</div><blockquote>“The tutor explained the topic, then the revision paper and quiz helped me see what I still needed to practise.”</blockquote><div className="quote-person"><img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=85" alt="Learner portrait" /><span><strong>Kabelo M.</strong><small>Preparing for BGCSE · Demo learner</small></span></div></div>
       </section>
 
       <section className="split-cta teach" id="teach">
-        <div><p className="eyebrow">Teach Botswana learners</p><h2>Turn subject knowledge<br />into real progress.</h2><p>Join Studacad as a PSLE, JCE, or BGCSE tutor and support learners across Botswana.</p><ul><li>Teach your strongest examination subjects</li><li>Set your own credit price and schedule</li><li>Support lessons with revision and quizzes</li></ul><button className="primary">Become a tutor <Arrow /></button></div>
+        <div><p className="eyebrow">Teach Botswana learners</p><h2>Turn subject knowledge<br />into real progress</h2><p>Join Studacad as a PSLE, JCE, or BGCSE tutor and support learners across Botswana.</p><ul><li>Teach your strongest examination subjects</li><li>Set your own credit price and schedule</li><li>Support lessons with revision and quizzes</li></ul><button className="primary">Become a tutor <Arrow /></button></div>
         <div className="cta-image tutor-desk"><img src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=1000&q=85" alt="Subject tutor teaching online" /><span className="income-card"><small>This month</small><strong>2,840 credits</strong><i>↑ 18% from last month</i></span></div>
       </section>
 
       <section className="split-cta business" id="schools">
         <div className="business-art"><span className="word w1">PSLE</span><span className="word w2">JCE</span><span className="word w3">BGCSE</span><div className="orbit o1" /><div className="orbit o2" /><div className="orbit o3" /></div>
-        <div><p className="eyebrow">Studacad for schools</p><h2>Extra learning support<br />your students can use.</h2><p>Subject tutoring, structured revision, and measurable lesson checks in one flexible platform.</p><div className="button-row"><button className="primary">Book a demo <Arrow /></button><button className="outline">Explore for schools</button></div></div>
+        <div><p className="eyebrow">Studacad for schools</p><h2>Extra learning support<br />your students can use</h2><p>Subject tutoring, structured revision, and measurable lesson checks in one flexible platform.</p><div className="button-row"><button className="primary">Book a demo <Arrow /></button><button className="outline">Explore for schools</button></div></div>
       </section>
 
       <section className="final-cta"><div><p className="eyebrow">Your next result starts with one topic</p><h2>Ready to prepare with confidence?</h2></div><button className="primary light" onClick={() => setModal("search")}>Find subject support <Arrow /></button></section>

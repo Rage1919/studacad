@@ -25,7 +25,7 @@ export default function LearningHub() {
       <LmsHeader current="learn" />
       {notice && <div className="toast" role="status">{notice}</div>}
       <section className="lms-hero">
-        <div><p className="eyebrow">My Studacad</p><h1>Your exam-prep dashboard.</h1><p>Book subject support, watch syllabus-focused tutorials, download revision papers, and check your understanding after every lesson.</p></div>
+        <div><p className="eyebrow">My Studacad</p><h1>Your exam prep dashboard</h1><p>Book subject support, watch syllabus-focused tutorials, download revision papers, and check your understanding after every lesson.</p></div>
         <div className="learning-stats">
           <div><strong>{completedCount}/{totalLessons || 0}</strong><span>lessons complete</span></div>
           <div><strong>{Object.values(quizScores).length ? Math.round(Object.values(quizScores).reduce((a, b) => a + b, 0) / Object.values(quizScores).length) : 0}%</strong><span>average score</span></div>
@@ -50,7 +50,7 @@ export default function LearningHub() {
       </section>
 
       <section className="lms-section discover-section">
-        <div className="lms-section-heading"><div><p className="eyebrow">Revision marketplace</p><h2>Add an exam-prep course</h2></div><p>Purchase once with credits. Every tutorial, paper, and test stays in the same Studacad account.</p></div>
+        <div className="lms-section-heading"><div><p className="eyebrow">Revision marketplace</p><h2>Add an exam prep course</h2></div><p>Purchase once with credits. Every tutorial, paper, and test stays in the same Studacad account.</p></div>
         <div className="course-grid discover-grid">
           {discover.map(course => <article className="course-card" key={course.id} style={{ "--course-color": course.color } as React.CSSProperties}>
             <div className="course-banner"><span>{course.examination} · {course.subject}</span></div>

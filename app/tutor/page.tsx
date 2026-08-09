@@ -5,11 +5,14 @@ import { useEffect, useState } from "react";
 import { LmsHeader } from "../components/LmsHeader";
 import { useLms } from "../components/LmsProvider";
 import { findTutor, Tutor } from "../lib/tutors";
+import type { TutorMessage } from "../lib/tutorMessages";
 import { useTutorFavourites } from "../lib/useTutorFavourites";
+import { useTutorMessages } from "../lib/useTutorMessages";
 
 const MessageIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14v10H9l-4 3v-13Z" /><path d="M9 9h6M9 12h4" /></svg>;
 const HeartIcon = ({ filled = false }: { filled?: boolean }) => <svg viewBox="0 0 24 24" aria-hidden="true" className={filled ? "filled" : ""}><path d="M12 20s-7-4.3-7-10a4 4 0 0 1 7-2.7A4 4 0 0 1 19 10c0 5.7-7 10-7 10Z" /></svg>;
 const ShareIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V3m0 0L8 7m4-4 4 4" /><path d="M7 10H5v10h14V10h-2" /></svg>;
+const WhatsAppIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.6a8 8 0 0 1-11.8 7L4 20l1.4-4A8 8 0 1 1 20 11.6Z" /><path d="M8.5 7.8c.4 2.8 2.6 5 5.4 5.6l1.1-1.1 2 .9-.3 2c-.2.8-1 1.3-1.8 1.2-5.1-.7-9-4.7-9.4-9.8-.1-.8.5-1.6 1.3-1.8l2-.2.8 2.1-1.1 1.1Z" /></svg>;
 
 type SessionFormat = Tutor["sessionFormats"][number];
 
@@ -35,7 +38,10 @@ export default function TutorProfilePage() {
   const [messageOpen, setMessageOpen] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [messageNotice, setMessageNotice] = useState("");
+  const [messageError, setMessageError] = useState(false);
+  const [messageSending, setMessageSending] = useState(false);
   const [actionNotice, setActionNotice] = useState("");
+  const { messages: messageHistory, refresh: refreshMessages, saveLocal: saveLocalMessage } = useTutorMessages(tutor?.id);
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("id") ?? "";
@@ -46,7 +52,7 @@ export default function TutorProfilePage() {
 
   if (tutor === undefined) return <main className="lms-page"><LmsHeader /><div className="loading-state">Loading tutor profile…</div></main>;
 
-  if (!tutor) return <main className="lms-page"><LmsHeader /><section className="locked-state"><span>?</span><h1>Tutor not found.</h1><p>This tutor profile may no longer be available.</p><Link className="primary" href="/tutors">Browse Studacad tutors</Link></section></main>;
+  if (!tutor) return <main className="lms-page"><LmsHeader /><section className="locked-state"><span>?</span><h1>Tutor not found</h1><p>This tutor profile may no longer be available.</p><Link className="primary" href="/tutors">Browse Studacad tutors</Link></section></main>;
 
   const isFavourite = favouriteIds.includes(tutor.id);
   const availableSessions = sessionOptions.filter(option => tutor.sessionFormats.includes(option.id));
@@ -106,21 +112,49 @@ export default function TutorProfilePage() {
     }
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     const cleanMessage = messageText.trim();
     if (!cleanMessage) {
       setMessageNotice("Write a message before sending.");
+      setMessageError(true);
       return;
     }
-    try {
-      const key = "studacad-tutor-messages";
-      const existing = JSON.parse(window.localStorage.getItem(key) ?? "[]");
-      window.localStorage.setItem(key, JSON.stringify([{ tutorId: tutor.id, tutorName: tutor.name, text: cleanMessage, createdAt: new Date().toISOString() }, ...existing]));
-    } catch {
-      // The confirmation still demonstrates the messaging flow if storage is blocked.
-    }
+    const outgoing: TutorMessage = {
+      id: `client-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      tutorId: tutor.id,
+      tutorName: tutor.name,
+      text: cleanMessage,
+      direction: "outbound",
+      channel: "whatsapp",
+      status: "saved",
+      createdAt: new Date().toISOString()
+    };
+    saveLocalMessage(outgoing);
     setMessageText("");
-    setMessageNotice(`Message sent to ${tutor.name}. You can book after they reply.`);
+    setMessageError(false);
+    setMessageSending(true);
+    setMessageNotice(`Saving your message and connecting to ${tutor.name} on WhatsApp…`);
+    try {
+      const response = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tutorId: tutor.id, text: cleanMessage, clientMessageId: outgoing.id })
+      });
+      const payload = await response.json() as { message?: TutorMessage; delivery?: "cloud_api" | "whatsapp_link"; whatsappUrl?: string; error?: string };
+      if (!response.ok) throw new Error(payload.error ?? "Message delivery failed");
+      if (payload.message) saveLocalMessage(payload.message);
+      if (payload.delivery === "whatsapp_link" && payload.whatsappUrl) window.open(payload.whatsappUrl, "_blank", "noopener,noreferrer");
+      setMessageNotice(payload.delivery === "cloud_api"
+        ? `Message sent to ${tutor.name} on WhatsApp and saved in Studacad Messages.`
+        : `Message saved in Studacad Messages. WhatsApp has opened so you can complete delivery.`);
+      await refreshMessages();
+    } catch {
+      const fallbackUrl = `https://wa.me/${tutor.whatsappNumber}?text=${encodeURIComponent(cleanMessage)}`;
+      window.open(fallbackUrl, "_blank", "noopener,noreferrer");
+      setMessageNotice("The message is saved in Studacad. WhatsApp has opened as the delivery fallback.");
+    } finally {
+      setMessageSending(false);
+    }
   };
 
   return <main className="lms-page tutor-profile-page">
@@ -140,7 +174,7 @@ export default function TutorProfilePage() {
         </section>
 
         <div className="profile-actions" aria-label="Tutor profile actions">
-          <button type="button" aria-label={`Message ${tutor.name}`} title={`Message ${tutor.name}`} onClick={() => { setMessageOpen(true); setMessageNotice(""); }}><MessageIcon /><span className="sr-only">Message {tutor.name}</span></button>
+          <button type="button" aria-label={`Message ${tutor.name}`} title={`Message ${tutor.name}`} onClick={() => { setMessageOpen(true); setMessageNotice(""); setMessageError(false); void refreshMessages(); }}><MessageIcon /><span className="sr-only">Message {tutor.name}</span></button>
           <button type="button" aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"} title={isFavourite ? "Remove from favourites" : "Add to favourites"} className={isFavourite ? "active" : ""} onClick={handleFavourite} disabled={!favouritesReady}><HeartIcon filled={isFavourite} /><span className="sr-only">{isFavourite ? "Saved to favourites" : "Add to favourites"}</span></button>
           <button type="button" aria-label="Share profile" title="Share profile" onClick={shareTutor}><ShareIcon /><span className="sr-only">Share profile</span></button>
         </div>
@@ -192,7 +226,7 @@ export default function TutorProfilePage() {
         <p className="eyebrow">Choose how to learn</p>
         <div className="booking-price"><strong>{sessionPrice}</strong><span>credits<br />{selectedFormat === "online-group" ? "group rate · 40% less" : "for 50 minutes"}</span></div>
         <div className="booking-balance"><span>Your wallet</span><b>{credits.toLocaleString()} credits</b></div>
-        <button className="message-before-booking" type="button" onClick={() => { setMessageOpen(true); setMessageNotice(""); }}><MessageIcon /> Message before booking</button>
+        <button className="message-before-booking" type="button" onClick={() => { setMessageOpen(true); setMessageNotice(""); setMessageError(false); void refreshMessages(); }}><MessageIcon /> Message before booking</button>
         <fieldset className="session-format-fieldset"><legend>Session format</legend>{availableSessions.map(option => <label key={option.id} className={selectedFormat === option.id ? "selected" : ""}><input type="radio" name="session-format" checked={selectedFormat === option.id} onChange={() => { setSelectedFormat(option.id); setNotice(""); setBooked(false); setMeetUrl(""); }} /><span className="session-format-copy"><strong>{option.label}{option.id === "online-group" && <em>40% less</em>}</strong></span></label>)}</fieldset>
         {isOnlineSession && <div className="session-venue google-meet-venue"><span>G</span><div><strong>Google Meet included</strong><small>A secure meeting space is prepared after booking.</small></div></div>}
         {selectedFormat === "tutor-place" && <div className="session-venue"><span>⌂</span><div><strong>{tutor.location}</strong><small>The exact address is shared after confirmation.</small></div></div>}
@@ -209,11 +243,13 @@ export default function TutorProfilePage() {
       <section className="message-modal" role="dialog" aria-modal="true" aria-labelledby="message-heading">
         <button className="message-close" type="button" aria-label="Close message window" onClick={() => setMessageOpen(false)}>×</button>
         <div className="message-tutor"><img src={tutor.image} alt="" /><div><p className="eyebrow">Message before booking</p><h2 id="message-heading">Ask {tutor.name} a question</h2></div></div>
-        <p className="message-helper">Share the learner&apos;s level, the topic they need help with, and the times that suit you. Messaging is free and does not make a booking.</p>
+        <div className="message-channel"><span><WhatsAppIcon /> WhatsApp connected</span><Link href="/messages">Open Studacad Messages</Link></div>
+        <p className="message-helper">Share the learner&apos;s level, topic, and suitable times. The message stays in Studacad and is delivered to the tutor through WhatsApp. Replies return through the connected webhook.</p>
+        {messageHistory.length > 0 && <div className="message-thread" aria-label={`Conversation with ${tutor.name}`}>{messageHistory.map(message => <div className={`thread-message ${message.direction}`} key={message.id}><p>{message.text}</p><small>{message.direction === "inbound" ? tutor.name : "You"} · {new Date(message.createdAt).toLocaleString()} · {message.status}</small></div>)}</div>}
         <label htmlFor="tutor-message">Your message</label>
         <textarea id="tutor-message" value={messageText} onChange={event => { setMessageText(event.target.value); setMessageNotice(""); }} placeholder={`Hello ${tutor.name}, I would like help with…`} rows={6} />
-        {messageNotice && <p className={messageNotice.startsWith("Message sent") ? "message-status success" : "message-status"} role="status">{messageNotice}</p>}
-        <div className="message-modal-actions"><button type="button" className="secondary" onClick={() => setMessageOpen(false)}>Cancel</button><button type="button" className="primary" onClick={sendMessage}>Send message</button></div>
+        {messageNotice && <p className={messageError ? "message-status" : "message-status success"} role="status">{messageNotice}</p>}
+        <div className="message-modal-actions"><button type="button" className="secondary" onClick={() => setMessageOpen(false)}>Cancel</button><button type="button" className="primary whatsapp-send" onClick={() => void sendMessage()} disabled={messageSending}><WhatsAppIcon /> {messageSending ? "Sending…" : "Send with WhatsApp"}</button></div>
       </section>
     </div>}
   </main>;

@@ -8,6 +8,7 @@ export type Tutor = {
   price: number;
   color: string;
   image: string;
+  whatsappNumber: string;
   location: string;
   experience: string;
   headline: string;
@@ -27,8 +28,14 @@ export type Tutor = {
 
 type TutorSeed = Pick<Tutor, "id" | "name" | "examination" | "subject" | "rating" | "lessons" | "price" | "color" | "image" | "location" | "availability" | "availabilityGroups">;
 
+const demoWhatsappNumber = (id: string) => {
+  const checksum = [...id].reduce((total, character) => (total * 31 + character.charCodeAt(0)) % 1_000_000, 0);
+  return `26771${String(checksum).padStart(6, "0")}`;
+};
+
 const subjectTutor = (seed: TutorSeed): Tutor => ({
   ...seed,
+  whatsappNumber: demoWhatsappNumber(seed.id),
   experience: "5 years teaching experience",
   headline: `Focused ${seed.examination} ${seed.subject} support with clear explanations and exam-style practice.`,
   about: `I help learners understand ${seed.subject} concepts, correct common mistakes, and build a reliable method for answering ${seed.examination} questions. Each tutorial is adjusted to the learner's current level and revision goals.`,
@@ -57,6 +64,7 @@ export const tutors: Tutor[] = [
     price: 22,
     color: "peach",
     image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=900&q=88",
+    whatsappNumber: demoWhatsappNumber("masego"),
     location: "Gaborone, Botswana",
     experience: "6 years teaching experience",
     headline: "Patient PSLE Mathematics support with clear, step-by-step explanations.",
@@ -86,6 +94,7 @@ export const tutors: Tutor[] = [
     price: 24,
     color: "blue",
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=88",
+    whatsappNumber: demoWhatsappNumber("thabo"),
     location: "Francistown, Botswana",
     experience: "8 years teaching experience",
     headline: "JCE Science made practical, visual, and easier to remember.",
@@ -115,6 +124,7 @@ export const tutors: Tutor[] = [
     price: 27,
     color: "yellow",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=88",
+    whatsappNumber: demoWhatsappNumber("keneilwe"),
     location: "Maun, Botswana",
     experience: "7 years teaching experience",
     headline: "Precise BGCSE Biology explanations, diagrams, and exam practice.",

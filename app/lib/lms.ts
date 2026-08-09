@@ -89,11 +89,11 @@ export const defaultCourses: Course[] = [
       },
       {
         id: "multi-step-problems",
-        title: "Solve multi-step word problems",
+        title: "Solve multi step word problems",
         duration: "16 min",
         description: "Identify the information given, choose operations, and check whether your answer is reasonable.",
         videoUrl: "https://www.youtube.com/embed/AHk16ZOKS3E",
-        revisionTitle: "Word-problem strategy card",
+        revisionTitle: "Word problem strategy card",
         revisionContent: "READ — What is the question asking?\nPLAN — Which facts and operations will you use?\nSOLVE — Show one step per line.\nCHECK — Estimate and label your final answer.\n\nPractice: A school buys 24 boxes of pencils. Each box contains 12 pencils. The pencils are shared equally among 8 classes. How many pencils does each class receive?",
         quiz: [
           q("pm3q1", "A shop packs 6 oranges in each bag. How many bags are needed for 54 oranges?", ["8", "9", "48", "60"], 1),
