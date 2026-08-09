@@ -23,7 +23,6 @@ export type Course = {
   title: string;
   examination: ExamLevel;
   subject: string;
-  level: string;
   description: string;
   color: string;
   price: number;
@@ -56,7 +55,6 @@ export const defaultCourses: Course[] = [
     title: "PSLE Mathematics Exam Readiness",
     examination: "PSLE",
     subject: "Mathematics",
-    level: "Standard 7",
     description: "Build speed and confidence in computation, application, and reasoning for Botswana PSLE Mathematics.",
     color: "#ffcf70",
     price: 140,
@@ -109,7 +107,6 @@ export const defaultCourses: Course[] = [
     title: "PSLE Science Core Concepts",
     examination: "PSLE",
     subject: "Science",
-    level: "Standard 7",
     description: "Revise scientific knowledge and practise applying it to everyday Botswana contexts.",
     color: "#b8efc5",
     price: 125,
@@ -148,7 +145,6 @@ export const defaultCourses: Course[] = [
     title: "JCE General Science Essentials",
     examination: "JCE",
     subject: "General Science",
-    level: "Form 3",
     description: "Connect biology, chemistry, and physics ideas with JCE-style explanations and data questions.",
     color: "#aee4ff",
     price: 180,
@@ -188,7 +184,6 @@ export const defaultCourses: Course[] = [
     title: "JCE Mathematics Problem Solving",
     examination: "JCE",
     subject: "Mathematics",
-    level: "Form 3",
     description: "Strengthen algebra, ratio, graphs, and clear mathematical reasoning for the JCE examination.",
     color: "#e0c8ff",
     price: 165,
@@ -227,7 +222,6 @@ export const defaultCourses: Course[] = [
     title: "BGCSE Mathematics Paper Skills",
     examination: "BGCSE",
     subject: "Mathematics",
-    level: "Form 5",
     description: "Practise the algebra, geometry, and statistics methods needed for confident BGCSE responses.",
     color: "#ffb6b0",
     price: 220,
@@ -266,7 +260,6 @@ export const defaultCourses: Course[] = [
     title: "BGCSE Biology Core Revision",
     examination: "BGCSE",
     subject: "Biology",
-    level: "Form 5",
     description: "Turn key biological processes into precise, exam-ready explanations and labelled diagrams.",
     color: "#8ee3d2",
     price: 210,

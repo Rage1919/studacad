@@ -98,3 +98,37 @@
   .admin-tabs { padding: 14px 15px; overflow-x: auto; position: static; }.admin-tabs button { flex: 0 0 auto; }.admin-workspace, .content-library { padding: 45px 20px 80px; display: block; }.form-intro { position: static; margin-bottom: 30px; }.admin-form { padding: 20px; box-shadow: 5px 5px 0 rgba(20,20,20,.12); }.field-grid, .option-grid { grid-template-columns: 1fr; }.admin-course-head { grid-template-columns: 45px 1fr; }.admin-course-head > strong { grid-column: 2; justify-self: start; }.reset-demo { margin-top: 25px; }.tutor-search-hero { padding: 50px 20px; display: block; }.tutor-search-hero h1 { font-size: 52px; letter-spacing: -3px; }.tutor-search-hero > div:first-child > p:last-child { font-size: 16px; }.search-count { width: 135px; margin-top: 30px; }.tutor-filter-shell { padding: 18px 20px; position: static; grid-template-columns: 1fr 1fr; }.filter-search { grid-column: 1/3; }.tutor-results-section { padding: 45px 20px 75px; }.results-toolbar { display: block; }.results-toolbar > div:last-child { margin-top: 20px; justify-content: space-between; }.search-tutor-grid { grid-template-columns: 1fr; }.search-tutor-photo { height: 310px; }.profile-shell { padding: 30px 20px 75px; }.profile-intro { grid-template-columns: 1fr; }.profile-photo { height: 370px; }.profile-summary h1 { font-size: 53px; letter-spacing: -3px; }.profile-headline { font-size: 17px; }.profile-facts, .approach-grid { grid-template-columns: 1fr; }.profile-section h2 { font-size: 34px; }.tutor-video-layout, .resume-grid { grid-template-columns: 1fr; }.resume-column:last-child { grid-column: auto; }.profile-review { padding: 24px; box-shadow: 5px 5px 0 var(--ink); }.profile-review blockquote { font-size: 20px; }.booking-card { padding: 22px; box-shadow: 5px 5px 0 var(--ink); }.message-modal { padding: 22px; box-shadow: 5px 5px 0 var(--ink); }.message-tutor h2 { font-size: 23px; }.message-modal-actions { display: grid; grid-template-columns: 1fr 1fr; }.favourites-hero { padding: 50px 20px; }.favourites-hero h1 { font-size: 49px; letter-spacing: -3px; }.favourites-section { padding: 45px 20px 75px; }
   .how-hero { min-height: 0; padding: 55px 20px 70px; gap: 45px; }.how-hero h1 { font-size: 54px; letter-spacing: -3px; }.how-hero-copy > p:last-of-type { font-size: 16px; }.how-hero-actions { display: grid; }.how-hero-visual { min-height: 430px; box-shadow: 6px 6px 0 var(--ink); transform: none; }.how-visual-wallet { position: static; margin: 15px 15px 0 auto; width: fit-content; }.how-pathway-tabs { margin-top: -41px; }.how-visual-body { padding: 55px 15px 15px; grid-template-columns: 1fr; }.how-mini-profile { min-height: 175px; }.how-mini-learning { display: none; }.how-jump-nav { padding: 9px 15px; }.how-section { padding: 65px 20px; }.how-section-heading h2, .how-copy-block h2 { font-size: 41px; letter-spacing: -2px; }.how-journey-grid, .how-directory-grid { grid-template-columns: 1fr; }.how-journey-grid article { min-height: 190px; }.how-journey-grid h3 { margin-top: 32px; }.how-market-visual, .how-profile-visual, .how-wallet-visual, .how-admin-visual, .how-booking-visual { padding: 18px; box-shadow: 5px 5px 0 var(--ink); }.how-result-cards article { min-height: 225px; padding: 12px; }.how-result-cards strong { margin-top: 25px; font-size: 15px; }.how-profile-head span { display: none; }.how-session-grid > div { min-height: 87px; padding: 12px; }.how-session-notes article { padding: 14px 0; }.how-lms-visual { grid-template-columns: 1fr; box-shadow: 5px 5px 0 var(--ink); }.how-lms-sidebar { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 2px solid var(--ink); }.how-lms-sidebar span { min-width: 120px; }.how-lms-content { padding: 15px; }.how-player { min-height: 170px; }.how-directory-grid article { min-height: 155px; }.how-final-cta { padding: 55px 20px; display: block; }.how-final-cta > div:last-child { margin-top: 25px; display: grid; }
 }
+
+/* Compact uppercase heading system shared by the marketplace and LMS. */
+.lms-hero h1, .wallet-hero h1, .admin-hero h1 { font-size: clamp(47px, 5.4vw, 73px); letter-spacing: -3.4px; }
+.lms-section-heading h2 { font-size: clamp(35px, 3.6vw, 50px); letter-spacing: -2.1px; }
+.lesson-title h1 { font-size: clamp(39px, 4.5vw, 61px); letter-spacing: -2.5px; }
+.quiz-intro h2 { font-size: 34px; }
+.quiz-card > h2 { font-size: 41px; }
+.locked-state h1 { font-size: 43px; }
+.admin-hero h1 { font-size: clamp(46px, 5.4vw, 70px); }
+.form-intro h2 { font-size: 38px; letter-spacing: -1.7px; }
+.tutor-search-hero h1 { font-size: clamp(47px, 6.2vw, 78px); letter-spacing: -4.2px; }
+.results-toolbar h2 { font-size: 34px; letter-spacing: -1.6px; }
+.profile-summary h1 { font-size: clamp(45px, 5.4vw, 68px); letter-spacing: -3.4px; }
+.profile-section h2 { font-size: 36px; letter-spacing: -1.7px; }
+.favourites-hero h1 { font-size: clamp(44px, 5.4vw, 68px); letter-spacing: -3.4px; }
+.empty-favourites h2 { font-size: 32px; }
+.how-hero h1 { font-size: clamp(52px, 5.8vw, 80px); letter-spacing: -4.2px; }
+.how-section-heading h2, .how-copy-block h2 { font-size: clamp(38px, 4.5vw, 59px); letter-spacing: -2.5px; }
+.how-final-cta h2 { font-size: clamp(38px, 4.5vw, 59px); letter-spacing: -2.5px; }
+
+@media (max-width: 760px) {
+  .lms-hero h1, .wallet-hero h1, .admin-hero h1 { font-size: 45px; letter-spacing: -2.5px; }
+  .lms-section-heading h2 { font-size: 36px; }
+  .lesson-title h1 { font-size: 39px; }
+  .quiz-intro h2 { font-size: 29px; }
+  .quiz-card > h2 { font-size: 32px; }
+  .tutor-search-hero h1 { font-size: 46px; letter-spacing: -2.5px; }
+  .profile-summary h1 { font-size: 47px; letter-spacing: -2.5px; }
+  .profile-section h2 { font-size: 31px; }
+  .message-tutor h2 { font-size: 21px; }
+  .favourites-hero h1 { font-size: 43px; letter-spacing: -2.5px; }
+  .how-hero h1 { font-size: 48px; letter-spacing: -2.5px; }
+  .how-section-heading h2, .how-copy-block h2 { font-size: 37px; letter-spacing: -1.7px; }
+}

@@ -8,33 +8,39 @@ import { tutors } from "./lib/tutors";
 
 const Arrow = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5" /></svg>;
 const Star = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.5 6.3-.9L12 2.8Z" /></svg>;
-const Chevron = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 9 5 5 5-5" /></svg>;
-
 const subjects = [
-  { name: "Mathematics", exam: "PSLE", count: "48", code: "P7" },
-  { name: "English", exam: "PSLE", count: "36", code: "P7" },
-  { name: "Science", exam: "PSLE", count: "31", code: "P7" },
-  { name: "Setswana", exam: "PSLE", count: "27", code: "P7" },
-  { name: "Mathematics", exam: "JCE", count: "42", code: "F3" },
-  { name: "General Science", exam: "JCE", count: "39", code: "F3" },
-  { name: "Social Studies", exam: "JCE", count: "24", code: "F3" },
-  { name: "English", exam: "JCE", count: "34", code: "F3" },
-  { name: "Mathematics", exam: "BGCSE", count: "51", code: "F5" },
-  { name: "Biology", exam: "BGCSE", count: "33", code: "F5" },
-  { name: "Physics", exam: "BGCSE", count: "29", code: "F5" },
-  { name: "Chemistry", exam: "BGCSE", count: "28", code: "F5" },
-  { name: "Accounting", exam: "BGCSE", count: "22", code: "F5" },
-  { name: "Geography", exam: "BGCSE", count: "19", code: "F5" },
-  { name: "Business Studies", exam: "BGCSE", count: "21", code: "F5" }
+  { name: "Mathematics", exam: "PSLE", count: "48" },
+  { name: "English", exam: "PSLE", count: "36" },
+  { name: "Science", exam: "PSLE", count: "31" },
+  { name: "Setswana", exam: "PSLE", count: "27" },
+  { name: "Mathematics", exam: "JCE", count: "42" },
+  { name: "General Science", exam: "JCE", count: "39" },
+  { name: "Social Studies", exam: "JCE", count: "24" },
+  { name: "English", exam: "JCE", count: "34" },
+  { name: "Mathematics", exam: "BGCSE", count: "51" },
+  { name: "Biology", exam: "BGCSE", count: "33" },
+  { name: "Physics", exam: "BGCSE", count: "29" },
+  { name: "Chemistry", exam: "BGCSE", count: "28" },
+  { name: "Accounting", exam: "BGCSE", count: "22" },
+  { name: "Geography", exam: "BGCSE", count: "19" },
+  { name: "Business Studies", exam: "BGCSE", count: "21" }
 ];
+
+const popularSubjectRows = (["PSLE", "JCE", "BGCSE"] as const).map(exam => ({
+  exam,
+  subjects: subjects
+    .filter(subject => subject.exam === exam)
+    .sort((a, b) => Number(b.count) - Number(a.count))
+    .slice(0, 3)
+}));
+
+const featuredTutors = tutors.filter(tutor => ["masego", "thabo", "keneilwe", "kabelo", "naledi", "kagiso"].includes(tutor.id));
 
 export default function Home() {
   const { credits } = useLms();
-  const [showAll, setShowAll] = useState(false);
   const [modal, setModal] = useState<"search" | "login" | null>(null);
   const [examination, setExamination] = useState("PSLE");
   const [subject, setSubject] = useState("Mathematics");
-  const visibleSubjects = useMemo(() => showAll ? subjects : subjects.slice(0, 9), [showAll]);
   const examSubjects = useMemo(() => Array.from(new Set(subjects.filter(item => item.exam === examination).map(item => item.name))), [examination]);
 
   const beginSearch = () => {
@@ -105,28 +111,30 @@ export default function Home() {
           <div><p className="eyebrow">Start with your examination</p><h2>What do you need help with?</h2></div>
           <p>Choose a PSLE, JCE, or BGCSE subject to meet tutors and find matching revision courses.</p>
         </div>
-        <div className="exam-anchor-row" aria-label="Examination levels"><span id="psle">PSLE · Standard 7</span><span id="jce">JCE · Form 3</span><span id="bgcse">BGCSE · Form 5</span></div>
-        <div className="language-grid">
-          {visibleSubjects.map((item, index) => (
-            <Link key={`${item.exam}-${item.name}`} className={`language-card color-${index % 5}`} href={`/tutors?exam=${encodeURIComponent(item.exam)}&subject=${encodeURIComponent(item.name)}`}>
-              <span className="flag">{item.code}</span>
-              <span><strong>{item.name}</strong><small>{item.exam} · {item.count} tutors</small></span>
-              <Arrow />
-            </Link>
-          ))}
+        <div className="popular-subject-rows">
+          {popularSubjectRows.map((row, rowIndex) => <div className="popular-subject-row" key={row.exam}>
+            <div className="popular-subject-label" id={row.exam.toLowerCase()}><span>Popular {row.exam} subjects</span><small>Top 3</small></div>
+            <div className="language-grid">
+              {row.subjects.map((item, subjectIndex) => (
+                <Link key={`${item.exam}-${item.name}`} className={`language-card color-${(rowIndex * 3 + subjectIndex) % 5}`} href={`/tutors?exam=${encodeURIComponent(item.exam)}&subject=${encodeURIComponent(item.name)}`}>
+                  <span><strong>{item.name}</strong><small>{item.exam} · {item.count} tutors</small></span>
+                  <Arrow />
+                </Link>
+              ))}
+            </div>
+          </div>)}
         </div>
-        <button className="outline show-more" onClick={() => setShowAll(value => !value)}>{showAll ? "Show fewer subjects" : "Show all subjects"} <Chevron /></button>
       </section>
 
       <section className="tutor-showcase" id="tutor-results">
         <div className="section-heading compact">
-          <div><p className="eyebrow">Popular Botswana exam tutors</p><h2>Meet tutors who know the syllabus.</h2></div>
+          <div><p className="eyebrow">Featured Botswana exam tutors</p><h2>Meet tutors who know the syllabus.</h2></div>
           <Link className="outline" href="/tutors">Browse all tutors <Arrow /></Link>
         </div>
         <div className="tutor-grid">
-          {tutors.map(tutor => (
+          {featuredTutors.map(tutor => (
             <article className="tutor-card" key={tutor.name}>
-              <div className={`tutor-photo ${tutor.color}`}><img src={tutor.image} alt={`${tutor.name}, ${tutor.examination} ${tutor.subject} tutor`} /><button aria-label={`Save ${tutor.name}`}>♡</button><span>Available today</span></div>
+              <div className={`tutor-photo ${tutor.color}`}><img src={tutor.image} alt={`${tutor.name}, ${tutor.examination} ${tutor.subject} tutor`} /><button aria-label={`Save ${tutor.name}`}>♡</button><em className="featured-badge">Featured</em><span>Available today</span></div>
               <div className="tutor-info">
                 <div><h3>{tutor.name} <i>✓</i></h3><p>{tutor.examination} {tutor.subject} tutor</p></div>
                 <div className="rating"><Star /><strong>{tutor.rating}</strong><small>{tutor.lessons}</small></div>
