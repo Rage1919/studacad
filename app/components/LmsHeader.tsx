@@ -7,7 +7,7 @@ import { WalletIcon } from "./WalletIcon";
 
 const MessageIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14v10H9l-4 3v-13Z" /><path d="M9 9h6M9 12h4" /></svg>;
 
-export function LmsHeader({ current }: { current?: "learn" | "wallet" | "how" | "messages" | "referral" }) {
+export function LmsHeader({ current }: { current?: "learn" | "wallet" | "how" | "messages" | "referral" | "become-tutor" }) {
   const { credits } = useLms();
   return (
     <header className="lms-header">
@@ -15,6 +15,7 @@ export function LmsHeader({ current }: { current?: "learn" | "wallet" | "how" | 
       <nav aria-label="Learning navigation">
         <TutorMenu />
         <Link className={current === "how" ? "active" : ""} href="/how-it-works">How it works</Link>
+        <Link className={current === "become-tutor" ? "active" : ""} href="/become-a-tutor">Become a tutor</Link>
         <Link className={current === "learn" ? "active" : ""} href="/learn">My learning</Link>
       </nav>
       <div className="lms-header-actions">

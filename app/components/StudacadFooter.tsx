@@ -8,9 +8,9 @@ export function StudacadFooter() {
       <div className="socials" aria-label="Studacad social channels"><button type="button" aria-label="LinkedIn">in</button><button type="button" aria-label="Instagram">◎</button><button type="button" aria-label="YouTube">▶</button><button type="button" aria-label="Facebook">f</button></div>
     </div>
     <div className="footer-links">
-      <div><h4>About Studacad</h4><Link href="/how-it-works">How it works</Link><Link href="/#schools">For schools</Link><Link href="/#tutor-results">Reviews</Link><Link href="/#teach">Careers</Link></div>
+      <div><h4>About Studacad</h4><Link href="/how-it-works">How it works</Link><Link href="/#schools">For schools</Link><Link href="/#tutor-results">Reviews</Link><Link href="/become-a-tutor">Careers</Link></div>
       <div><h4>For students</h4><Link href="/tutors">Find tutors</Link><Link href="/learn">My learning</Link><Link href="/wallet">Credits wallet</Link><Link href="/referral">Refer a friend</Link></div>
-      <div><h4>Exam pathways</h4><Link href="/tutors?exam=PSLE">PSLE subjects</Link><Link href="/tutors?exam=JCE">JCE subjects</Link><Link href="/tutors?exam=BGCSE">BGCSE subjects</Link><Link href="/#teach">Become a tutor</Link></div>
+      <div><h4>Exam pathways</h4><Link href="/tutors?exam=PSLE">PSLE subjects</Link><Link href="/tutors?exam=JCE">JCE subjects</Link><Link href="/tutors?exam=BGCSE">BGCSE subjects</Link><Link href="/become-a-tutor">Become a tutor</Link></div>
       <div><h4>Learning tools</h4><Link href="/learn">Tutorial videos</Link><Link href="/learn">Revision papers</Link><Link href="/learn">Lesson tests</Link><Link href="/#schools">School support</Link></div>
       <div><h4>Support</h4><Link href="/how-it-works">Help centre</Link><Link href="/how-it-works">Contact us</Link><Link href="/how-it-works">Safety</Link><Link href="/how-it-works">Community guidelines</Link></div>
     </div>
