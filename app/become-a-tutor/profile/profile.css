@@ -8,7 +8,7 @@
 .onboarding-eyebrow { margin: 0 0 10px; font-size: 10px; font-weight: 900; letter-spacing: 1.35px; text-transform: uppercase; }
 .onboarding-progress-card h2 { margin: 0; font-size: 28px; line-height: 1.05; letter-spacing: -1.2px; }
 .onboarding-progress-card ol { margin: 30px 0 0; padding: 0; display: grid; list-style: none; }
-.onboarding-progress-card li { position: relative; }.onboarding-progress-card li:not(:last-child):after { content: ""; width: 2px; height: 22px; position: absolute; left: 15px; bottom: -11px; background: #4c4c4c; }
+.onboarding-progress-card li { position: relative; }
 .onboarding-progress-card li + li { margin-top: 20px; }
 .onboarding-progress-card button { width: 100%; padding: 0; display: grid; grid-template-columns: 32px 1fr; align-items: center; gap: 12px; border: 0; background: transparent; color: #aaa; text-align: left; cursor: pointer; }.onboarding-progress-card button:disabled { cursor: default; }
 .onboarding-progress-card button > span:first-child { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid #777; border-radius: 50%; font-size: 11px; font-weight: 900; }
