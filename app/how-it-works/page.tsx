@@ -13,7 +13,7 @@ const directory = [
   ["Tutor discovery", "Exam-level submenus, subject cards, search, availability, rating, and credit-price filters."],
   ["Complete profiles", "Biography, specialties, introduction video, résumé, reviews, availability, and lesson price."],
   ["Before booking", "Free tutor messaging, persistent favourites, profile sharing, and a personal shortlist."],
-  ["Flexible sessions", "Online private, discounted online groups, tutor-hosted, or learner-home tutorials."],
+  ["Flexible sessions", "Weekly private and group schedules, multi-slot advance booking, tutor-hosted, and learner-home tutorials."],
   ["Google Meet", "Online bookings prepare a Google Meet space and place the joining link in the confirmation."],
   ["Credits wallet", "Top up once, pay tutors or purchase learning programmes, and review every transaction."],
   ["Learning library", "Purchased courses appear under My learning with progress, lesson lists, and completion status."],
@@ -75,7 +75,7 @@ export default function HowItWorksPage() {
     </section>
 
     <section className="how-section" id="sessions">
-      <div className="how-section-heading"><p className="eyebrow">Flexible tutorials</p><h2>Choose where and how the lesson happens</h2><p>Availability and delivery format are selected together before credits are deducted.</p></div>
+      <div className="how-section-heading"><p className="eyebrow">Flexible tutorials</p><h2>Choose where and how the lesson happens</h2><p>Open a tutor&apos;s weekly private or group schedule, move between weeks, and reserve several lesson times in one booking.</p></div>
       <div className="how-session-layout">
         <div className="how-booking-visual">
           <div className="how-session-grid"><div className="selected"><b>Online private</b></div><div><b>Online group</b><em>40% less</em></div><div><b>At tutor&apos;s place</b></div><div><b>At student&apos;s place</b></div></div>

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useLms } from "./LmsProvider";
 import { TutorMenu } from "./TutorMenu";
 
+const MessageIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14v10H9l-4 3v-13Z" /><path d="M9 9h6M9 12h4" /></svg>;
+
 export function LmsHeader({ current }: { current?: "learn" | "wallet" | "how" | "messages" | "referral" }) {
   const { credits } = useLms();
   return (
@@ -13,12 +15,14 @@ export function LmsHeader({ current }: { current?: "learn" | "wallet" | "how" | 
         <TutorMenu />
         <Link className={current === "how" ? "active" : ""} href="/how-it-works">How it works</Link>
         <Link className={current === "learn" ? "active" : ""} href="/learn">My learning</Link>
-        <Link className={current === "messages" ? "active" : ""} href="/messages">Messages</Link>
-        <Link className={current === "referral" ? "active referral-header-link" : "referral-header-link"} href="/referral">Refer a friend</Link>
       </nav>
-      <Link className={`wallet-pill ${current === "wallet" ? "active" : ""}`} href="/wallet">
-        <span className="coin">◆</span><span><small>Wallet</small><strong>{credits.toLocaleString()} credits</strong></span>
-      </Link>
+      <div className="lms-header-actions">
+        <Link className={`message-header-button ${current === "messages" ? "active" : ""}`} href="/messages" aria-label="Messages" title="Messages"><MessageIcon /></Link>
+        <Link className={current === "referral" ? "active referral-header-link" : "referral-header-link"} href="/referral">Refer a friend</Link>
+        <Link className={`wallet-pill ${current === "wallet" ? "active" : ""}`} href="/wallet">
+          <span className="coin">◆</span><span><small>Wallet</small><strong>{credits.toLocaleString()}</strong></span>
+        </Link>
+      </div>
     </header>
   );
 }

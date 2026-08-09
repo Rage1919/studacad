@@ -11,6 +11,7 @@ type LmsContextValue = LmsState & {
   visitorId: string;
   topUp: (amount: number) => void;
   bookTutor: (tutorName: string, price: number, slot: string, format?: string) => { ok: boolean; message: string };
+  bookTutorSlots: (tutorName: string, pricePerSlot: number, slots: string[], format: string) => { ok: boolean; message: string };
   purchaseCourse: (courseId: string) => { ok: boolean; message: string };
   recordQuiz: (lessonId: string, score: number) => void;
   addCourse: (course: Course) => void;
@@ -95,6 +96,17 @@ export function LmsProvider({ children }: { children: React.ReactNode }) {
         transactions: [transaction("purchase", `${format} with ${tutorName} · ${slot}`, -price), ...current.transactions]
       }));
       return { ok: true, message: `${format} with ${tutorName} booked for ${slot}.` };
+    },
+    bookTutorSlots: (tutorName, pricePerSlot, slots, format) => {
+      if (slots.length === 0) return { ok: false, message: "Choose at least one lesson time." };
+      const total = pricePerSlot * slots.length;
+      if (state.credits < total) return { ok: false, message: "Not enough credits. Reduce the selected lessons or top up your wallet." };
+      setState(current => ({
+        ...current,
+        credits: current.credits - total,
+        transactions: [transaction("purchase", `${slots.length} × ${format} with ${tutorName}`, -total), ...current.transactions]
+      }));
+      return { ok: true, message: `${slots.length} ${format.toLowerCase()} ${slots.length === 1 ? "lesson" : "lessons"} booked with ${tutorName}.` };
     },
     purchaseCourse: (courseId) => {
       const course = state.courses.find(item => item.id === courseId);

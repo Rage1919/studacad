@@ -8,6 +8,7 @@ import { tutors } from "./lib/tutors";
 
 const Arrow = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5" /></svg>;
 const Star = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.5 6.3-.9L12 2.8Z" /></svg>;
+const MessageIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14v10H9l-4 3v-13Z" /><path d="M9 9h6M9 12h4" /></svg>;
 const subjects = [
   { name: "Mathematics", exam: "PSLE", count: "48" },
   { name: "English", exam: "PSLE", count: "36" },
@@ -66,8 +67,9 @@ export default function Home() {
           <Link href="/learn">My learning</Link>
         </nav>
         <div className="nav-actions">
+          <Link className="message-nav" href="/messages" aria-label="Messages" title="Messages"><MessageIcon /></Link>
           <Link className="referral-nav" href="/referral">Refer a friend</Link>
-          <Link className="currency wallet-nav" href="/wallet">◆ {credits.toLocaleString()} credits</Link>
+          <Link className="currency wallet-nav" href="/wallet">◆ {credits.toLocaleString()}</Link>
           <button className="help" aria-label="Help">?</button>
           <button className="login" onClick={() => setModal("login")}>↪ <span>Log in</span></button>
         </div>
