@@ -1,0 +1,51 @@
+.policy-admin {
+  max-width: 1000px;
+  margin: auto;
+  padding: 2rem 1.25rem 5rem;
+  color: #142b47;
+}
+.policy-admin header {
+  padding: 2rem 0;
+}
+.policy-admin section,
+.policy-admin form {
+  display: grid;
+  gap: 0.7rem;
+  background: #fff;
+  border: 1px solid #dce5e9;
+  border-radius: 16px;
+  padding: 1.2rem;
+  margin: 1rem 0;
+}
+.policy-admin article {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  border-top: 1px solid #e1e8eb;
+  padding: 0.8rem 0;
+}
+.policy-admin article small {
+  grid-column: 1/-1;
+}
+.policy-admin label {
+  display: grid;
+  gap: 0.3rem;
+}
+.policy-admin input,
+.policy-admin select {
+  padding: 0.7rem;
+  border: 1px solid #9cacb8;
+  border-radius: 8px;
+}
+.policy-admin button {
+  justify-self: start;
+  border: 0;
+  border-radius: 8px;
+  background: #142b47;
+  color: #fff;
+  padding: 0.8rem 1rem;
+}
+.notice {
+  background: #e7f5ef;
+  padding: 1rem;
+  border-radius: 10px;
+}

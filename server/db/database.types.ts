@@ -20,6 +20,12 @@ import type {
   Notification,
   NotificationPreference,
   NotificationSuppression,
+  PolicyDocument,
+  PolicyReview,
+  SupportCase,
+  SupportCaseMessage,
+  TutorReport,
+  UserPolicyAcceptance,
   ObjectFile,
   LedgerEntry,
   LedgerTransaction,
@@ -377,6 +383,36 @@ export type Database = {
         Omit<NotificationSuppression, "created_at">,
         Record<string, never>
       >;
+      policy_documents: Table<
+        PolicyDocument,
+        Record<string, never>,
+        Record<string, never>
+      >;
+      user_policy_acceptances: Table<
+        UserPolicyAcceptance,
+        Record<string, never>,
+        Record<string, never>
+      >;
+      policy_reviews: Table<
+        PolicyReview,
+        Record<string, never>,
+        Record<string, never>
+      >;
+      support_cases: Table<
+        SupportCase,
+        Record<string, never>,
+        Partial<SupportCase>
+      >;
+      support_case_messages: Table<
+        SupportCaseMessage,
+        Record<string, never>,
+        Record<string, never>
+      >;
+      tutor_reports: Table<
+        TutorReport,
+        Record<string, never>,
+        Partial<TutorReport>
+      >;
       audit_events: Table<
         AuditEvent,
         Omit<AuditEvent, "id" | "created_at"> & { id?: string },
@@ -654,6 +690,67 @@ export type Database = {
       mark_notification_read: {
         Args: { p_user: string; p_id: string };
         Returns: boolean;
+      };
+      accept_current_policies: {
+        Args: {
+          p_user: string;
+          p_keys: string[];
+          p_context: string;
+          p_reference: string;
+          p_ip_hash?: string | null;
+        };
+        Returns: number;
+      };
+      create_support_case: {
+        Args: {
+          p_user: string;
+          p_category: string;
+          p_subject: string;
+          p_message: string;
+          p_booking?: string | null;
+        };
+        Returns: string;
+      };
+      add_support_case_message: {
+        Args: {
+          p_actor: string;
+          p_case: string;
+          p_body: string;
+          p_internal?: boolean;
+        };
+        Returns: string;
+      };
+      admin_update_support_case: {
+        Args: {
+          p_actor: string;
+          p_case: string;
+          p_status: string;
+          p_priority: string;
+          p_assignee: string | null;
+          p_note?: string | null;
+        };
+        Returns: string;
+      };
+      report_tutor: {
+        Args: {
+          p_user: string;
+          p_tutor_slug: string;
+          p_reason: string;
+          p_booking?: string | null;
+        };
+        Returns: string;
+      };
+      record_policy_review: {
+        Args: {
+          p_actor: string;
+          p_version: string;
+          p_kind: string;
+          p_reviewer: string;
+          p_outcome: string;
+          p_evidence: string;
+          p_next_review: string;
+        };
+        Returns: string;
       };
     };
     Enums: {

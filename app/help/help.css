@@ -1,0 +1,40 @@
+.help-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 2rem 1.25rem 5rem;
+  color: #142b47;
+}
+.help-page nav {
+  display: flex;
+  justify-content: space-between;
+}
+.help-page header {
+  padding: 4rem 0 2rem;
+}
+.help-page h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1;
+}
+.help-page details {
+  border-top: 1px solid #d9e4e8;
+  padding: 1.2rem 0;
+}
+.help-page summary {
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.help-page details p {
+  line-height: 1.7;
+  color: #4b5d70;
+}
+.help-page aside {
+  background: #eaf6f2;
+  border-radius: 16px;
+  padding: 1.3rem;
+  margin-top: 2rem;
+}
+.help-page a {
+  color: #155c8b;
+  font-weight: 800;
+}

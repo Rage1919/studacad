@@ -1,0 +1,61 @@
+.support-admin {
+  max-width: 1100px;
+  margin: auto;
+  padding: 2rem 1.25rem 5rem;
+  color: #142b47;
+}
+.support-admin header {
+  padding: 2rem 0;
+}
+.support-admin h1 {
+  font-size: clamp(2.4rem, 5vw, 4rem);
+}
+.support-queue {
+  display: grid;
+  gap: 1rem;
+}
+.support-queue article {
+  border: 1px solid #dae4e8;
+  border-radius: 16px;
+  padding: 1.2rem;
+  background: #fff;
+}
+.support-queue article.urgent {
+  border-left: 7px solid #bf341f;
+}
+.support-queue article > header {
+  display: flex;
+  justify-content: space-between;
+}
+.support-queue header div {
+  display: grid;
+}
+.thread p {
+  display: grid;
+  background: #f1f5f6;
+  padding: 0.7rem;
+  border-radius: 8px;
+}
+.thread p.internal {
+  background: #fff3d7;
+}
+.thread small {
+  font-size: 0.75rem;
+}
+.support-queue footer {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.support-queue button {
+  border: 0;
+  border-radius: 8px;
+  background: #142b47;
+  color: white;
+  padding: 0.7rem 1rem;
+}
+.notice {
+  background: #e7f5ef;
+  padding: 1rem;
+  border-radius: 10px;
+}
