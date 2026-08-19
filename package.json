@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/validate-runtime-env.mjs && vinext build && node scripts/prepare-sites.mjs",
+    "build": "vinext build && node scripts/prepare-sites.mjs",
     "start": "node scripts/validate-runtime-env.mjs && vinext start",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "next typegen && tsc --noEmit",

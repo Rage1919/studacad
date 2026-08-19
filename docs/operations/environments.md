@@ -34,4 +34,4 @@ The repository owner is accountable for production access and may delegate day-t
 
 ## Fail-closed behavior
 
-`instrumentation.ts` validates the contract when the Node.js server starts. Invalid or missing required values stop the server. `/api/health` repeats the validation and returns only the environment name and optional release metadata; it never returns secrets or connection details.
+`instrumentation.ts` and the `start` script validate the contract when the Node.js server starts. Invalid or missing required values stop the runtime. `/api/health` repeats the validation and returns only the environment name and optional release metadata; it never returns secrets or connection details. Compilation is environment-neutral because Sites injects these values into the deployed runtime rather than the source-build process; CI runs `pnpm env:check` as a separate preflight.
