@@ -25,10 +25,7 @@ const sessionOptions: Array<{ id: SessionFormat; label: string }> = [
   { id: "student-place", label: "At student's place" }
 ];
 
-const schedulePatterns: Record<ScheduleMode, string[][]> = {
-  private: [["12:00", "15:00"], ["16:00", "17:30"], ["16:30", "18:00"], ["17:00"], ["16:00", "18:30"], ["17:30", "19:00"], ["10:00", "12:30", "15:30"]],
-  group: [[], ["18:00"], [], ["17:30"], ["18:00"], ["18:30"], ["10:00", "14:00"]]
-};
+type AvailableSlot = { startsAt: string; endsAt: string; timezone: string; priceCredits: number; capacity: number; remainingCapacity: number };
 
 const startOfWeek = (date = new Date()) => {
   const result = new Date(date);
@@ -39,18 +36,12 @@ const startOfWeek = (date = new Date()) => {
 
 const dateKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 const displaySlot = (slot: string) => {
-  if (!slot.includes("T")) return slot;
-  const [date, time] = slot.split("T");
-  return `${new Date(`${date}T12:00:00`).toLocaleDateString("en-BW", { weekday: "short", month: "short", day: "numeric" })} · ${time}`;
-};
-
-const tutorSlots = (tutorId: string, dayIndex: number, mode: ScheduleMode) => {
-  const offset = [...tutorId].reduce((total, character) => total + character.charCodeAt(0), 0) % 7;
-  return schedulePatterns[mode][(dayIndex + offset) % 7];
+  const date = new Date(slot);
+  return Number.isFinite(date.getTime()) ? date.toLocaleString("en-BW", { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : slot;
 };
 
 export default function TutorProfilePage() {
-  const { credits, bookTutor, bookTutorSlots, referredBy, visitorId } = useLms();
+  const { credits, refreshWallet } = useLms();
   const { favouriteIds, ready: favouritesReady, toggleFavourite } = useTutorFavourites();
   const [tutor, setTutor] = useState<Tutor | null | undefined>(undefined);
   const [notice, setNotice] = useState("");
@@ -63,10 +54,11 @@ export default function TutorProfilePage() {
   const [scheduleMode, setScheduleMode] = useState<ScheduleMode>("private");
   const [weekStart, setWeekStart] = useState(() => startOfWeek());
   const [selectedLessonSlots, setSelectedLessonSlots] = useState<Record<ScheduleMode, string[]>>({ private: [], group: [] });
+  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
+  const [slotsError, setSlotsError] = useState("");
+  const [bookingLoading, setBookingLoading] = useState(false);
   const [studentAddress, setStudentAddress] = useState("");
-  const [meetUrl, setMeetUrl] = useState("");
-  const [meetDemo, setMeetDemo] = useState(false);
-  const [meetLoading, setMeetLoading] = useState(false);
   const [messageOpen, setMessageOpen] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [messageNotice, setMessageNotice] = useState("");
@@ -89,6 +81,31 @@ export default function TutorProfilePage() {
       .catch(() => setTutor(null));
   }, []);
 
+  useEffect(() => {
+    if (!tutor || staticPreview) return;
+    const from = new Date(weekStart); from.setHours(0, 0, 0, 0);
+    const to = new Date(from); to.setDate(to.getDate() + 7);
+    const query = new URLSearchParams({
+      format: selectedFormat, examination: tutor.examination, subject: tutor.subject,
+      from: from.toISOString(), to: to.toISOString()
+    });
+    setSlotsLoading(true); setSlotsError("");
+    void fetch(`/api/availability/${encodeURIComponent(tutor.id)}?${query.toString()}`, { cache: "no-store" })
+      .then(async response => {
+        const result = await response.json() as { slots?: AvailableSlot[]; error?: string };
+        if (!response.ok) throw new Error(result.error ?? "Unable to load availability.");
+        setAvailableSlots(result.slots ?? []);
+      })
+      .catch(error => { setAvailableSlots([]); setSlotsError(error instanceof Error ? error.message : "Unable to load availability."); })
+      .finally(() => setSlotsLoading(false));
+  }, [selectedFormat, tutor, weekStart]);
+
+  useEffect(() => {
+    if (!tutor || tutor.sessionFormats.includes(selectedFormat)) return;
+    const firstFormat = tutor.sessionFormats[0];
+    if (firstFormat) setSelectedFormat(firstFormat);
+  }, [selectedFormat, tutor]);
+
   if (tutor === undefined) return <main className="lms-page"><LmsHeader /><div className="loading-state">Loading tutor profile…</div></main>;
 
   if (!tutor) return <main className="lms-page"><LmsHeader /><section className="locked-state"><span>?</span><h1>Tutor not found</h1><p>This tutor profile may no longer be available.</p><Link className="primary" href="/tutors">Browse Studacad tutors</Link></section></main>;
@@ -96,12 +113,12 @@ export default function TutorProfilePage() {
   const isFavourite = favouriteIds.includes(tutor.id);
   const availableSessions = sessionOptions.filter(option => tutor.sessionFormats.includes(option.id));
   const session = availableSessions.find(option => option.id === selectedFormat) ?? availableSessions[0];
-  const sessionPrice = selectedFormat === "online-group" ? Math.max(1, Math.round(tutor.price * .6)) : tutor.price;
-  const trialPrice = Math.max(1, Math.round(tutor.price * .4));
+  const selectedServerSlot = availableSlots.find(slot => selectedLessonSlots[selectedFormat === "online-group" ? "group" : "private"].includes(slot.startsAt));
+  const sessionPrice = selectedServerSlot?.priceCredits ?? (selectedFormat === "online-group" ? Math.max(1, Math.round(tutor.price * .6)) : tutor.price);
   const isOnlineSession = selectedFormat === "online-1to1" || selectedFormat === "online-group";
   const activeScheduleMode: ScheduleMode = selectedFormat === "online-group" ? "group" : "private";
   const activeLessonSlots = selectedLessonSlots[activeScheduleMode];
-  const selectedSlot = activeLessonSlots[0] ?? tutor.availability[0] ?? "";
+  const selectedSlot = activeLessonSlots[0] ?? "";
   const bookingTotal = sessionPrice * activeLessonSlots.length;
   const weekDays = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(weekStart);
@@ -109,10 +126,7 @@ export default function TutorProfilePage() {
     return date;
   });
 
-  const toggleScheduleSlot = (mode: ScheduleMode, slot: string) => setSelectedLessonSlots(current => ({
-    ...current,
-    [mode]: current[mode].includes(slot) ? current[mode].filter(item => item !== slot) : [...current[mode], slot].sort()
-  }));
+  const toggleScheduleSlot = (mode: ScheduleMode, slot: string) => setSelectedLessonSlots(current => ({ ...current, [mode]: current[mode].includes(slot) ? [] : [slot] }));
 
   const changeWeek = (direction: number) => setWeekStart(current => {
     const next = new Date(current);
@@ -125,70 +139,21 @@ export default function TutorProfilePage() {
       setNotice("Add the learner's address before booking an at-home tutorial.");
       return;
     }
-    const result = bookTutorSlots(tutor.name, sessionPrice, activeLessonSlots, session.label);
-    setNotice(result.message);
-    setBooked(result.ok);
-    setBookedLabel(result.ok ? session.label : "");
-    setBookedDuration(result.ok ? `${activeLessonSlots.length} × 50 minutes` : "");
-    setBookedSlots(result.ok ? activeLessonSlots : []);
-    setMeetUrl("");
-    if (result.ok && isOnlineSession) {
-      setMeetLoading(true);
-      try {
-        const response = await fetch("/api/meet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tutorId: tutor.id, format: selectedFormat, slot: selectedSlot }) });
-        const meeting = await response.json();
-        if (!response.ok) throw new Error(meeting.error ?? "Unable to create the Google Meet space.");
-        setMeetUrl(meeting.meetingUri);
-        setMeetDemo(Boolean(meeting.demo));
-      } catch {
-        setNotice(`${result.message} The Google Meet link will be added when the tutor confirms.`);
-      } finally {
-        setMeetLoading(false);
-      }
-    }
-  };
-
-  const confirmTrialBooking = async () => {
-    const trialBookingId = `trial-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const result = bookTutor(tutor.name, trialPrice, selectedSlot, "20 minute online private trial lesson");
-    setNotice(result.message);
-    setBooked(result.ok);
-    setBookedLabel(result.ok ? "Online private trial lesson" : "");
-    setBookedDuration(result.ok ? "20 minutes" : "");
-    setBookedSlots(result.ok ? [selectedSlot] : []);
-    setMeetUrl("");
-    if (!result.ok) return;
-
-    if (referredBy && visitorId) {
-      try {
-        const referralResponse = await fetch("/api/referrals", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ referralCode: referredBy, visitorId, trialBookingId, tutorId: tutor.id })
-        });
-        const referral = await referralResponse.json() as { created?: boolean };
-        if (referralResponse.ok) {
-          setNotice(referral.created
-            ? `${result.message} Your referrer will receive 50 credits.`
-            : `${result.message} The referral reward for this learner was already issued.`);
-        }
-      } catch {
-        setNotice(`${result.message} Referral confirmation will be retried when the connection is restored.`);
-      }
-    }
-
-    setMeetLoading(true);
+    if (!selectedSlot) return;
+    setBookingLoading(true); setNotice("");
     try {
-      const response = await fetch("/api/meet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tutorId: tutor.id, format: "online-1to1", slot: selectedSlot, duration: 20 }) });
-      const meeting = await response.json();
-      if (!response.ok) throw new Error(meeting.error ?? "Unable to create the Google Meet space.");
-      setMeetUrl(meeting.meetingUri);
-      setMeetDemo(Boolean(meeting.demo));
-    } catch {
-      setNotice(current => current || `${result.message} The Google Meet link will be added when the tutor confirms.`);
-    } finally {
-      setMeetLoading(false);
-    }
+      const response = await fetch("/api/bookings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+        tutorSlug: tutor.id, format: selectedFormat, examination: tutor.examination, subject: tutor.subject,
+        startsAt: selectedSlot, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Africa/Gaborone",
+        learnerLocation: selectedFormat === "student-place" ? studentAddress.trim() : "",
+        idempotencyKey: crypto.randomUUID()
+      }) });
+      const result = await response.json() as { booking?: { bookingId?: string; endsAt?: string }; error?: string };
+      if (!response.ok) throw new Error(result.error ?? "Unable to create the booking.");
+      setBooked(true); setBookedLabel(session.label); setBookedDuration(`${Math.round((new Date(result.booking?.endsAt ?? selectedSlot).getTime() - new Date(selectedSlot).getTime()) / 60000)} minutes`); setBookedSlots([selectedSlot]);
+      setNotice(`${session.label} with ${tutor.name} is confirmed.`); await refreshWallet();
+    } catch (error) { setBooked(false); setNotice(error instanceof Error ? error.message : "Unable to create the booking."); }
+    finally { setBookingLoading(false); }
   };
 
   const handleFavourite = () => {
@@ -330,29 +295,30 @@ export default function TutorProfilePage() {
 
       <aside className="booking-card">
         <p className="eyebrow">Choose how to learn</p>
-        <div className="booking-price"><strong>{sessionPrice}</strong><span>credits<br />{selectedFormat === "online-group" ? "group rate · 40% less" : "for 50 minutes"}</span></div>
+        <div className="booking-price"><strong>{sessionPrice}</strong><span>credits<br />per available lesson</span></div>
         <div className="booking-balance"><span>Your wallet</span><b>{credits.toLocaleString()} credits</b></div>
         <button className="message-before-booking" type="button" onClick={() => { setMessageOpen(true); setMessageNotice(""); setMessageError(false); void refreshMessages(); }}><MessageIcon /> Message before booking</button>
-        <fieldset className="session-format-fieldset"><legend>Session format</legend>{availableSessions.map(option => <label key={option.id} className={selectedFormat === option.id ? "selected" : ""}><input type="radio" name="session-format" checked={selectedFormat === option.id} onChange={() => { setSelectedFormat(option.id); setScheduleMode(option.id === "online-group" ? "group" : "private"); setNotice(""); setBooked(false); setMeetUrl(""); }} /><span className="session-format-copy"><strong>{option.label}{option.id === "online-group" && <em>40% less</em>}</strong></span></label>)}</fieldset>
+        <fieldset className="session-format-fieldset"><legend>Session format</legend>{availableSessions.map(option => <label key={option.id} className={selectedFormat === option.id ? "selected" : ""}><input type="radio" name="session-format" checked={selectedFormat === option.id} onChange={() => { setSelectedFormat(option.id); setScheduleMode(option.id === "online-group" ? "group" : "private"); setSelectedLessonSlots({ private: [], group: [] }); setNotice(""); setBooked(false); }} /><span className="session-format-copy"><strong>{option.label}{option.id === "online-group" && <em>40% less</em>}</strong></span></label>)}</fieldset>
         {isOnlineSession && <div className="session-venue google-meet-venue"><span>G</span><div><strong>Google Meet included</strong><small>A secure meeting space is prepared after booking.</small></div></div>}
         {selectedFormat === "tutor-place" && <div className="session-venue"><span>⌂</span><div><strong>{tutor.location}</strong><small>The exact address is shared after confirmation.</small></div></div>}
         {selectedFormat === "student-place" && <label className="student-address"><span>Learner&apos;s address</span><input value={studentAddress} onChange={event => { setStudentAddress(event.target.value); setNotice(""); }} placeholder="Street and area" /></label>}
-        <div className="schedule-picker-summary"><div><span>Weekly schedule</span><strong>{activeLessonSlots.length > 0 ? `${activeLessonSlots.length} ${activeScheduleMode} ${activeLessonSlots.length === 1 ? "lesson" : "lessons"}` : "Choose one or more times"}</strong></div><button type="button" onClick={() => { setScheduleMode(activeScheduleMode); setScheduleOpen(true); }}>Choose times</button>{activeLessonSlots.length > 0 && <div className="selected-slot-chips">{activeLessonSlots.slice(0, 3).map(slot => <span key={slot}>{displaySlot(slot)}</span>)}{activeLessonSlots.length > 3 && <span>+{activeLessonSlots.length - 3} more</span>}</div>}</div>
-        {!booked ? <div className="booking-actions"><button className="trial-booking-button" onClick={() => void confirmTrialBooking()} disabled={!selectedSlot || credits < trialPrice}><span>Book trial lesson</span><small>20 minutes · {trialPrice} credits · Online private</small></button><button className="primary booking-button" onClick={confirmBooking} disabled={activeLessonSlots.length === 0 || credits < bookingTotal}>{activeLessonSlots.length === 0 ? "Choose lesson times" : credits < bookingTotal ? "Top up to book" : `Book ${activeLessonSlots.length} ${session.label} · ${bookingTotal} credits`}</button></div> : <div className="booking-success"><span>✓</span><div><strong>{bookedLabel || session.label} booked</strong><p>{bookedDuration}</p>{bookedSlots.length > 0 && <ul className="booked-slot-list">{bookedSlots.map(slot => <li key={slot}>{displaySlot(slot)}</li>)}</ul>}{meetLoading && <small>Creating your Google Meet space…</small>}{meetUrl && <a href={meetUrl} target="_blank" rel="noreferrer">{meetDemo ? "Open Google Meet setup →" : "Join Google Meet →"}</a>}{!meetUrl && !meetLoading && !bookedLabel.includes("trial") && !isOnlineSession && <small>{selectedFormat === "student-place" ? studentAddress : "Venue details will be shared in your messages."}</small>}</div></div>}
+        <div className="schedule-picker-summary"><div><span>Weekly schedule</span><strong>{activeLessonSlots.length > 0 ? `${activeScheduleMode} lesson selected` : "Choose a server-confirmed time"}</strong></div><button type="button" onClick={() => { setScheduleMode(activeScheduleMode); setScheduleOpen(true); }}>Choose time</button>{activeLessonSlots.length > 0 && <div className="selected-slot-chips">{activeLessonSlots.map(slot => <span key={slot}>{displaySlot(slot)}</span>)}</div>}</div>
+        {!booked ? <div className="booking-actions"><button className="primary booking-button" onClick={() => void confirmBooking()} disabled={bookingLoading || activeLessonSlots.length === 0 || credits < bookingTotal}>{bookingLoading ? "Confirming securely…" : activeLessonSlots.length === 0 ? "Choose a lesson time" : credits < bookingTotal ? "Add credits to book" : `Book ${session.label} · ${bookingTotal} credits`}</button></div> : <div className="booking-success"><span>✓</span><div><strong>{bookedLabel || session.label} booked</strong><p>{bookedDuration}</p>{bookedSlots.length > 0 && <ul className="booked-slot-list">{bookedSlots.map(slot => <li key={slot}>{displaySlot(slot)}</li>)}</ul>}<small>{isOnlineSession ? "Meeting details will appear in Bookings when the session integration is enabled." : selectedFormat === "student-place" ? studentAddress : "Venue details will be shared in your messages."}</small><Link href="/bookings">View your bookings →</Link></div></div>}
         {notice && <p className={booked ? "booking-notice success" : "booking-notice"} role="status">{notice}</p>}
-        {credits < trialPrice && <Link className="booking-topup" href="/wallet">Top up your Studacad wallet →</Link>}
-        <small>Trial lessons are 20 minute online private sessions. Standard sessions are 50 minutes. Credits are deducted immediately.</small>
+        {activeLessonSlots.length > 0 && credits < bookingTotal && <Link className="booking-topup" href="/wallet">View your Studacad wallet →</Link>}
+        <small>The selected server price is held immediately when the booking is confirmed. The tutor cannot be double-booked.</small>
       </aside>
     </div>
 
     {scheduleOpen && <div className="schedule-modal-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setScheduleOpen(false); }}>
       <section className="weekly-schedule-modal" role="dialog" aria-modal="true" aria-labelledby="schedule-heading">
         <header><div><p className="eyebrow">{tutor.name}&apos;s availability</p><h2 id="schedule-heading">Weekly schedule</h2></div><button type="button" aria-label="Close weekly schedule" onClick={() => setScheduleOpen(false)}>×</button></header>
-        <div className="schedule-timezone-note"><span>i</span><p>Choose several lesson times in advance. All times are displayed in your local timezone.</p></div>
-        <div className="schedule-type-tabs" role="tablist" aria-label="Lesson schedule type"><button type="button" role="tab" aria-selected={scheduleMode === "private"} className={scheduleMode === "private" ? "active" : ""} onClick={() => { setScheduleMode("private"); if (selectedFormat === "online-group") setSelectedFormat("online-1to1"); }}>Private lessons <small>{tutor.price} credits each</small></button><button type="button" role="tab" aria-selected={scheduleMode === "group"} className={scheduleMode === "group" ? "active" : ""} onClick={() => { setScheduleMode("group"); setSelectedFormat("online-group"); }}>Group lessons <small>{Math.max(1, Math.round(tutor.price * .6))} credits each · 40% less</small></button></div>
-        <div className="schedule-week-controls"><div><button type="button" aria-label="Previous week" onClick={() => changeWeek(-1)}>‹</button><button type="button" aria-label="Next week" onClick={() => changeWeek(1)}>›</button><strong>{weekDays[0].toLocaleDateString("en-BW", { month: "short", day: "numeric" })} – {weekDays[6].toLocaleDateString("en-BW", { month: "short", day: "numeric", year: "numeric" })}</strong></div><div className="schedule-timezone"><strong>Africa/Gaborone</strong><small>GMT +02:00</small></div></div>
-        <div className="weekly-schedule-grid">{weekDays.map((date, dayIndex) => { const slots = tutorSlots(tutor.id, dayIndex, scheduleMode); const past = dateKey(date) < dateKey(new Date()); return <div className={past ? "schedule-day past" : "schedule-day"} key={dateKey(date)}><div className="schedule-day-heading"><span>{date.toLocaleDateString("en-BW", { weekday: "short" })}</span><strong>{date.getDate()}</strong></div><div className="schedule-day-slots">{slots.length === 0 ? <small>—</small> : slots.map(time => { const slot = `${dateKey(date)}T${time}`; const selected = selectedLessonSlots[scheduleMode].includes(slot); return <button type="button" key={slot} className={selected ? "selected" : ""} aria-pressed={selected} disabled={past} onClick={() => toggleScheduleSlot(scheduleMode, slot)}>{time}</button>; })}</div></div>; })}</div>
-        <footer><div><strong>{selectedLessonSlots[scheduleMode].length} selected</strong><span>{scheduleMode === "group" ? "Online group lessons" : "Private lesson times"}</span></div><button className="primary" type="button" onClick={() => setScheduleOpen(false)} disabled={selectedLessonSlots[scheduleMode].length === 0}>Use selected times</button></footer>
+        <div className="schedule-timezone-note"><span>i</span><p>Choose one valid lesson time. Times are displayed in your local timezone and rechecked by the server before credits are held.</p></div>
+        <div className="schedule-type-tabs"><button type="button" className="active" disabled>{session.label}<small>{sessionPrice} credits for the selected time</small></button></div>
+        <div className="schedule-week-controls"><div><button type="button" aria-label="Previous week" onClick={() => changeWeek(-1)}>‹</button><button type="button" aria-label="Next week" onClick={() => changeWeek(1)}>›</button><strong>{weekDays[0].toLocaleDateString("en-BW", { month: "short", day: "numeric" })} – {weekDays[6].toLocaleDateString("en-BW", { month: "short", day: "numeric", year: "numeric" })}</strong></div><div className="schedule-timezone"><strong>{Intl.DateTimeFormat().resolvedOptions().timeZone || "Africa/Gaborone"}</strong><small>Local display timezone</small></div></div>
+        {slotsError && <p className="booking-notice" role="alert">{slotsError}</p>}
+        <div className="weekly-schedule-grid">{weekDays.map(date => { const slots = availableSlots.filter(slot => dateKey(new Date(slot.startsAt)) === dateKey(date)); const past = dateKey(date) < dateKey(new Date()); return <div className={past ? "schedule-day past" : "schedule-day"} key={dateKey(date)}><div className="schedule-day-heading"><span>{date.toLocaleDateString("en-BW", { weekday: "short" })}</span><strong>{date.getDate()}</strong></div><div className="schedule-day-slots">{slotsLoading ? <small>…</small> : slots.length === 0 ? <small>—</small> : slots.map(slot => { const selected = selectedLessonSlots[scheduleMode].includes(slot.startsAt); return <button type="button" key={slot.startsAt} className={selected ? "selected" : ""} aria-pressed={selected} disabled={past || slot.remainingCapacity < 1} onClick={() => toggleScheduleSlot(scheduleMode, slot.startsAt)}>{new Date(slot.startsAt).toLocaleTimeString("en-BW", { hour: "2-digit", minute: "2-digit" })}{slot.capacity > 1 ? ` · ${slot.remainingCapacity} left` : ""}</button>; })}</div></div>; })}</div>
+        <footer><div><strong>{selectedLessonSlots[scheduleMode].length} selected</strong><span>{scheduleMode === "group" ? "Online group lesson" : "Private lesson time"}</span></div><button className="primary" type="button" onClick={() => setScheduleOpen(false)} disabled={selectedLessonSlots[scheduleMode].length === 0}>Use selected time</button></footer>
       </section>
     </div>}
 

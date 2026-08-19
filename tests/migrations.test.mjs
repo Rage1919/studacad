@@ -8,6 +8,7 @@ const expectedTables = [
   "availability_exceptions",
   "availability_rules",
   "booking_participants",
+  "booking_location_details",
   "booking_status_events",
   "bookings",
   "conversation_participants",
@@ -226,6 +227,152 @@ test("verified deposits are authorized, idempotent, balanced, and priced one-to-
       insert into public.payments (user_id, provider, status, amount_minor, currency, credits, checkout_reference)
       values ('10000000-0000-4000-8000-000000000022', 'test', 'paid', 25000, 'BWP', 300, 'invalid-parity')
     `), /payments_bwp_credit_parity/);
+  } finally {
+    await db.close();
+  }
+});
+
+test("availability produces bookable slots and booking holds/refunds credits atomically", async () => {
+  const db = new PGlite();
+  try {
+    await apply(db, await readMigrationFiles());
+    await db.exec(`
+      insert into public.user_accounts (id, auth_subject, email, display_name, status, email_verified_at)
+      values
+        ('10000000-0000-4000-8000-000000000031', '20000000-0000-4000-8000-000000000031', 'booking-admin@example.test', 'Booking Admin', 'active', now()),
+        ('10000000-0000-4000-8000-000000000032', '20000000-0000-4000-8000-000000000032', 'booking-tutor@example.test', 'Booking Tutor', 'active', now()),
+        ('10000000-0000-4000-8000-000000000033', '20000000-0000-4000-8000-000000000033', 'booking-learner@example.test', 'Booking Learner', 'active', now()),
+        ('10000000-0000-4000-8000-000000000034', '20000000-0000-4000-8000-000000000034', 'second-learner@example.test', 'Second Learner', 'active', now()),
+        ('10000000-0000-4000-8000-000000000035', '20000000-0000-4000-8000-000000000035', 'third-learner@example.test', 'Third Learner', 'active', now()),
+        ('10000000-0000-4000-8000-000000000036', '20000000-0000-4000-8000-000000000036', 'empty-wallet@example.test', 'Empty Wallet', 'active', now());
+      insert into public.user_roles (user_id, role)
+      values
+        ('10000000-0000-4000-8000-000000000031', 'admin'),
+        ('10000000-0000-4000-8000-000000000032', 'tutor'),
+        ('10000000-0000-4000-8000-000000000033', 'learner'),
+        ('10000000-0000-4000-8000-000000000034', 'learner'),
+        ('10000000-0000-4000-8000-000000000035', 'learner'),
+        ('10000000-0000-4000-8000-000000000036', 'learner');
+      insert into public.tutor_applications (id, applicant_user_id, status)
+      values ('30000000-0000-4000-8000-000000000031', '10000000-0000-4000-8000-000000000032', 'approved');
+      insert into public.tutor_profiles (
+        id, tutor_user_id, approved_application_id, status, slug, headline, about, location, timezone, base_price_credits, published_at
+      ) values (
+        '40000000-0000-4000-8000-000000000031', '10000000-0000-4000-8000-000000000032',
+        '30000000-0000-4000-8000-000000000031', 'active', 'booking-tutor', 'Booking tutor',
+        'A sufficiently complete biography for booking tests.', 'Gaborone', 'Africa/Gaborone', 80, now()
+      );
+      insert into public.tutor_profile_subjects (tutor_profile_id, examination, subject, price_credits)
+      values ('40000000-0000-4000-8000-000000000031', 'PSLE', 'Mathematics', 80);
+      insert into public.tutor_profile_formats (tutor_profile_id, format, group_capacity)
+      values
+        ('40000000-0000-4000-8000-000000000031', 'online_1to1', 1),
+        ('40000000-0000-4000-8000-000000000031', 'online_group', 2);
+    `);
+    await db.query(`
+      select public.replace_tutor_availability(
+        '10000000-0000-4000-8000-000000000032',
+        jsonb_build_array(
+          jsonb_build_object(
+            'weekday', extract(dow from current_date + 7)::smallint, 'local_start_time', '10:00', 'local_end_time', '12:00',
+            'timezone', 'Africa/Gaborone', 'format', 'online_1to1', 'slot_duration_minutes', 60,
+            'lead_time_minutes', 0, 'buffer_before_minutes', 0, 'buffer_after_minutes', 10,
+            'effective_from', current_date, 'effective_until', null
+          ),
+          jsonb_build_object(
+            'weekday', extract(dow from current_date + 7)::smallint, 'local_start_time', '14:00', 'local_end_time', '15:00',
+            'timezone', 'Africa/Gaborone', 'format', 'online_group', 'slot_duration_minutes', 60,
+            'lead_time_minutes', 0, 'buffer_before_minutes', 0, 'buffer_after_minutes', 0,
+            'effective_from', current_date, 'effective_until', null
+          )
+        ),
+        '[]'::jsonb,
+        '{"subjects":[{"examination":"PSLE","subject":"Mathematics","price_credits":80}],"formats":[{"format":"online_1to1","group_capacity":1,"location_note":"Online"},{"format":"online_group","group_capacity":2,"location_note":"Online group"}]}'::jsonb
+      )
+    `);
+    await db.query("select public.record_verified_deposit($1, $2, 200, 'BOOKING-DEPOSIT-1', 'booking-deposit-001')", ["10000000-0000-4000-8000-000000000031", "10000000-0000-4000-8000-000000000033"]);
+    await db.query("select public.record_verified_deposit($1, $2, 200, 'BOOKING-DEPOSIT-2', 'booking-deposit-002')", ["10000000-0000-4000-8000-000000000031", "10000000-0000-4000-8000-000000000034"]);
+    await db.query("select public.record_verified_deposit($1, $2, 200, 'BOOKING-DEPOSIT-3', 'booking-deposit-003')", ["10000000-0000-4000-8000-000000000031", "10000000-0000-4000-8000-000000000035"]);
+
+    const slots = await db.query(`
+      select * from public.list_tutor_slots(
+        'booking-tutor', now(), now() + interval '14 days', 'online_1to1', 'PSLE', 'Mathematics'
+      )
+    `);
+    assert.ok(slots.rows.length >= 2);
+    assert.equal(slots.rows[0].price_credits, 80);
+    await assert.rejects(
+      db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9)", ["10000000-0000-4000-8000-000000000036", "booking-tutor", "online_1to1", "PSLE", "Mathematics", slots.rows[1].starts_at, "Africa/Gaborone", null, "empty-wallet-booking"]),
+      /Insufficient credits/
+    );
+    const startsAt = slots.rows[0].starts_at;
+    const args = ["10000000-0000-4000-8000-000000000033", "booking-tutor", "online_1to1", "PSLE", "Mathematics", startsAt, "Africa/Gaborone", null, "booking-request-001"];
+    const first = await db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking", args);
+    const replay = await db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking", args);
+    assert.equal(replay.rows[0].booking.bookingId, first.rows[0].booking.bookingId);
+    assert.equal(replay.rows[0].booking.replayed, true);
+    const learnerWallet = async learnerId => (await db.query(`
+      select coalesce(balance.balance_credits, 0)::integer as balance
+      from public.wallet_accounts wallet
+      left join public.wallet_balances balance on balance.wallet_account_id = wallet.id
+      where wallet.owner_user_id = $1
+    `, [learnerId])).rows[0].balance;
+    assert.equal(await learnerWallet(args[0]), 120);
+    await assert.rejects(
+      db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9)", ["10000000-0000-4000-8000-000000000034", ...args.slice(1, 8), "booking-request-002"]),
+      /no longer available/
+    );
+    const bookingId = first.rows[0].booking.bookingId;
+    const cancelled = await db.query("select public.cancel_booking_with_refund($1, $2, 'Schedule changed', 'cancel-booking-001') as cancellation", [args[0], bookingId]);
+    assert.equal(cancelled.rows[0].cancellation.status, "cancelled_by_learner");
+    assert.equal(await learnerWallet(args[0]), 200);
+    assert.equal((await db.query("select count(*)::integer as count from public.ledger_transactions where booking_id = $1", [bookingId])).rows[0].count, 2);
+
+    const groupSlots = await db.query("select * from public.list_tutor_slots('booking-tutor', now(), now() + interval '14 days', 'online_group', 'PSLE', 'Mathematics')");
+    const groupStart = groupSlots.rows[0].starts_at;
+    const groupBase = ["booking-tutor", "online_group", "PSLE", "Mathematics", groupStart, "Africa/Gaborone", null];
+    const groupOne = await db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking", [args[0], ...groupBase, "group-booking-001"]);
+    const groupTwo = await db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking", ["10000000-0000-4000-8000-000000000034", ...groupBase, "group-booking-002"]);
+    assert.equal(groupTwo.rows[0].booking.bookingId, groupOne.rows[0].booking.bookingId);
+    assert.equal((await db.query("select count(*)::integer as count from public.booking_participants where booking_id = $1 and cancelled_at is null", [groupOne.rows[0].booking.bookingId])).rows[0].count, 2);
+    await assert.rejects(
+      db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9)", ["10000000-0000-4000-8000-000000000035", ...groupBase, "group-booking-003"]),
+      /no longer available|group is full/
+    );
+  } finally {
+    await db.close();
+  }
+});
+
+test("slot generation remains ordered across daylight-saving gaps and folds", async () => {
+  const db = new PGlite();
+  try {
+    await apply(db, await readMigrationFiles());
+    await db.exec(`
+      insert into public.user_accounts (id, auth_subject, email, display_name, status, email_verified_at)
+      values ('10000000-0000-4000-8000-000000000041', '20000000-0000-4000-8000-000000000041', 'dst-tutor@example.test', 'DST Tutor', 'active', now());
+      insert into public.tutor_applications (id, applicant_user_id, status)
+      values ('30000000-0000-4000-8000-000000000041', '10000000-0000-4000-8000-000000000041', 'approved');
+      insert into public.tutor_profiles (id, tutor_user_id, approved_application_id, status, slug, headline, about, location, timezone, base_price_credits, published_at)
+      values ('40000000-0000-4000-8000-000000000041', '10000000-0000-4000-8000-000000000041', '30000000-0000-4000-8000-000000000041', 'active', 'dst-tutor', 'DST tutor', 'A sufficiently complete biography for daylight-saving tests.', 'Remote', 'America/New_York', 80, now());
+      insert into public.tutor_profile_subjects (tutor_profile_id, examination, subject, price_credits)
+      values ('40000000-0000-4000-8000-000000000041', 'PSLE', 'Mathematics', 80);
+      insert into public.tutor_profile_formats (tutor_profile_id, format, group_capacity)
+      values ('40000000-0000-4000-8000-000000000041', 'online_1to1', 1);
+      insert into public.availability_rules (tutor_profile_id, weekday, local_start_time, local_end_time, timezone, format, slot_duration_minutes, lead_time_minutes, effective_from, effective_until)
+      values
+        ('40000000-0000-4000-8000-000000000041', 0, '01:00', '04:00', 'America/New_York', 'online_1to1', 60, 0, '2027-03-14', '2027-03-14'),
+        ('40000000-0000-4000-8000-000000000041', 0, '00:00', '03:00', 'America/New_York', 'online_1to1', 60, 0, '2027-11-07', '2027-11-07');
+    `);
+    const spring = await db.query("select starts_at, ends_at from public.list_tutor_slots('dst-tutor', '2027-03-14T00:00:00Z', '2027-03-15T00:00:00Z', 'online_1to1', 'PSLE', 'Mathematics')");
+    const fall = await db.query("select starts_at, ends_at from public.list_tutor_slots('dst-tutor', '2027-11-07T00:00:00Z', '2027-11-08T00:00:00Z', 'online_1to1', 'PSLE', 'Mathematics')");
+    assert.equal(spring.rows.length, 2);
+    assert.equal(fall.rows.length, 4);
+    for (const rows of [spring.rows, fall.rows]) {
+      assert.equal(new Set(rows.map(row => new Date(row.starts_at).toISOString())).size, rows.length);
+      assert.ok(rows.every(row => new Date(row.ends_at).getTime() - new Date(row.starts_at).getTime() === 3_600_000));
+      assert.ok(rows.every((row, index) => index === 0 || new Date(row.starts_at) > new Date(rows[index - 1].starts_at)));
+    }
   } finally {
     await db.close();
   }
