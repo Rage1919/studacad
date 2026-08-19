@@ -38,3 +38,7 @@ The seed command is restricted to development and test. Production migrations ar
 ## Accounts
 
 Accounts use server-managed Supabase passwordless email sessions. Configure the permitted callback origins before testing sign-in. Google and Apple are intentionally absent until their providers are approved and configured. See [authentication and authorization](docs/security/authentication-and-authorization.md) for session policy, protected surfaces, threats, and the first-admin procedure.
+
+## Tutor verification
+
+Tutor drafts, private verification uploads, review decisions, approved profiles, and profile revisions are durable and account-scoped. Only approved, active profiles are returned by the production marketplace APIs. Deployments must configure a compatible malware-scanning gateway; uploads fail closed without one outside development/test. See [tutor onboarding and verification](docs/security/tutor-onboarding-and-verification.md).

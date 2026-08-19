@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { LmsHeader } from "../components/LmsHeader";
-import { tutors } from "../lib/tutors";
+import { tutors as demoTutors, type Tutor } from "../lib/tutors";
 
 type SortOption = "recommended" | "price-low" | "rating";
+const staticPreview = process.env.NEXT_PUBLIC_STUDACAD_STATIC_PREVIEW === "true";
 
 const nextMatchingSlot = (slots: string[], filter: string) => {
   if (filter === "Today") return slots.find(slot => slot.startsWith("Today")) ?? slots[0];
@@ -17,6 +18,9 @@ const nextMatchingSlot = (slots: string[], filter: string) => {
 
 export default function TutorsPage() {
   const [ready, setReady] = useState(false);
+  const [marketplaceTutors, setMarketplaceTutors] = useState<Tutor[]>(staticPreview ? demoTutors : []);
+  const [marketplaceLoading, setMarketplaceLoading] = useState(!staticPreview);
+  const [marketplaceError, setMarketplaceError] = useState("");
   const [exam, setExam] = useState("All");
   const [subject, setSubject] = useState("All");
   const [availability, setAvailability] = useState("Any time");
@@ -31,6 +35,16 @@ export default function TutorsPage() {
     setSubject(params.get("subject") ?? "All");
     setAvailability(params.get("availability") ?? "Any time");
     setReady(true);
+    if (!staticPreview) {
+      void fetch("/api/tutors")
+        .then(async response => {
+          const result = await response.json() as { tutors?: Tutor[]; error?: string };
+          if (!response.ok) throw new Error(result.error ?? "Unable to load published tutors.");
+          setMarketplaceTutors(result.tutors ?? []);
+        })
+        .catch(error => setMarketplaceError(error instanceof Error ? error.message : "Unable to load published tutors."))
+        .finally(() => setMarketplaceLoading(false));
+    }
   }, []);
 
   useEffect(() => {
@@ -42,10 +56,10 @@ export default function TutorsPage() {
     window.history.replaceState(null, "", `/tutors${params.size ? `?${params.toString()}` : ""}`);
   }, [availability, exam, ready, subject]);
 
-  const subjectOptions = useMemo(() => Array.from(new Set(tutors.filter(tutor => exam === "All" || tutor.examination === exam).map(tutor => tutor.subject))).sort(), [exam]);
+  const subjectOptions = useMemo(() => Array.from(new Set(marketplaceTutors.filter(tutor => exam === "All" || tutor.examination === exam).map(tutor => tutor.subject))).sort(), [exam, marketplaceTutors]);
 
   const filteredTutors = useMemo(() => {
-    const result = tutors.filter(tutor => {
+    const result = marketplaceTutors.filter(tutor => {
       if (exam !== "All" && tutor.examination !== exam) return false;
       if (subject !== "All" && tutor.subject !== subject) return false;
       if (availability !== "Any time" && !tutor.availabilityGroups.includes(availability as "Today" | "Tomorrow" | "Weekdays" | "Weekend")) return false;
@@ -55,11 +69,11 @@ export default function TutorsPage() {
       return true;
     });
     return [...result].sort((a, b) => sort === "price-low" ? a.price - b.price : sort === "rating" ? Number(b.rating) - Number(a.rating) : Number(b.rating) - Number(a.rating) || b.lessons.localeCompare(a.lessons));
-  }, [availability, exam, maxPrice, minimumRating, search, sort, subject]);
+  }, [availability, exam, marketplaceTutors, maxPrice, minimumRating, search, sort, subject]);
 
   const changeExam = (value: string) => {
     setExam(value);
-    if (value !== "All" && !tutors.some(tutor => tutor.examination === value && tutor.subject === subject)) setSubject("All");
+    if (value !== "All" && !marketplaceTutors.some(tutor => tutor.examination === value && tutor.subject === subject)) setSubject("All");
   };
 
   const clearFilters = () => {
@@ -98,7 +112,9 @@ export default function TutorsPage() {
           <div className="search-tutor-body"><div className="search-tutor-name"><div><h3>{tutor.name} <i>✓</i></h3><p>{tutor.examination} · {tutor.subject}</p></div><span><b>★ {tutor.rating}</b><small>{tutor.lessons}</small></span></div><p className="search-tutor-headline">{tutor.headline}</p><div className="search-specialties">{tutor.specialties.slice(0, 3).map(item => <span key={item}>{item}</span>)}</div><div className="search-card-footer"><span><strong>{tutor.price}</strong> credits / 50 min</span><Link href={`/tutor?id=${tutor.id}`}>View profile →</Link></div></div>
         </article>)}
       </div>
-      {ready && filteredTutors.length === 0 && <div className="no-tutor-results"><span>⌕</span><h2>No tutors match every filter</h2><p>Try another availability, price, or subject.</p><button className="primary" onClick={clearFilters}>Clear all filters</button></div>}
+      {marketplaceLoading && <div className="no-tutor-results"><h2>Loading verified tutors…</h2></div>}
+      {marketplaceError && <div className="no-tutor-results"><span>!</span><h2>Tutor marketplace is temporarily unavailable</h2><p>{marketplaceError}</p></div>}
+      {ready && !marketplaceLoading && !marketplaceError && filteredTutors.length === 0 && <div className="no-tutor-results"><span>⌕</span><h2>No approved tutors match every filter</h2><p>Try another availability, price, or subject.</p><button className="primary" onClick={clearFilters}>Clear all filters</button></div>}
     </section>
   </main>;
 }

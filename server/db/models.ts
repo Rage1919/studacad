@@ -45,6 +45,92 @@ export type ObjectFile = {
   deleted_at: IsoTimestamp | null;
 }
 
+export type TutorApplication = {
+  id: Uuid;
+  applicant_user_id: Uuid;
+  parent_application_id: Uuid | null;
+  status: TutorApplicationStatus;
+  version: number;
+  legal_name: string | null;
+  phone_e164: string | null;
+  district: string | null;
+  headline: string | null;
+  biography: string | null;
+  location: string | null;
+  timezone: string;
+  teaching_experience: string | null;
+  languages: string[];
+  base_price_credits: number | null;
+  session_duration_minutes: number | null;
+  availability: Json;
+  consented_at: IsoTimestamp | null;
+  submitted_at: IsoTimestamp | null;
+  reviewed_at: IsoTimestamp | null;
+  withdrawn_at: IsoTimestamp | null;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
+}
+
+export type TutorApplicationSubject = {
+  application_id: Uuid;
+  examination: ExamLevel;
+  subject: string;
+}
+
+export type TutorApplicationFormat = {
+  application_id: Uuid;
+  format: SessionFormat;
+}
+
+export type TutorQualification = {
+  id: Uuid;
+  application_id: Uuid;
+  qualification_type: string;
+  institution: string;
+  title: string;
+  awarded_on: string | null;
+  expires_on: string | null;
+  created_at: IsoTimestamp;
+}
+
+export type TutorApplicationDocument = {
+  application_id: Uuid;
+  file_id: Uuid;
+  document_type: string;
+  created_at: IsoTimestamp;
+}
+
+export type TutorApplicationReview = {
+  id: Uuid;
+  application_id: Uuid;
+  reviewer_user_id: Uuid;
+  from_status: TutorApplicationStatus;
+  to_status: TutorApplicationStatus;
+  internal_note: string | null;
+  applicant_message: string | null;
+  created_at: IsoTimestamp;
+}
+
+export type PublicTutorMarketplaceProfile = {
+  id: Uuid;
+  slug: string;
+  display_name: string;
+  headline: string;
+  about: string;
+  location: string;
+  timezone: string;
+  base_price_credits: number;
+  average_rating: number;
+  completed_booking_count: number;
+  published_at: IsoTimestamp;
+  teaching_experience: string | null;
+  languages: string[];
+  profile_image_object_key: string;
+  profile_image_content_type: string;
+  subjects: Json;
+  formats: Json;
+}
+
 export type TutorProfile = {
   id: Uuid;
   tutor_user_id: Uuid;
