@@ -17,6 +17,9 @@ import type {
   Message,
   MessageDelivery,
   MessageReport,
+  Notification,
+  NotificationPreference,
+  NotificationSuppression,
   ObjectFile,
   LedgerEntry,
   LedgerTransaction,
@@ -359,6 +362,21 @@ export type Database = {
         Record<string, never>,
         Record<string, never>
       >;
+      notifications: Table<
+        Notification,
+        Record<string, never>,
+        Partial<Notification>
+      >;
+      notification_preferences: Table<
+        NotificationPreference,
+        NotificationPreference,
+        Partial<NotificationPreference>
+      >;
+      notification_suppressions: Table<
+        NotificationSuppression,
+        Omit<NotificationSuppression, "created_at">,
+        Record<string, never>
+      >;
       audit_events: Table<
         AuditEvent,
         Omit<AuditEvent, "id" | "created_at"> & { id?: string },
@@ -597,6 +615,45 @@ export type Database = {
           p_key: string;
         };
         Returns: string;
+      };
+      enqueue_user_notification: {
+        Args: {
+          p_user: string;
+          p_category: string;
+          p_template: string;
+          p_payload: Json;
+          p_event_key: string;
+          p_essential: boolean;
+          p_scheduled_for?: string;
+        };
+        Returns: number;
+      };
+      set_notification_preference: {
+        Args: {
+          p_user: string;
+          p_category: string;
+          p_channel: string;
+          p_enabled: boolean;
+        };
+        Returns: boolean;
+      };
+      claim_notifications: {
+        Args: { p_limit: number; p_claim_token: string };
+        Returns: Notification[];
+      };
+      complete_notification: {
+        Args: {
+          p_id: string;
+          p_claim_token: string;
+          p_outcome: string;
+          p_provider_message_id?: string | null;
+          p_error?: string | null;
+        };
+        Returns: boolean;
+      };
+      mark_notification_read: {
+        Args: { p_user: string; p_id: string };
+        Returns: boolean;
       };
     };
     Enums: {

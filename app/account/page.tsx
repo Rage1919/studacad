@@ -10,6 +10,6 @@ export default async function AccountPage() {
     <p className="eyebrow">Account</p><h1>Your Studacad profile</h1>
     <p className="account-email">Signed in as {viewer.email}</p>
     <AccountForm initial={{ displayName: viewer.displayName, phoneE164: viewer.phoneE164 ?? "", timezone: viewer.timezone }} roles={viewer.roles} />
-    <Link href="/">← Return home</Link>
+    <div className="account-links"><Link href="/notifications">Notifications and email preferences →</Link><Link href="/">← Return home</Link></div>
   </section></main>;
 }

@@ -633,6 +633,58 @@ export type BookingRefund = {
   created_at: IsoTimestamp;
 };
 
+export type Notification = {
+  id: Uuid;
+  user_id: Uuid;
+  category: string;
+  template_key: string;
+  channel: "in_app" | "email" | "sms" | "whatsapp";
+  status: "pending" | "sent" | "failed" | "read";
+  payload: Json;
+  idempotency_key: string;
+  scheduled_for: IsoTimestamp;
+  sent_at: IsoTimestamp | null;
+  read_at: IsoTimestamp | null;
+  failure_reason: string | null;
+  created_at: IsoTimestamp;
+  template_version: number;
+  event_key: string;
+  essential: boolean;
+  locale: string;
+  recipient_timezone: string;
+  attempt_count: number;
+  next_retry_at: IsoTimestamp | null;
+  last_attempt_at: IsoTimestamp | null;
+  claimed_at: IsoTimestamp | null;
+  claim_token: Uuid | null;
+  provider_message_id: string | null;
+  delivered_at: IsoTimestamp | null;
+  dead_lettered_at: IsoTimestamp | null;
+  delivery_disposition:
+    | "delivered"
+    | "preference_disabled"
+    | "provider_suppressed"
+    | "booking_changed"
+    | "booking_cancelled"
+    | null;
+};
+
+export type NotificationPreference = {
+  user_id: Uuid;
+  category: "booking_reminder" | "new_message";
+  channel: "email";
+  enabled: boolean;
+  updated_at: IsoTimestamp;
+};
+
+export type NotificationSuppression = {
+  user_id: Uuid;
+  channel: "email";
+  reason: "bounce" | "complaint" | "manual";
+  provider_event_id: string;
+  created_at: IsoTimestamp;
+};
+
 export type AuditEvent = {
   id: Uuid;
   actor_user_id: Uuid | null;
