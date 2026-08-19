@@ -60,7 +60,7 @@ export const defaultCourses: Course[] = [
     examination: "PSLE",
     subject: "Mathematics",
     description: "Build speed and confidence in computation, application, and reasoning for Botswana PSLE Mathematics.",
-    color: "#ffcf70",
+    color: "#dbeafe",
     price: 140,
     instructor: "Masego T.",
     lessons: [
@@ -112,7 +112,7 @@ export const defaultCourses: Course[] = [
     examination: "PSLE",
     subject: "Science",
     description: "Revise scientific knowledge and practise applying it to everyday Botswana contexts.",
-    color: "#b8efc5",
+    color: "#eaf3ff",
     price: 125,
     instructor: "Kagiso R.",
     lessons: [
@@ -150,7 +150,7 @@ export const defaultCourses: Course[] = [
     examination: "JCE",
     subject: "General Science",
     description: "Connect biology, chemistry, and physics ideas with JCE-style explanations and data questions.",
-    color: "#aee4ff",
+    color: "#cfe4ff",
     price: 180,
     instructor: "Thabo K.",
     lessons: [
@@ -189,7 +189,7 @@ export const defaultCourses: Course[] = [
     examination: "JCE",
     subject: "Mathematics",
     description: "Strengthen algebra, ratio, graphs, and clear mathematical reasoning for the JCE examination.",
-    color: "#e0c8ff",
+    color: "#f3f7fd",
     price: 165,
     instructor: "Lorato P.",
     lessons: [
@@ -227,7 +227,7 @@ export const defaultCourses: Course[] = [
     examination: "BGCSE",
     subject: "Mathematics",
     description: "Practise the algebra, geometry, and statistics methods needed for confident BGCSE responses.",
-    color: "#ffb6b0",
+    color: "#d7eaff",
     price: 220,
     instructor: "Onalenna B.",
     lessons: [
@@ -265,7 +265,7 @@ export const defaultCourses: Course[] = [
     examination: "BGCSE",
     subject: "Biology",
     description: "Turn key biological processes into precise, exam-ready explanations and labelled diagrams.",
-    color: "#8ee3d2",
+    color: "#e4f0ff",
     price: 210,
     instructor: "Keneilwe S.",
     lessons: [

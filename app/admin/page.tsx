@@ -12,7 +12,7 @@ export default function AdminPage() {
   const { courses, addCourse, addLesson, resetDemo } = useLms();
   const [tab, setTab] = useState<"lesson" | "course" | "library">("lesson");
   const [notice, setNotice] = useState("");
-  const [courseForm, setCourseForm] = useState({ title: "", examination: "PSLE" as ExamLevel, subject: "Mathematics", description: "", instructor: "", price: 120, color: "#c9fa78" });
+  const [courseForm, setCourseForm] = useState({ title: "", examination: "PSLE" as ExamLevel, subject: "Mathematics", description: "", instructor: "", price: 120, color: "#dbeafe" });
   const [lessonForm, setLessonForm] = useState({ courseId: courses[0]?.id ?? "", title: "", duration: "15 min", description: "", videoUrl: "https://www.youtube.com/embed/PSqbQXy8oq0", revisionTitle: "", revisionContent: "" });
   const [questions, setQuestions] = useState<QuizQuestion[]>([blankQuestion()]);
 
@@ -23,7 +23,7 @@ export default function AdminPage() {
     const course: Course = { ...courseForm, id: slug(courseForm.title), price: Number(courseForm.price), lessons: [] };
     addCourse(course);
     setLessonForm(current => ({ ...current, courseId: course.id }));
-    setCourseForm({ title: "", examination: "PSLE", subject: "Mathematics", description: "", instructor: "", price: 120, color: "#c9fa78" });
+    setCourseForm({ title: "", examination: "PSLE", subject: "Mathematics", description: "", instructor: "", price: 120, color: "#dbeafe" });
     setTab("lesson");
     flash(`${course.title} created. Add its first lesson now.`);
   };

@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
 
 :root {
-  --ink: #0b022b;
-  --pink: #fff4cf;
-  --pink-soft: #fff9e9;
-  --cream: #ffffff;
-  --lime: #ffc43d;
-  --violet: #0b022b;
-  --blue: #fff4cf;
+  --ink: #082a5e;
+  --pink: #e7f1ff;
+  --pink-soft: #f3f7fd;
+  --cream: #f8fbff;
+  --lime: #dbeafe;
+  --violet: #0b3d79;
+  --blue: #dbeafe;
   --yellow: #ffc43d;
-  --line: #d8dce5;
+  --line: #d6dfeb;
   --white: #ffffff;
   --shadow: none;
 }
@@ -24,14 +24,22 @@ button { color: inherit; }
 a { color: inherit; text-decoration: none; }
 svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-/* Shared navy, yellow, and white platform theme. */
+/* Shared blue, white, and yellow-accent platform theme. */
 .tutor-cta,
+.onboarding-form-heading i { background: var(--yellow) !important; color: var(--ink) !important; }
+
 .tutor-apply-panel,
 .referral-hero,
 .credit-art,
 .onboarding-complete,
 .onboarding-progress-card li.complete button > span:first-child,
-.onboarding-form-heading i { background: var(--yellow) !important; color: var(--ink) !important; }
+.guarantee,
+.share-art,
+.color-2,
+.tutor-photo.yellow,
+.course-banner { background: var(--blue) !important; color: var(--ink) !important; }
+
+.share-art i:nth-child(2) { background: var(--yellow) !important; }
 
 .quiz-module,
 .how,
