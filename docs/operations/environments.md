@@ -27,6 +27,12 @@ Before public launch, the existing private Sites deployment acts as `staging`. A
 | `DATABASE_URL` | Yes | Migrations/maintenance | Data-platform owner | PostgreSQL session-pooler connection URL |
 | `STUDACAD_MALWARE_SCAN_URL` | No | Server tutor uploads | Security/operations owner | HTTPS endpoint for synchronous private-evidence scanning |
 | `STUDACAD_MALWARE_SCAN_TOKEN` | Yes | Server tutor uploads | Security/operations owner | Bearer credential for the malware-scanning gateway |
+| `GOOGLE_MEET_CLIENT_ID` | No | Meet provisioning | Google Workspace owner | OAuth client for the dedicated Meet organizer |
+| `GOOGLE_MEET_CLIENT_SECRET` | Yes | Meet provisioning | Google Workspace owner | Server-only OAuth client credential |
+| `GOOGLE_MEET_REFRESH_TOKEN` | Yes | Meet provisioning | Google Workspace owner | Refresh credential for the dedicated organizer account |
+| `GOOGLE_MEET_ORGANIZER_EMAIL` | No | Meet provisioning | Google Workspace owner | Account whose authorization creates Studacad spaces |
+| `GOOGLE_MEET_LINK_RELEASE_MINUTES` | No | Optional | Product/operations owner | Minutes before start when participants can retrieve a link; defaults to 1440 |
+| `MEET_PROVISIONER_SECRET` | Yes | Meet provisioning | Deployment owner | At least 32 random characters used only by the scheduled internal worker call |
 
 Each roadmap issue must add its variables to this table and to `.env.example`. Secrets must be created in the provider’s environment store, restricted to the minimum set of maintainers, rotated after suspected exposure or staff/contractor access changes, and never copied into issues, pull requests, screenshots, logs, or client-prefixed variables.
 

@@ -8,7 +8,7 @@
     "build": "vinext build && node scripts/prepare-sites.mjs",
     "start": "node scripts/validate-runtime-env.mjs && node scripts/validate-database-env.mjs && vinext start",
     "lint": "eslint . --max-warnings 0",
-    "format:check": "prettier --check next.config.mjs proxy.ts playwright.config.ts app/api/whatsapp/route.ts server/security tests/e2e",
+    "format:check": "prettier --check next.config.mjs proxy.ts playwright.config.ts app/api/whatsapp/route.ts server/security server/meet tests/e2e",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
     "test:e2e": "playwright test",

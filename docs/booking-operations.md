@@ -41,3 +41,4 @@ Changing this policy later must be implemented and tested in the database transa
 - Use an authorized compensating ledger entry for financial corrections.
 - If booking creation fails after a stale slot or balance response, reload slots and the wallet; the transaction rolls back without a partial booking or debit.
 - If a downstream Meet, message, or notification integration fails, retain the confirmed booking and retry that downstream event. Those integrations must not recreate or charge the booking.
+- Meet provisioning, participant release, retry, cancellation, and support procedures are documented in `docs/operations/google-meet.md`.
