@@ -22,3 +22,15 @@ See:
 - [Production runtime decision](docs/adr/0001-production-runtime.md)
 - [Environment and secret ownership](docs/operations/environments.md)
 - [Deploy and rollback runbook](docs/runbooks/deploy-and-rollback.md)
+
+## Database and private storage
+
+Studacad uses Supabase Postgres as its durable source of truth and a private Supabase Storage bucket for verification documents and protected learning resources. Copy `.env.example`, provide a non-production project, then run:
+
+```bash
+pnpm db:env:check
+pnpm db:migrate
+pnpm db:seed:development
+```
+
+The seed command is restricted to development and test. Production migrations are checksum-verified, serialized, and transactional. See [the data-platform decision](docs/adr/0002-data-platform.md) and [the database/storage runbook](docs/runbooks/database-and-storage.md).

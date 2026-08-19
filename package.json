@@ -6,20 +6,27 @@
   "scripts": {
     "dev": "next dev",
     "build": "vinext build && node scripts/prepare-sites.mjs",
-    "start": "node scripts/validate-runtime-env.mjs && vinext start",
+    "start": "node scripts/validate-runtime-env.mjs && node scripts/validate-database-env.mjs && vinext start",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "node --test tests/runtime-env.test.mjs",
+    "test": "node --test tests/*.test.mjs",
     "env:check": "node scripts/validate-runtime-env.mjs",
-    "check": "pnpm env:check && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+    "db:env:check": "node scripts/validate-database-env.mjs",
+    "db:migrate": "node scripts/database/migrate.mjs",
+    "db:seed:development": "node scripts/database/seed-development.mjs",
+    "check": "pnpm env:check && pnpm db:env:check && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
   },
   "dependencies": {
     "@next/env": "16.3.0",
+    "@supabase/supabase-js": "2.112.3",
     "next": "16.3.0",
+    "postgres": "3.4.9",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.5",
     "@types/node": "24.2.1",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
