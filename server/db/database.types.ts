@@ -6,13 +6,23 @@ import type {
   BookingLocationDetail,
   BookingParticipant,
   Course,
+  CoursePurchaseRecord,
   ExamLevel,
   Json,
   Message,
   ObjectFile,
   LedgerEntry,
   LedgerTransaction,
+  LessonProgressRecord,
+  LessonRecord,
   PublicTutorMarketplaceProfile,
+  QuizAttemptAnswerRecord,
+  QuizAttemptRecord,
+  QuizOptionRecord,
+  QuizQuestionRecord,
+  ReferralAttributionRecord,
+  ReferralCodeRecord,
+  ReferralRewardRecord,
   SessionFormat,
   TutorApplication,
   TutorApplicationDocument,
@@ -24,6 +34,7 @@ import type {
   TutorProfileFormat,
   TutorProfileSubject,
   TutorQualification,
+  TutorFavouriteRecord,
   UserAccount,
   WalletAccount,
   WalletBalance
@@ -81,6 +92,18 @@ export type Database = {
       booking_location_details: Table<BookingLocationDetail, Record<string, never>, Record<string, never>>;
       booking_participants: Table<BookingParticipant, Record<string, never>, Partial<BookingParticipant>>;
       courses: Table<Course, Record<string, never>, Partial<Course>>;
+      lessons: Table<LessonRecord, Record<string, never>, Partial<LessonRecord>>;
+      quiz_questions: Table<QuizQuestionRecord, Record<string, never>, Partial<QuizQuestionRecord>>;
+      quiz_options: Table<QuizOptionRecord, Record<string, never>, Partial<QuizOptionRecord>>;
+      course_purchases: Table<CoursePurchaseRecord, Record<string, never>, Partial<CoursePurchaseRecord>>;
+      course_resources: Table<{ id: string; course_id: string; lesson_id: string | null; file_id: string; title: string; created_at: string }, Record<string, never>, Record<string, never>>;
+      lesson_progress: Table<LessonProgressRecord, Record<string, never>, Partial<LessonProgressRecord>>;
+      quiz_attempts: Table<QuizAttemptRecord, Record<string, never>, Partial<QuizAttemptRecord>>;
+      quiz_attempt_answers: Table<QuizAttemptAnswerRecord, Record<string, never>, Partial<QuizAttemptAnswerRecord>>;
+      tutor_favourites: Table<TutorFavouriteRecord, TutorFavouriteRecord, Record<string, never>>;
+      referral_codes: Table<ReferralCodeRecord, Record<string, never>, Partial<ReferralCodeRecord>>;
+      referral_attributions: Table<ReferralAttributionRecord, Record<string, never>, Partial<ReferralAttributionRecord>>;
+      referral_rewards: Table<ReferralRewardRecord, Record<string, never>, Partial<ReferralRewardRecord>>;
       messages: Table<Message, Record<string, never>, Partial<Message>>;
       wallet_accounts: Table<WalletAccount, {
         id?: string;
@@ -194,6 +217,20 @@ export type Database = {
         Args: { p_actor_user_id: string; p_booking_id: string; p_target_status: Booking["status"]; p_reason: string; p_idempotency_key: string };
         Returns: Json;
       };
+      purchase_course: {
+        Args: { p_learner_user_id: string; p_course_slug: string; p_idempotency_key: string };
+        Returns: Json;
+      };
+      submit_quiz_attempt: {
+        Args: { p_learner_user_id: string; p_lesson_id: string; p_answers: Json; p_idempotency_key: string };
+        Returns: Json;
+      };
+      get_or_create_referral_code: { Args: { p_owner_user_id: string }; Returns: string };
+      attach_referral_code: { Args: { p_referred_user_id: string; p_code: string }; Returns: string };
+      admin_create_course: { Args: { p_actor_user_id: string; p_payload: Json }; Returns: string };
+      admin_create_lesson: { Args: { p_actor_user_id: string; p_payload: Json }; Returns: string };
+      admin_set_course_status: { Args: { p_actor_user_id: string; p_course_id: string; p_status: Course["status"] }; Returns: Course["status"] };
+      admin_set_lesson_status: { Args: { p_actor_user_id: string; p_lesson_id: string; p_status: Course["status"] }; Returns: Course["status"] };
     };
     Enums: {
       account_status: UserAccount["status"];

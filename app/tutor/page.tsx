@@ -110,7 +110,7 @@ export default function TutorProfilePage() {
 
   if (!tutor) return <main className="lms-page"><LmsHeader /><section className="locked-state"><span>?</span><h1>Tutor not found</h1><p>This tutor profile may no longer be available.</p><Link className="primary" href="/tutors">Browse Studacad tutors</Link></section></main>;
 
-  const isFavourite = favouriteIds.includes(tutor.id);
+  const isFavourite = favouriteIds.includes(tutor.profileId ?? tutor.id);
   const availableSessions = sessionOptions.filter(option => tutor.sessionFormats.includes(option.id));
   const session = availableSessions.find(option => option.id === selectedFormat) ?? availableSessions[0];
   const selectedServerSlot = availableSlots.find(slot => selectedLessonSlots[selectedFormat === "online-group" ? "group" : "private"].includes(slot.startsAt));
@@ -156,9 +156,9 @@ export default function TutorProfilePage() {
     finally { setBookingLoading(false); }
   };
 
-  const handleFavourite = () => {
-    const saved = toggleFavourite(tutor.id);
-    setActionNotice(saved ? `${tutor.name} added to your favourites.` : `${tutor.name} removed from your favourites.`);
+  const handleFavourite = async () => {
+    const saved = await toggleFavourite(tutor.profileId ?? tutor.id);
+    setActionNotice(saved === null ? "Unable to update favourites." : saved ? `${tutor.name} added to your favourites.` : `${tutor.name} removed from your favourites.`);
   };
 
   const shareTutor = async () => {
@@ -246,7 +246,7 @@ export default function TutorProfilePage() {
 
         <div className="profile-actions" aria-label="Tutor profile actions">
           <button type="button" aria-label={`Message ${tutor.name}`} title={`Message ${tutor.name}`} onClick={() => { setMessageOpen(true); setMessageNotice(""); setMessageError(false); void refreshMessages(); }}><MessageIcon /><span className="sr-only">Message {tutor.name}</span></button>
-          <button type="button" aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"} title={isFavourite ? "Remove from favourites" : "Add to favourites"} className={isFavourite ? "active" : ""} onClick={handleFavourite} disabled={!favouritesReady}><HeartIcon filled={isFavourite} /><span className="sr-only">{isFavourite ? "Saved to favourites" : "Add to favourites"}</span></button>
+          <button type="button" aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"} title={isFavourite ? "Remove from favourites" : "Add to favourites"} className={isFavourite ? "active" : ""} onClick={() => void handleFavourite()} disabled={!favouritesReady}><HeartIcon filled={isFavourite} /><span className="sr-only">{isFavourite ? "Saved to favourites" : "Add to favourites"}</span></button>
           <button type="button" aria-label="Share profile" title="Share profile" onClick={shareTutor}><ShareIcon /><span className="sr-only">Share profile</span></button>
         </div>
         {actionNotice && <p className="profile-action-notice" role="status">{actionNotice} {isFavourite && <Link href="/favourites">View favourites →</Link>}</p>}

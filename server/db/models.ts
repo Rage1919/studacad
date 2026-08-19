@@ -237,12 +237,40 @@ export type Course = {
   description: string;
   instructor_tutor_profile_id: Uuid | null;
   price_credits: number;
+  theme_color: string;
   status: CourseStatus;
   published_at: IsoTimestamp | null;
   created_by_user_id: Uuid;
   created_at: IsoTimestamp;
   updated_at: IsoTimestamp;
 }
+
+export type LessonRecord = {
+  id: Uuid;
+  course_id: Uuid;
+  slug: string;
+  title: string;
+  description: string;
+  duration_minutes: number;
+  position: number;
+  video_url: string | null;
+  revision_title: string | null;
+  revision_content: string | null;
+  status: CourseStatus;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
+}
+
+export type QuizQuestionRecord = { id: Uuid; lesson_id: Uuid; prompt: string; position: number; points: number; created_at: IsoTimestamp }
+export type QuizOptionRecord = { id: Uuid; question_id: Uuid; label: string; position: number; is_correct: boolean }
+export type CoursePurchaseRecord = { id: Uuid; learner_user_id: Uuid; course_id: Uuid; status: "pending" | "completed" | "refunded" | "cancelled"; price_credits: number; idempotency_key: string; purchased_at: IsoTimestamp | null; refunded_at: IsoTimestamp | null; created_at: IsoTimestamp }
+export type LessonProgressRecord = { learner_user_id: Uuid; lesson_id: Uuid; status: "not_started" | "in_progress" | "completed"; best_score_percent: number | null; started_at: IsoTimestamp | null; completed_at: IsoTimestamp | null; updated_at: IsoTimestamp }
+export type QuizAttemptRecord = { id: Uuid; learner_user_id: Uuid; lesson_id: Uuid; score_points: number; possible_points: number; passed: boolean; idempotency_key: string; submitted_at: IsoTimestamp }
+export type QuizAttemptAnswerRecord = { attempt_id: Uuid; question_id: Uuid; selected_option_id: Uuid; awarded_points: number }
+export type TutorFavouriteRecord = { learner_user_id: Uuid; tutor_profile_id: Uuid; created_at: IsoTimestamp }
+export type ReferralCodeRecord = { id: Uuid; owner_user_id: Uuid; code: string; created_at: IsoTimestamp; disabled_at: IsoTimestamp | null }
+export type ReferralAttributionRecord = { id: Uuid; referral_code_id: Uuid; referred_user_id: Uuid; attributed_at: IsoTimestamp }
+export type ReferralRewardRecord = { id: Uuid; attribution_id: Uuid; qualifying_booking_id: Uuid; credits: number; status: "pending" | "earned" | "reversed"; ledger_transaction_id: Uuid | null; created_at: IsoTimestamp; earned_at: IsoTimestamp | null; reversed_at: IsoTimestamp | null }
 
 export type Message = {
   id: Uuid;
