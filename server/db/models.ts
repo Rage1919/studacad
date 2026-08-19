@@ -415,17 +415,96 @@ export type ReferralRewardRecord = {
   reversed_at: IsoTimestamp | null;
 };
 
+export type Conversation = {
+  id: Uuid;
+  kind: "booking" | "support";
+  booking_id: Uuid | null;
+  tutor_profile_id: Uuid | null;
+  created_by_user_id: Uuid | null;
+  subject: string | null;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
+};
+
+export type ConversationParticipant = {
+  conversation_id: Uuid;
+  user_id: Uuid;
+  last_read_at: IsoTimestamp | null;
+  joined_at: IsoTimestamp;
+  left_at: IsoTimestamp | null;
+};
+
 export type Message = {
   id: Uuid;
   conversation_id: Uuid;
   sender_user_id: Uuid;
   body: string;
   status: "queued" | "sent" | "delivered" | "read" | "failed";
+  channel: "in_app" | "whatsapp";
+  direction: "internal" | "outbound" | "inbound";
+  moderation_status: "visible" | "reported" | "removed";
   client_idempotency_key: string;
   provider_message_id: string | null;
   created_at: IsoTimestamp;
   edited_at: IsoTimestamp | null;
   deleted_at: IsoTimestamp | null;
+};
+
+export type TutorMessagingChannel = {
+  id: Uuid;
+  tutor_profile_id: Uuid;
+  provider: "whatsapp";
+  recipient_e164: string;
+  status: "pending" | "verified" | "disabled";
+  verified_by_user_id: Uuid | null;
+  verified_at: IsoTimestamp | null;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
+};
+export type MessageDelivery = {
+  id: Uuid;
+  message_id: Uuid;
+  channel_id: Uuid;
+  provider: "whatsapp";
+  status:
+    | "queued"
+    | "sending"
+    | "sent"
+    | "delivered"
+    | "read"
+    | "retry_required"
+    | "failed"
+    | "support_required";
+  provider_message_id: string | null;
+  attempt_count: number;
+  last_error_code: string | null;
+  next_retry_at: IsoTimestamp | null;
+  sent_at: IsoTimestamp | null;
+  delivered_at: IsoTimestamp | null;
+  read_at: IsoTimestamp | null;
+  failed_at: IsoTimestamp | null;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
+};
+export type ContactBlock = {
+  blocker_user_id: Uuid;
+  blocked_user_id: Uuid;
+  conversation_id: Uuid;
+  reason: string | null;
+  created_at: IsoTimestamp;
+};
+export type MessageReport = {
+  id: Uuid;
+  message_id: Uuid;
+  conversation_id: Uuid;
+  reporter_user_id: Uuid;
+  reason: string;
+  status: "open" | "reviewing" | "resolved" | "dismissed";
+  reviewed_by_user_id: Uuid | null;
+  reviewed_at: IsoTimestamp | null;
+  resolution_note: string | null;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
 };
 
 export type WalletBalance = {

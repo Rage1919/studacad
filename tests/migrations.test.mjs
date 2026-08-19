@@ -16,12 +16,15 @@ const expectedTables = [
   "conversations",
   "course_purchases",
   "course_resources",
+  "contact_blocks",
   "courses",
   "ledger_entries",
   "ledger_transactions",
   "lesson_progress",
   "lessons",
   "messages",
+  "message_deliveries",
+  "message_reports",
   "notifications",
   "object_files",
   "payment_refunds",
@@ -37,6 +40,7 @@ const expectedTables = [
   "tutor_applications",
   "tutor_earnings",
   "tutor_favourites",
+  "tutor_messaging_channels",
   "tutor_payouts",
   "tutor_profiles",
   "user_accounts",
@@ -737,6 +741,94 @@ test("confirmed online bookings create one Meet lifecycle record and cancellatio
         )
       ).rows[0].status,
       "revoked",
+    );
+  } finally {
+    await db.close();
+  }
+});
+
+test("messaging isolates conversations, deduplicates sends, and queues only verified WhatsApp channels", async () => {
+  const db = new PGlite();
+  try {
+    await apply(db, await readMigrationFiles());
+    await db.exec(`
+      insert into public.user_accounts (id, auth_subject, email, display_name, status, email_verified_at)
+      values
+        ('10000000-0000-4000-8000-000000000101', '20000000-0000-4000-8000-000000000101', 'message-tutor@example.test', 'Message Tutor', 'active', now()),
+        ('10000000-0000-4000-8000-000000000102', '20000000-0000-4000-8000-000000000102', 'message-learner@example.test', 'Message Learner', 'active', now()),
+        ('10000000-0000-4000-8000-000000000103', '20000000-0000-4000-8000-000000000103', 'other-learner@example.test', 'Other Learner', 'active', now()),
+        ('10000000-0000-4000-8000-000000000104', '20000000-0000-4000-8000-000000000104', 'message-admin@example.test', 'Message Admin', 'active', now());
+      insert into public.user_roles (user_id, role) values ('10000000-0000-4000-8000-000000000104', 'admin');
+      insert into public.tutor_applications (id, applicant_user_id, status)
+      values ('30000000-0000-4000-8000-000000000101', '10000000-0000-4000-8000-000000000101', 'approved');
+      insert into public.tutor_profiles (id, tutor_user_id, approved_application_id, status, slug, headline, about, location, base_price_credits)
+      values ('40000000-0000-4000-8000-000000000101', '10000000-0000-4000-8000-000000000101', '30000000-0000-4000-8000-000000000101', 'active', 'message-tutor', 'Message tutor', 'Biography long enough for durable messaging isolation tests.', 'Gaborone', 80);
+    `);
+    const learner = "10000000-0000-4000-8000-000000000102";
+    const otherLearner = "10000000-0000-4000-8000-000000000103";
+    const tutor = "10000000-0000-4000-8000-000000000101";
+    const first = await db.query(
+      "select public.start_tutor_conversation($1, 'message-tutor') as id",
+      [learner],
+    );
+    const replay = await db.query(
+      "select public.start_tutor_conversation($1, 'message-tutor') as id",
+      [learner],
+    );
+    assert.equal(replay.rows[0].id, first.rows[0].id);
+    const conversationId = first.rows[0].id;
+    const sent = await db.query(
+      "select public.send_conversation_message($1, $2, 'Can we review fractions?', 'client-message-001') as id",
+      [learner, conversationId],
+    );
+    const sentReplay = await db.query(
+      "select public.send_conversation_message($1, $2, 'Can we review fractions?', 'client-message-001') as id",
+      [learner, conversationId],
+    );
+    assert.equal(sentReplay.rows[0].id, sent.rows[0].id);
+    await assert.rejects(
+      db.query(
+        "select public.send_conversation_message($1, $2, 'Show me another learner message', 'client-message-idor')",
+        [otherLearner, conversationId],
+      ),
+      /Conversation not found/,
+    );
+    assert.equal(
+      (
+        await db.query(
+          "select count(*)::integer as count from public.message_deliveries",
+        )
+      ).rows[0].count,
+      0,
+    );
+
+    await db.exec(`
+      insert into public.tutor_messaging_channels (tutor_profile_id, provider, recipient_e164, status, verified_by_user_id, verified_at)
+      values ('40000000-0000-4000-8000-000000000101', 'whatsapp', '+26771234567', 'verified', '10000000-0000-4000-8000-000000000104', now());
+    `);
+    await db.query(
+      "select public.send_conversation_message($1, $2, 'Second question', 'client-message-002')",
+      [learner, conversationId],
+    );
+    assert.equal(
+      (
+        await db.query(
+          "select count(*)::integer as count from public.message_deliveries where status = 'queued'",
+        )
+      ).rows[0].count,
+      1,
+    );
+
+    await db.query(
+      "insert into public.contact_blocks (blocker_user_id, blocked_user_id, conversation_id, reason) values ($1, $2, $3, 'No further contact')",
+      [learner, tutor, conversationId],
+    );
+    await assert.rejects(
+      db.query(
+        "select public.send_conversation_message($1, $2, 'Blocked message', 'client-message-003')",
+        [tutor, conversationId],
+      ),
+      /Messaging is blocked/,
     );
   } finally {
     await db.close();

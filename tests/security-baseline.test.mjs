@@ -148,6 +148,7 @@ test("every user-triggered API mutation retains same-origin CSRF enforcement", a
   const exceptions = new Set([
     join("app", "api", "whatsapp", "route.ts"),
     join("app", "api", "internal", "meet", "provision", "route.ts"),
+    join("app", "api", "internal", "messages", "deliver", "route.ts"),
   ]);
   for (const path of routes) {
     const source = await readFile(path, "utf8");

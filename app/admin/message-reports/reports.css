@@ -1,0 +1,60 @@
+.report-review-page {
+  min-height: 100vh;
+  background: var(--cream);
+}
+.report-review-hero {
+  padding: 55px clamp(24px, 7vw, 100px);
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  border-bottom: 2px solid var(--ink);
+  background: #ffd5df;
+}
+.report-review-hero h1 {
+  margin: 7px 0;
+  font-size: clamp(40px, 6vw, 68px);
+}
+.report-review-hero p {
+  max-width: 720px;
+  line-height: 1.5;
+}
+.report-review-list {
+  padding: 40px clamp(24px, 7vw, 100px) 90px;
+  display: grid;
+  gap: 14px;
+}
+.report-review-list article {
+  padding: 22px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: white;
+}
+.report-review-list header,
+.report-review-list footer {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+.report-review-list header {
+  color: #666;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.report-review-list blockquote {
+  margin: 16px 0;
+  padding: 14px;
+  border-left: 4px solid var(--pink);
+  background: #f8f8f8;
+}
+.report-review-list button {
+  padding: 9px 12px;
+  border: 1px solid var(--ink);
+  border-radius: 5px;
+  background: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+.report-review-list button.remove {
+  background: #7f1d1d;
+  color: white;
+}

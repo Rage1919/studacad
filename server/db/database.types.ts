@@ -6,11 +6,16 @@ import type {
   BookingMeeting,
   BookingLocationDetail,
   BookingParticipant,
+  ContactBlock,
+  Conversation,
+  ConversationParticipant,
   Course,
   CoursePurchaseRecord,
   ExamLevel,
   Json,
   Message,
+  MessageDelivery,
+  MessageReport,
   ObjectFile,
   LedgerEntry,
   LedgerTransaction,
@@ -36,6 +41,7 @@ import type {
   TutorProfileFormat,
   TutorProfileSubject,
   TutorQualification,
+  TutorMessagingChannel,
   TutorFavouriteRecord,
   UserAccount,
   WalletAccount,
@@ -250,7 +256,52 @@ export type Database = {
         Record<string, never>,
         Partial<ReferralRewardRecord>
       >;
-      messages: Table<Message, Record<string, never>, Partial<Message>>;
+      conversations: Table<
+        Conversation,
+        Record<string, never>,
+        Partial<Conversation>
+      >;
+      conversation_participants: Table<
+        ConversationParticipant,
+        ConversationParticipant,
+        Partial<ConversationParticipant>
+      >;
+      messages: Table<
+        Message,
+        Pick<
+          Message,
+          | "conversation_id"
+          | "sender_user_id"
+          | "body"
+          | "client_idempotency_key"
+        > &
+          Partial<Message>,
+        Partial<Message>
+      >;
+      tutor_messaging_channels: Table<
+        TutorMessagingChannel,
+        Record<string, never>,
+        Partial<TutorMessagingChannel>
+      >;
+      message_deliveries: Table<
+        MessageDelivery,
+        Record<string, never>,
+        Partial<MessageDelivery>
+      >;
+      contact_blocks: Table<
+        ContactBlock,
+        Omit<ContactBlock, "created_at"> & { created_at?: string },
+        Record<string, never>
+      >;
+      message_reports: Table<
+        MessageReport,
+        Pick<
+          MessageReport,
+          "message_id" | "conversation_id" | "reporter_user_id" | "reason"
+        > &
+          Partial<MessageReport>,
+        Partial<MessageReport>
+      >;
       wallet_accounts: Table<
         WalletAccount,
         {
@@ -430,6 +481,19 @@ export type Database = {
       };
       attach_referral_code: {
         Args: { p_referred_user_id: string; p_code: string };
+        Returns: string;
+      };
+      start_tutor_conversation: {
+        Args: { p_actor_user_id: string; p_tutor_slug: string };
+        Returns: string;
+      };
+      send_conversation_message: {
+        Args: {
+          p_actor_user_id: string;
+          p_conversation_id: string;
+          p_body: string;
+          p_client_idempotency_key: string;
+        };
         Returns: string;
       };
       admin_create_course: {
