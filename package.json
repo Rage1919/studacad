@@ -14,10 +14,12 @@
     "db:env:check": "node scripts/validate-database-env.mjs",
     "db:migrate": "node scripts/database/migrate.mjs",
     "db:seed:development": "node scripts/database/seed-development.mjs",
+    "auth:bootstrap-admin": "node scripts/auth/bootstrap-admin.mjs",
     "check": "pnpm env:check && pnpm db:env:check && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
   },
   "dependencies": {
     "@next/env": "16.3.0",
+    "@supabase/ssr": "0.12.4",
     "@supabase/supabase-js": "2.112.3",
     "next": "16.3.0",
     "postgres": "3.4.9",

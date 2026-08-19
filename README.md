@@ -34,3 +34,7 @@ pnpm db:seed:development
 ```
 
 The seed command is restricted to development and test. Production migrations are checksum-verified, serialized, and transactional. See [the data-platform decision](docs/adr/0002-data-platform.md) and [the database/storage runbook](docs/runbooks/database-and-storage.md).
+
+## Accounts
+
+Accounts use server-managed Supabase passwordless email sessions. Configure the permitted callback origins before testing sign-in. Google and Apple are intentionally absent until their providers are approved and configured. See [authentication and authorization](docs/security/authentication-and-authorization.md) for session policy, protected surfaces, threats, and the first-admin procedure.

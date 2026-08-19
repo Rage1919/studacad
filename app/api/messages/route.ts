@@ -1,14 +1,29 @@
 import { findTutor } from "../../lib/tutors";
 import { listTutorMessages, saveTutorMessage, TutorMessage } from "../../lib/tutorMessages";
+import { readRuntimeEnvironment } from "../../../server/runtime-env.mjs";
+import { assertSameOrigin, CsrfError } from "../../../server/auth/csrf.mjs";
+import { authErrorResponse, requireViewer } from "../../../server/auth/viewer";
 
 const whatsappUrl = (phone: string, text: string) => `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 
 export async function GET(request: Request) {
-  const tutorId = new URL(request.url).searchParams.get("tutorId") ?? undefined;
-  return Response.json({ messages: listTutorMessages(tutorId) });
+  try {
+    await requireViewer();
+    const tutorId = new URL(request.url).searchParams.get("tutorId") ?? undefined;
+    return Response.json({ messages: listTutorMessages(tutorId) }, { headers: { "Cache-Control": "private, no-store" } });
+  } catch (error) {
+    return authErrorResponse(error);
+  }
 }
 
 export async function POST(request: Request) {
+  try {
+    assertSameOrigin(request, readRuntimeEnvironment(process.env).appUrl);
+    await requireViewer();
+  } catch (error) {
+    if (error instanceof CsrfError) return Response.json({ error: error.message }, { status: 403 });
+    return authErrorResponse(error);
+  }
   const body = await request.json().catch(() => null) as { tutorId?: string; text?: string; clientMessageId?: string } | null;
   const tutor = findTutor(body?.tutorId ?? "");
   const text = body?.text?.trim() ?? "";

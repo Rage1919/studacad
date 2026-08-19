@@ -1,4 +1,15 @@
-export async function POST() {
+import { readRuntimeEnvironment } from "../../../server/runtime-env.mjs";
+import { assertSameOrigin, CsrfError } from "../../../server/auth/csrf.mjs";
+import { authErrorResponse, requireViewer } from "../../../server/auth/viewer";
+
+export async function POST(request: Request) {
+  try {
+    assertSameOrigin(request, readRuntimeEnvironment(process.env).appUrl);
+    await requireViewer();
+  } catch (error) {
+    if (error instanceof CsrfError) return Response.json({ error: error.message }, { status: 403 });
+    return authErrorResponse(error);
+  }
   const accessToken = process.env.GOOGLE_MEET_ACCESS_TOKEN;
 
   if (!accessToken) {

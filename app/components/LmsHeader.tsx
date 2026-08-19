@@ -5,6 +5,7 @@ import { useLms } from "./LmsProvider";
 import { TutorMenu } from "./TutorMenu";
 import { WalletIcon } from "./WalletIcon";
 import { ReferralIcon } from "./ReferralIcon";
+import { AccountNav } from "./AccountNav";
 
 const MessageIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14v10H9l-4 3v-13Z" /><path d="M9 9h6M9 12h4" /></svg>;
 
@@ -37,6 +38,7 @@ export function LmsHeader({ current }: { current?: "learn" | "wallet" | "how" | 
         >
           <WalletIcon /><strong>{credits.toLocaleString()}</strong>
         </Link>
+        <AccountNav className="wallet-pill" />
       </div>
     </header>
   );
