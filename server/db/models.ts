@@ -206,6 +206,34 @@ export type WalletBalance = {
   balance_credits: number;
 }
 
+export type WalletAccount = {
+  id: Uuid;
+  owner_user_id: Uuid | null;
+  system_code: string | null;
+  created_at: IsoTimestamp;
+  closed_at: IsoTimestamp | null;
+}
+
+export type LedgerTransaction = {
+  id: Uuid;
+  kind: LedgerTransactionKind;
+  idempotency_key: string;
+  description: string;
+  booking_id: Uuid | null;
+  course_purchase_id: Uuid | null;
+  actor_user_id: Uuid | null;
+  metadata: Json;
+  created_at: IsoTimestamp;
+}
+
+export type LedgerEntry = {
+  id: Uuid;
+  transaction_id: Uuid;
+  wallet_account_id: Uuid;
+  amount_credits: number;
+  created_at: IsoTimestamp;
+}
+
 export type AuditEvent = {
   id: Uuid;
   actor_user_id: Uuid | null;

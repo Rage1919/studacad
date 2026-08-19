@@ -34,7 +34,7 @@ export type Course = {
 
 export type CreditTransaction = {
   id: string;
-  type: "topup" | "purchase" | "reward";
+  type: "topup" | "purchase" | "reward" | "refund" | "adjustment" | "hold" | "release" | "chargeback" | "earning" | "payout";
   label: string;
   amount: number;
   createdAt: string;
@@ -300,16 +300,14 @@ export const defaultCourses: Course[] = [
 ];
 
 export const initialLmsState: LmsState = {
-  credits: 850,
+  credits: 0,
   courses: defaultCourses,
   purchasedCourseIds: ["psle-mathematics"],
   completedLessonIds: [],
   quizScores: {},
   appliedReferralRewardIds: [],
   referralRewards: [],
-  transactions: [
-    { id: "welcome-credit", type: "topup", label: "Studacad demo wallet funded", amount: 850, createdAt: new Date().toISOString() }
-  ]
+  transactions: []
 };
 
 export const credit = (amount: number) => `${amount.toLocaleString()} credits`;

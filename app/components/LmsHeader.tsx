@@ -10,7 +10,7 @@ import { AccountNav } from "./AccountNav";
 const MessageIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14v10H9l-4 3v-13Z" /><path d="M9 9h6M9 12h4" /></svg>;
 
 export function LmsHeader({ current }: { current?: "learn" | "wallet" | "how" | "messages" | "referral" | "become-tutor" }) {
-  const { credits } = useLms();
+  const { credits, walletReady } = useLms();
   return (
     <header className="lms-header">
       <Link className="brand" href="/"><span>Studacad</span><i className="brand-mark"><b /><b /><b /></i></Link>
@@ -33,10 +33,10 @@ export function LmsHeader({ current }: { current?: "learn" | "wallet" | "how" | 
         <Link
           className={`wallet-pill ${current === "wallet" ? "active" : ""}`}
           href="/wallet"
-          aria-label={`Wallet balance: ${credits.toLocaleString()} credits`}
+          aria-label={walletReady ? `Wallet balance: ${credits.toLocaleString()} credits` : "Wallet balance loading"}
           title="Wallet"
         >
-          <WalletIcon /><strong>{credits.toLocaleString()}</strong>
+          <WalletIcon /><strong>{walletReady ? credits.toLocaleString() : "…"}</strong>
         </Link>
         <AccountNav className="wallet-pill" />
       </div>

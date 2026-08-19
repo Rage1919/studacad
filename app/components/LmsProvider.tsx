@@ -1,15 +1,17 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { Course, CreditTransaction, initialLmsState, Lesson, LmsState } from "../lib/lms";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Course, initialLmsState, Lesson, LmsState } from "../lib/lms";
 import type { ReferralRewardEvent } from "../lib/referrals";
 
 type LmsContextValue = LmsState & {
   ready: boolean;
+  walletReady: boolean;
+  walletError: string;
   referralCode: string;
   referredBy: string;
   visitorId: string;
-  topUp: (amount: number) => void;
+  refreshWallet: () => Promise<void>;
   bookTutor: (tutorName: string, price: number, slot: string, format?: string) => { ok: boolean; message: string };
   bookTutorSlots: (tutorName: string, pricePerSlot: number, slots: string[], format: string) => { ok: boolean; message: string };
   purchaseCourse: (courseId: string) => { ok: boolean; message: string };
@@ -26,17 +28,11 @@ const REFERRED_BY_KEY = "studacad-referred-by";
 const VISITOR_ID_KEY = "studacad-visitor-id";
 const LmsContext = createContext<LmsContextValue | null>(null);
 
-const transaction = (type: CreditTransaction["type"], label: string, amount: number): CreditTransaction => ({
-  id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-  type,
-  label,
-  amount,
-  createdAt: new Date().toISOString()
-});
-
 export function LmsProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<LmsState>(initialLmsState);
   const [ready, setReady] = useState(false);
+  const [walletReady, setWalletReady] = useState(false);
+  const [walletError, setWalletError] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [referredBy, setReferredBy] = useState("");
   const [visitorId, setVisitorId] = useState("");
@@ -46,7 +42,13 @@ export function LmsProvider({ children }: { children: React.ReactNode }) {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored) as LmsState;
-        setState({ ...parsed, appliedReferralRewardIds: parsed.appliedReferralRewardIds ?? [], referralRewards: parsed.referralRewards ?? [] });
+        setState({
+          ...parsed,
+          credits: 0,
+          transactions: [],
+          appliedReferralRewardIds: parsed.appliedReferralRewardIds ?? [],
+          referralRewards: parsed.referralRewards ?? []
+        });
       }
       let identity = window.localStorage.getItem(VISITOR_ID_KEY);
       if (!identity) {
@@ -66,7 +68,7 @@ export function LmsProvider({ children }: { children: React.ReactNode }) {
       setReferralCode(ownCode);
       setReferredBy(window.localStorage.getItem(REFERRED_BY_KEY) ?? "");
     } catch {
-      // The seeded demo remains available if storage is unavailable.
+      // Account-backed data will still load if browser storage is unavailable.
     } finally {
       setReady(true);
     }
@@ -74,62 +76,58 @@ export function LmsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!ready) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...state, credits: 0, transactions: [] }));
   }, [ready, state]);
+
+  const refreshWallet = useCallback(async () => {
+    try {
+      const response = await fetch("/api/wallet", { cache: "no-store" });
+      if (!response.ok) {
+        if (response.status === 401) {
+          setWalletError("");
+          return;
+        }
+        const result = await response.json().catch(() => null) as { error?: string } | null;
+        throw new Error(result?.error ?? "Unable to load the wallet.");
+      }
+      const wallet = await response.json() as Pick<LmsState, "credits" | "transactions"> & { balance?: number };
+      setState(current => ({ ...current, credits: wallet.balance ?? wallet.credits ?? 0, transactions: wallet.transactions ?? [] }));
+      setWalletError("");
+    } catch (error) {
+      setWalletError(error instanceof Error ? error.message : "Unable to load the wallet.");
+    } finally {
+      setWalletReady(true);
+    }
+  }, []);
+
+  useEffect(() => { void refreshWallet(); }, [refreshWallet]);
 
   const value = useMemo<LmsContextValue>(() => ({
     ...state,
     ready,
+    walletReady,
+    walletError,
     referralCode,
     referredBy,
     visitorId,
-    topUp: (amount) => setState(current => ({
-      ...current,
-      credits: current.credits + amount,
-      transactions: [transaction("topup", `Wallet top-up · ${amount} credits`, amount), ...current.transactions]
-    })),
-    bookTutor: (tutorName, price, slot, format = "1-to-1 tutorial") => {
-      if (state.credits < price) return { ok: false, message: "Not enough credits. Top up your wallet first." };
-      setState(current => ({
-        ...current,
-        credits: current.credits - price,
-        transactions: [transaction("purchase", `${format} with ${tutorName} · ${slot}`, -price), ...current.transactions]
-      }));
-      return { ok: true, message: `${format} with ${tutorName} booked for ${slot}.` };
-    },
-    bookTutorSlots: (tutorName, pricePerSlot, slots, format) => {
+    refreshWallet,
+    bookTutor: () => ({ ok: false, message: "Secure booking is being connected to your Studacad wallet." }),
+    bookTutorSlots: (_tutorName, _pricePerSlot, slots) => {
       if (slots.length === 0) return { ok: false, message: "Choose at least one lesson time." };
-      const total = pricePerSlot * slots.length;
-      if (state.credits < total) return { ok: false, message: "Not enough credits. Reduce the selected lessons or top up your wallet." };
-      setState(current => ({
-        ...current,
-        credits: current.credits - total,
-        transactions: [transaction("purchase", `${slots.length} × ${format} with ${tutorName}`, -total), ...current.transactions]
-      }));
-      return { ok: true, message: `${slots.length} ${format.toLowerCase()} ${slots.length === 1 ? "lesson" : "lessons"} booked with ${tutorName}.` };
+      return { ok: false, message: "Secure booking is being connected to your Studacad wallet." };
     },
     purchaseCourse: (courseId) => {
       const course = state.courses.find(item => item.id === courseId);
       if (!course) return { ok: false, message: "Course not found." };
       if (state.purchasedCourseIds.includes(courseId)) return { ok: true, message: "Already in your learning library." };
-      if (state.credits < course.price) return { ok: false, message: "Not enough credits. Top up your wallet first." };
-      setState(current => ({
-        ...current,
-        credits: current.credits - course.price,
-        purchasedCourseIds: [...current.purchasedCourseIds, courseId],
-        transactions: [transaction("purchase", course.title, -course.price), ...current.transactions]
-      }));
-      return { ok: true, message: `${course.title} added to your library.` };
+      return { ok: false, message: "Secure course purchases are being connected to your Studacad wallet." };
     },
     recordQuiz: (lessonId, score) => setState(current => {
       const passed = score >= 70;
-      const firstPass = passed && !current.completedLessonIds.includes(lessonId);
       return {
         ...current,
-        credits: current.credits + (firstPass ? 10 : 0),
         completedLessonIds: passed ? Array.from(new Set([...current.completedLessonIds, lessonId])) : current.completedLessonIds,
-        quizScores: { ...current.quizScores, [lessonId]: Math.max(score, current.quizScores[lessonId] ?? 0) },
-        transactions: firstPass ? [transaction("reward", "Lesson mastery reward", 10), ...current.transactions] : current.transactions
+        quizScores: { ...current.quizScores, [lessonId]: Math.max(score, current.quizScores[lessonId] ?? 0) }
       };
     }),
     addCourse: (course) => setState(current => ({ ...current, courses: [course, ...current.courses] })),
@@ -141,24 +139,18 @@ export function LmsProvider({ children }: { children: React.ReactNode }) {
       const applied = state.appliedReferralRewardIds ?? [];
       const newRewards = rewards.filter(reward => !applied.includes(reward.id));
       if (newRewards.length === 0) return 0;
-      const total = newRewards.reduce((sum, reward) => sum + reward.amount, 0);
       setState(current => ({
         ...current,
-        credits: current.credits + total,
         appliedReferralRewardIds: [...(current.appliedReferralRewardIds ?? []), ...newRewards.map(reward => reward.id)],
-        referralRewards: Array.from(new Map([...(current.referralRewards ?? []), ...newRewards].map(reward => [reward.id, reward])).values()),
-        transactions: [
-          ...newRewards.map(reward => transaction("reward", `Referral reward · ${reward.tutorName} trial lesson`, reward.amount)),
-          ...current.transactions
-        ]
+        referralRewards: Array.from(new Map([...(current.referralRewards ?? []), ...newRewards].map(reward => [reward.id, reward])).values())
       }));
-      return total;
+      return 0;
     },
     resetDemo: () => {
-      setState(initialLmsState);
+      setState(current => ({ ...initialLmsState, credits: current.credits, transactions: current.transactions }));
       window.localStorage.removeItem(STORAGE_KEY);
     }
-  }), [ready, referralCode, referredBy, state, visitorId]);
+  }), [ready, referralCode, referredBy, refreshWallet, state, visitorId, walletError, walletReady]);
 
   return <LmsContext.Provider value={value}>{children}</LmsContext.Provider>;
 }

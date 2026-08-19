@@ -169,6 +169,68 @@ test("financial and audit records are append-only", async () => {
   }
 });
 
+test("verified deposits are authorized, idempotent, balanced, and priced one-to-one", async () => {
+  const db = new PGlite();
+  try {
+    await apply(db, await readMigrationFiles());
+    await db.exec(`
+      insert into public.user_accounts (id, auth_subject, email, display_name, status, email_verified_at)
+      values
+        ('10000000-0000-4000-8000-000000000021', '20000000-0000-4000-8000-000000000021', 'admin-wallet@example.test', 'Wallet Admin', 'active', now()),
+        ('10000000-0000-4000-8000-000000000022', '20000000-0000-4000-8000-000000000022', 'learner-wallet@example.test', 'Wallet Learner', 'active', now()),
+        ('10000000-0000-4000-8000-000000000023', '20000000-0000-4000-8000-000000000023', 'other-wallet@example.test', 'Other Learner', 'active', now());
+      insert into public.user_roles (user_id, role)
+      values
+        ('10000000-0000-4000-8000-000000000021', 'admin'),
+        ('10000000-0000-4000-8000-000000000022', 'learner'),
+        ('10000000-0000-4000-8000-000000000023', 'learner');
+    `);
+
+    const args = [
+      "10000000-0000-4000-8000-000000000021",
+      "10000000-0000-4000-8000-000000000022",
+      250,
+      "BANK-2026-001",
+      "verified-deposit-001"
+    ];
+    const first = await db.query("select public.record_verified_deposit($1, $2, $3, $4, $5) as id", args);
+    const replay = await db.query("select public.record_verified_deposit($1, $2, $3, $4, $5) as id", args);
+    assert.equal(replay.rows[0].id, first.rows[0].id);
+
+    const learnerBalance = await db.query(`
+      select balance_credits::integer as balance
+      from public.wallet_balances balance
+      join public.wallet_accounts wallet on wallet.id = balance.wallet_account_id
+      where wallet.owner_user_id = '10000000-0000-4000-8000-000000000022'
+    `);
+    assert.equal(learnerBalance.rows[0].balance, 250);
+    const transaction = await db.query(`
+      select sum(entry.amount_credits)::integer as net, count(*)::integer as entry_count
+      from public.ledger_entries entry
+      where entry.transaction_id = $1
+    `, [first.rows[0].id]);
+    assert.deepEqual(transaction.rows[0], { net: 0, entry_count: 2 });
+    const payment = await db.query("select amount_minor::integer, credits from public.payments");
+    assert.deepEqual(payment.rows[0], { amount_minor: 25000, credits: 250 });
+    assert.equal((await db.query("select count(*)::integer as count from public.audit_events where action = 'wallet.verified_deposit_recorded'")).rows[0].count, 1);
+
+    await assert.rejects(
+      db.query("select public.record_verified_deposit($1, $2, $3, $4, $5)", [args[0], args[1], 251, args[3], args[4]]),
+      /different deposit details/
+    );
+    await assert.rejects(
+      db.query("select public.record_verified_deposit($1, $2, $3, $4, $5)", ["10000000-0000-4000-8000-000000000023", ...args.slice(1, 4), "verified-deposit-002"]),
+      /Only an active administrator/
+    );
+    await assert.rejects(db.exec(`
+      insert into public.payments (user_id, provider, status, amount_minor, currency, credits, checkout_reference)
+      values ('10000000-0000-4000-8000-000000000022', 'test', 'paid', 25000, 'BWP', 300, 'invalid-parity')
+    `), /payments_bwp_credit_parity/);
+  } finally {
+    await db.close();
+  }
+});
+
 test("tutor onboarding enforces reviewer authority and publishes only approved active profiles", async () => {
   const db = new PGlite();
   try {
