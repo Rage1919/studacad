@@ -5,6 +5,8 @@ out
 dist
 coverage
 screenshots
+playwright-report
+test-results
 *.log
 *.tsbuildinfo
 .DS_Store

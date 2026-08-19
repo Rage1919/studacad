@@ -2,6 +2,7 @@ import { readRuntimeEnvironment } from "../../../../../server/runtime-env.mjs";
 import { assertSameOrigin, CsrfError } from "../../../../../server/auth/csrf.mjs";
 import { authErrorResponse, requireViewer } from "../../../../../server/auth/viewer";
 import { bookingErrorResponse, recordBookingOutcome } from "../../../../../server/bookings/repository";
+import { appendCorrelatedAudit } from "../../../../../server/security/request-audit";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ bookingId: string }> }) {
   try {
@@ -16,7 +17,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ bo
     if (!status) return Response.json({ error: "Choose a valid booking outcome." }, { status: 400 });
     if (reason.length < 4 || reason.length > 500) return Response.json({ error: "Outcome reason must be 4–500 characters." }, { status: 400 });
     if (idempotencyKey.length < 8 || idempotencyKey.length > 100) return Response.json({ error: "A valid idempotency key is required." }, { status: 400 });
-    return Response.json({ outcome: await recordBookingOutcome({ actorUserId: viewer.id, bookingId, targetStatus: status, reason, idempotencyKey }) }, { headers: { "Cache-Control": "private, no-store" } });
+    const outcome = await recordBookingOutcome({ actorUserId: viewer.id, bookingId, targetStatus: status, reason, idempotencyKey });
+    await appendCorrelatedAudit({ request, actorUserId: viewer.id, action: "booking.outcome_request", entityType: "booking", entityId: bookingId, metadata: { targetStatus: status } });
+    return Response.json({ outcome }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     if (error instanceof CsrfError) return Response.json({ error: error.message }, { status: 403 });
     try { return authErrorResponse(error); } catch { return bookingErrorResponse(error); }

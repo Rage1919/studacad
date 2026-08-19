@@ -16,6 +16,7 @@ import type {
   LessonProgressRecord,
   LessonRecord,
   PublicTutorMarketplaceProfile,
+  ProviderWebhookEvent,
   QuizAttemptAnswerRecord,
   QuizAttemptRecord,
   QuizOptionRecord,
@@ -112,6 +113,7 @@ export type Database = {
       }, Pick<WalletAccount, "closed_at">>;
       ledger_transactions: Table<LedgerTransaction, Record<string, never>, Record<string, never>>;
       ledger_entries: Table<LedgerEntry, Record<string, never>, Record<string, never>>;
+      provider_webhook_events: Table<ProviderWebhookEvent, Omit<ProviderWebhookEvent, "id" | "received_at" | "processed_at" | "failure_reason"> & { id?: string; failure_reason?: string | null }, Partial<ProviderWebhookEvent>>;
       audit_events: Table<AuditEvent, Omit<AuditEvent, "id" | "created_at"> & { id?: string }, Record<string, never>>;
     };
     Views: {
