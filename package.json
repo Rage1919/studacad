@@ -5,11 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "vinext build && node scripts/prepare-sites.mjs",
-    "start": "vinext start",
-    "lint": "next lint"
+    "build": "node scripts/validate-runtime-env.mjs && vinext build && node scripts/prepare-sites.mjs",
+    "start": "node scripts/validate-runtime-env.mjs && vinext start",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/runtime-env.test.mjs",
+    "env:check": "node scripts/validate-runtime-env.mjs",
+    "check": "pnpm env:check && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
   },
   "dependencies": {
+    "@next/env": "16.3.0",
     "next": "16.3.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
@@ -19,6 +24,8 @@
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
     "@vitejs/plugin-rsc": "0.5.34",
+    "eslint": "9.22.0",
+    "eslint-config-next": "16.3.0",
     "typescript": "5.9.2",
     "vinext": "0.2.1"
   }
