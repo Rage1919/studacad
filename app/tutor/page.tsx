@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LmsHeader } from "../components/LmsHeader";
 import { useLms } from "../components/LmsProvider";
-import { findTutor, Tutor } from "../lib/tutors";
+import type { Tutor } from "../lib/tutors";
 import type { TutorMessage } from "../lib/tutorMessages";
 import { useTutorFavourites } from "../lib/useTutorFavourites";
 import { useTutorMessages } from "../lib/useTutorMessages";
@@ -36,9 +36,6 @@ const WhatsAppIcon = () => (
     <path d="M8.5 7.8c.4 2.8 2.6 5 5.4 5.6l1.1-1.1 2 .9-.3 2c-.2.8-1 1.3-1.8 1.2-5.1-.7-9-4.7-9.4-9.8-.1-.8.5-1.6 1.3-1.8l2-.2.8 2.1-1.1 1.1Z" />
   </svg>
 );
-const staticPreview =
-  process.env.NEXT_PUBLIC_STUDACAD_STATIC_PREVIEW === "true";
-
 type SessionFormat = Tutor["sessionFormats"][number];
 type ScheduleMode = "private" | "group";
 
@@ -88,6 +85,8 @@ export default function TutorProfilePage() {
     toggleFavourite,
   } = useTutorFavourites();
   const [tutor, setTutor] = useState<Tutor | null | undefined>(undefined);
+  const [tutorLoadError, setTutorLoadError] = useState("");
+  const [profileAttempt, setProfileAttempt] = useState(0);
   const [notice, setNotice] = useState("");
   const [booked, setBooked] = useState(false);
   const [bookedLabel, setBookedLabel] = useState("");
@@ -114,26 +113,40 @@ export default function TutorProfilePage() {
   const [actionNotice, setActionNotice] = useState("");
   const {
     messages: messageHistory,
+    error: messageLoadError,
     refresh: refreshMessages,
-    saveLocal: saveLocalMessage,
   } = useTutorMessages(tutor?.id);
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("id") ?? "";
-    if (staticPreview) {
-      setTutor(findTutor(id) ?? null);
-      return;
-    }
+    setTutor(undefined);
+    setTutorLoadError("");
     void fetch(`/api/tutors/${encodeURIComponent(id)}`)
       .then(async (response) => {
-        const result = (await response.json()) as { tutor?: Tutor | null };
-        setTutor(response.ok ? (result.tutor ?? null) : null);
+        const result = (await response.json()) as {
+          tutor?: Tutor | null;
+          error?: string;
+        };
+        if (response.status === 404) {
+          setTutor(null);
+          return;
+        }
+        if (!response.ok)
+          throw new Error(result.error ?? "Unable to load the tutor profile.");
+        setTutor(result.tutor ?? null);
       })
-      .catch(() => setTutor(null));
-  }, []);
+      .catch((error) => {
+        setTutor(null);
+        setTutorLoadError(
+          error instanceof Error
+            ? error.message
+            : "Unable to load the tutor profile.",
+        );
+      });
+  }, [profileAttempt]);
 
   useEffect(() => {
-    if (!tutor || staticPreview) return;
+    if (!tutor) return;
     const from = new Date(weekStart);
     from.setHours(0, 0, 0, 0);
     const to = new Date(from);
@@ -185,6 +198,24 @@ export default function TutorProfilePage() {
       </main>
     );
 
+  if (!tutor && tutorLoadError)
+    return (
+      <main className="lms-page">
+        <LmsHeader />
+        <section className="locked-state">
+          <span>!</span>
+          <h1>Tutor profile is temporarily unavailable</h1>
+          <p>{tutorLoadError}</p>
+          <button
+            className="primary"
+            onClick={() => setProfileAttempt((value) => value + 1)}
+          >
+            Try again
+          </button>
+        </section>
+      </main>
+    );
+
   if (!tutor)
     return (
       <main className="lms-page">
@@ -212,11 +243,7 @@ export default function TutorProfilePage() {
       selectedFormat === "online-group" ? "group" : "private"
     ].includes(slot.startsAt),
   );
-  const sessionPrice =
-    selectedServerSlot?.priceCredits ??
-    (selectedFormat === "online-group"
-      ? Math.max(1, Math.round(tutor.price * 0.6))
-      : tutor.price);
+  const sessionPrice = selectedServerSlot?.priceCredits ?? tutor.price;
   const isOnlineSession =
     selectedFormat === "online-1to1" || selectedFormat === "online-group";
   const activeScheduleMode: ScheduleMode =
@@ -378,24 +405,9 @@ export default function TutorProfilePage() {
       setMessageError(true);
       return;
     }
-    const outgoing: TutorMessage = {
-      id: `client-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      conversationId: "pending",
-      tutorId: tutor.id,
-      tutorName: tutor.name,
-      text: cleanMessage,
-      direction: "outbound",
-      channel: "in_app",
-      status: "queued",
-      providerStatus: null,
-      createdAt: new Date().toISOString(),
-      canReport: false,
-    };
-    saveLocalMessage(outgoing);
-    setMessageText("");
     setMessageError(false);
     setMessageSending(true);
-    setMessageNotice(`Saving your message for ${tutor.name}…`);
+    setMessageNotice(`Sending your message to ${tutor.name}…`);
     try {
       const response = await fetch("/api/messages", {
         method: "POST",
@@ -403,7 +415,7 @@ export default function TutorProfilePage() {
         body: JSON.stringify({
           tutorId: tutor.id,
           text: cleanMessage,
-          clientMessageId: outgoing.id,
+          clientMessageId: crypto.randomUUID(),
         }),
       });
       const payload = (await response.json()) as {
@@ -413,7 +425,7 @@ export default function TutorProfilePage() {
       };
       if (!response.ok)
         throw new Error(payload.error ?? "Message delivery failed");
-      if (payload.message) saveLocalMessage(payload.message);
+      setMessageText("");
       setMessageNotice(
         payload.message?.providerStatus
           ? `Message sent in Studacad. WhatsApp delivery is ${payload.message.providerStatus.replaceAll("_", " ")}.`
@@ -447,7 +459,7 @@ export default function TutorProfilePage() {
                 src={tutor.image}
                 alt={`${tutor.name}, ${tutor.examination} ${tutor.subject} tutor`}
               />
-              <span>Available this week</span>
+              <span>Approved tutor</span>
             </div>
             <div className="profile-summary">
               <p className="eyebrow">
@@ -543,99 +555,97 @@ export default function TutorProfilePage() {
             </div>
           </section>
 
-          <section className="profile-section video-profile-section">
-            <p className="eyebrow">Tutor introduction</p>
-            <h2>Meet {tutor.name} on video</h2>
-            <div className="tutor-video-layout">
-              <video
-                controls
-                preload="metadata"
-                poster={tutor.image}
-                aria-label={`${tutor.name}'s introductory video`}
-              >
-                <source src={tutor.introVideo} type="video/mp4" />
-                Your browser does not support video playback.
-              </video>
-              <div>
-                <span className="video-duration">▶ 1 minute introduction</span>
-                <h3>Teaching style and lesson expectations</h3>
-                <p>
-                  Hear how {tutor.name} supports {tutor.examination} learners,
-                  structures tutorials, and helps students prepare for{" "}
-                  {tutor.subject} examinations.
-                </p>
-                <small>Demonstration tutor introduction video.</small>
-              </div>
-            </div>
-          </section>
-
-          <section className="profile-section">
-            <p className="eyebrow">Qualifications and experience</p>
-            <h2>{tutor.name}&apos;s résumé</h2>
-            <div className="resume-simple">
-              <div>
-                <h3>Education</h3>
+          {tutor.introVideo && (
+            <section className="profile-section video-profile-section">
+              <p className="eyebrow">Tutor introduction</p>
+              <h2>Meet {tutor.name} on video</h2>
+              <div className="tutor-video-layout">
+                <video
+                  controls
+                  preload="metadata"
+                  poster={tutor.image}
+                  aria-label={`${tutor.name}'s introductory video`}
+                >
+                  <source src={tutor.introVideo} type="video/mp4" />
+                  Your browser does not support video playback.
+                </video>
                 <div>
-                  {tutor.resume.education.map((item) => (
-                    <p className="resume-education" key={item}>
-                      <span>{item}</span>
-                      <em>
-                        <i>✓</i> Verified
-                      </em>
-                    </p>
-                  ))}
+                  <span className="video-duration">
+                    ▶ 1 minute introduction
+                  </span>
+                  <h3>Teaching style and lesson expectations</h3>
+                  <p>
+                    Hear how {tutor.name} supports {tutor.examination} learners,
+                    structures tutorials, and helps students prepare for{" "}
+                    {tutor.subject} examinations.
+                  </p>
                 </div>
               </div>
-              <div>
-                <h3>Experience</h3>
+            </section>
+          )}
+
+          {(tutor.resume.education.length > 0 ||
+            tutor.resume.experience.length > 0 ||
+            tutor.resume.certifications.length > 0) && (
+            <section className="profile-section">
+              <p className="eyebrow">Qualifications and experience</p>
+              <h2>{tutor.name}&apos;s résumé</h2>
+              <div className="resume-simple">
                 <div>
-                  {tutor.resume.experience.map((item) => (
-                    <p
-                      className="resume-role"
-                      key={`${item.role}-${item.period}`}
-                    >
-                      <strong>{item.role}</strong>
-                      <span>
-                        {item.organisation} · {item.period}
-                      </span>
-                    </p>
-                  ))}
+                  <h3>Education</h3>
+                  <div>
+                    {tutor.resume.education.map((item) => (
+                      <p className="resume-education" key={item}>
+                        <span>{item}</span>
+                        <em>
+                          <i>✓</i> Verified
+                        </em>
+                      </p>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h3>Experience</h3>
+                  <div>
+                    {tutor.resume.experience.map((item) => (
+                      <p
+                        className="resume-role"
+                        key={`${item.role}-${item.period}`}
+                      >
+                        <strong>{item.role}</strong>
+                        <span>
+                          {item.organisation} · {item.period}
+                        </span>
+                      </p>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h3>Credentials</h3>
+                  <ul>
+                    {tutor.resume.certifications.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
                 </div>
               </div>
-              <div>
-                <h3>Credentials</h3>
-                <ul>
-                  {tutor.resume.certifications.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
+            </section>
+          )}
+
+          {tutor.approach.length > 0 && (
+            <section className="profile-section">
+              <p className="eyebrow">A complete Studacad lesson</p>
+              <h2>What learning together looks like</h2>
+              <div className="approach-grid">
+                {tutor.approach.map((item, index) => (
+                  <div key={item}>
+                    <span>{index + 1}</span>
+                    <p>{item}</p>
+                  </div>
+                ))}
               </div>
-            </div>
-          </section>
-
-          <section className="profile-section">
-            <p className="eyebrow">A complete Studacad lesson</p>
-            <h2>What learning together looks like</h2>
-            <div className="approach-grid">
-              {tutor.approach.map((item, index) => (
-                <div key={item}>
-                  <span>{index + 1}</span>
-                  <p>{item}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="profile-review">
-            <div>★★★★★</div>
-            <blockquote>
-              “The explanations were clear and the practice questions showed
-              exactly where more revision was needed.”
-            </blockquote>
-            <p>
-              Demo learner review · {tutor.examination} {tutor.subject}
-            </p>
-          </section>
+            </section>
+          )}
         </div>
 
         <aside className="booking-card">
@@ -686,10 +696,7 @@ export default function TutorProfilePage() {
                   }}
                 />
                 <span className="session-format-copy">
-                  <strong>
-                    {option.label}
-                    {option.id === "online-group" && <em>40% less</em>}
-                  </strong>
+                  <strong>{option.label}</strong>
                 </span>
               </label>
             ))}
@@ -786,7 +793,7 @@ export default function TutorProfilePage() {
                 )}
                 <small>
                   {isOnlineSession
-                    ? "Meeting details will appear in Bookings when the session integration is enabled."
+                    ? "Meeting details appear in Bookings and are released 24 hours before the lesson starts."
                     : selectedFormat === "student-place"
                       ? studentAddress
                       : "Venue details will be shared in your messages."}
@@ -1015,6 +1022,14 @@ export default function TutorProfilePage() {
               message stays in Studacad. When this tutor has a verified WhatsApp
               channel, its delivery state appears alongside the in-app message.
             </p>
+            {messageLoadError && (
+              <p className="message-status" role="alert">
+                {messageLoadError}{" "}
+                <button type="button" onClick={() => void refreshMessages()}>
+                  Try again
+                </button>
+              </p>
+            )}
             {messageHistory.length > 0 && (
               <div
                 className="message-thread"

@@ -36,6 +36,23 @@ test("email-link sign-in uses a neutral response", async ({ page }) => {
   );
 });
 
+test("a fresh marketplace shows an honest empty state", async ({ page }) => {
+  await page.route("**/api/tutors", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ tutors: [] }),
+    }),
+  );
+  await page.goto("/tutors");
+  await expect(
+    page.getByRole("heading", {
+      name: "No approved tutors match every filter",
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("Demo learner", { exact: false })).toHaveCount(0);
+});
+
 test("oversized API requests fail before route execution", async ({
   request,
 }) => {
