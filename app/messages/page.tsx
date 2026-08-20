@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import { LmsHeader } from "../components/LmsHeader";
-import { findTutor } from "../lib/tutors";
 import type { TutorMessage } from "../lib/tutorMessages";
 import { useTutorMessages } from "../lib/useTutorMessages";
 
 export default function MessagesPage() {
-  const { messages, ready, refresh } = useTutorMessages();
+  const { messages, ready, error, refresh } = useTutorMessages();
   const [notice, setNotice] = useState("");
   const conversationIds = Array.from(
     new Set(messages.map((message) => message.conversationId)),
@@ -80,7 +79,16 @@ export default function MessagesPage() {
           </p>
         )}
         {!ready && <p className="message-empty">Loading conversations…</p>}
-        {ready && conversationIds.length === 0 && (
+        {ready && error && (
+          <div className="message-empty" role="alert">
+            <h2>Messages are temporarily unavailable</h2>
+            <p>{error}</p>
+            <button className="primary" onClick={() => void refresh()}>
+              Try again
+            </button>
+          </div>
+        )}
+        {ready && !error && conversationIds.length === 0 && (
           <div className="message-empty">
             <h2>No conversations yet</h2>
             <p>Open a tutor profile and send a question before booking.</p>
@@ -95,18 +103,12 @@ export default function MessagesPage() {
           );
           const first = thread[0];
           if (!first) return null;
-          const tutor = findTutor(first.tutorId);
           return (
             <article className="inbox-thread" key={conversationId}>
               <header>
-                {tutor?.image && <img src={tutor.image} alt="" />}
                 <div>
                   <h2>{first.tutorName}</h2>
-                  <p>
-                    {tutor
-                      ? `${tutor.examination} · ${tutor.subject}`
-                      : "Studacad conversation"}
-                  </p>
+                  <p>Studacad conversation</p>
                 </div>
                 <span>In-app active</span>
               </header>

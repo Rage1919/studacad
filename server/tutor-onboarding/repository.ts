@@ -464,18 +464,13 @@ const mapPublicTutor = async (
     color: "blue",
     image: signed.data.signedUrl,
     location: `${profile.location}, Botswana`,
-    experience: profile.teaching_experience || "Verified tutor",
+    experience: profile.teaching_experience ?? "",
     headline: profile.headline,
     about: profile.about,
     specialties: subjectItems.map(
       (item) => `${item.examination} ${item.subject}`,
     ),
-    approach: [
-      "Set a clear learning goal",
-      "Explain with worked examples",
-      "Practise exam-style questions",
-      "Finish with actionable feedback",
-    ],
+    approach: [],
     availability: [],
     availabilityGroups: [],
     sessionFormats: formats,
@@ -483,9 +478,7 @@ const mapPublicTutor = async (
     resume: {
       education: [],
       experience: [],
-      certifications: [
-        "Identity and qualification documents verified by Studacad",
-      ],
+      certifications: ["Verification review completed by Studacad"],
     },
   };
 };

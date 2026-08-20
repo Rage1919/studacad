@@ -15,28 +15,14 @@ export function StudacadFooter() {
         <p>
           Botswana tutors, courses, revision papers, and tests in one place.
         </p>
-        <div className="socials" aria-label="Studacad social channels">
-          <button type="button" aria-label="LinkedIn">
-            in
-          </button>
-          <button type="button" aria-label="Instagram">
-            ◎
-          </button>
-          <button type="button" aria-label="YouTube">
-            ▶
-          </button>
-          <button type="button" aria-label="Facebook">
-            f
-          </button>
-        </div>
       </div>
       <div className="footer-links">
         <div>
           <h4>About Studacad</h4>
           <Link href="/how-it-works">How it works</Link>
           <Link href="/#schools">For schools</Link>
-          <Link href="/#tutor-results">Reviews</Link>
-          <Link href="/become-a-tutor">Careers</Link>
+          <Link href="/#tutor-results">Tutor marketplace</Link>
+          <Link href="/become-a-tutor">Teach with us</Link>
         </div>
         <div>
           <h4>For students</h4>
