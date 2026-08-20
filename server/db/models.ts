@@ -150,6 +150,20 @@ export type TutorProfile = {
   updated_at: IsoTimestamp;
 }
 
+export type TutorProfileSubject = {
+  tutor_profile_id: Uuid;
+  examination: ExamLevel;
+  subject: string;
+  price_credits: number;
+}
+
+export type TutorProfileFormat = {
+  tutor_profile_id: Uuid;
+  format: SessionFormat;
+  location_note: string | null;
+  group_capacity: number;
+}
+
 export type Booking = {
   id: Uuid;
   tutor_profile_id: Uuid;
@@ -170,6 +184,48 @@ export type Booking = {
   created_at: IsoTimestamp;
   updated_at: IsoTimestamp;
   slot: string;
+}
+
+export type AvailabilityRule = {
+  id: Uuid;
+  tutor_profile_id: Uuid;
+  weekday: number;
+  local_start_time: string;
+  local_end_time: string;
+  timezone: string;
+  format: SessionFormat;
+  slot_duration_minutes: number;
+  lead_time_minutes: number;
+  buffer_before_minutes: number;
+  buffer_after_minutes: number;
+  effective_from: string;
+  effective_until: string | null;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
+}
+
+export type AvailabilityException = {
+  id: Uuid;
+  tutor_profile_id: Uuid;
+  starts_at: IsoTimestamp;
+  ends_at: IsoTimestamp;
+  available: boolean;
+  reason: string | null;
+  created_at: IsoTimestamp;
+}
+
+export type BookingParticipant = {
+  booking_id: Uuid;
+  learner_user_id: Uuid;
+  joined_at: IsoTimestamp;
+  cancelled_at: IsoTimestamp | null;
+}
+
+export type BookingLocationDetail = {
+  booking_id: Uuid;
+  learner_address: string | null;
+  tutor_location_note: string | null;
+  created_at: IsoTimestamp;
 }
 
 export type Course = {

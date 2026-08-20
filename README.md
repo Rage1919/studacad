@@ -46,3 +46,7 @@ Tutor drafts, private verification uploads, review decisions, approved profiles,
 ## Credits wallet
 
 Wallet balances and activity come from an immutable, server-authoritative ledger. The current pricing rule is one credit per whole Botswana pula received, with no bonus tiers. Online checkout is deferred; administrators may record only independently verified offline deposits through the audited workflow described in [wallet operations](docs/wallet-operations.md).
+
+## Availability and bookings
+
+Approved tutors publish timezone-aware recurring hours and blackouts. Learners book only server-calculated slots; confirmation rechecks conflicts, capacity, price, and wallet balance while atomically holding credits. See [availability and booking operations](docs/booking-operations.md) for state transitions, cancellation/refund behavior, and recovery guidance.

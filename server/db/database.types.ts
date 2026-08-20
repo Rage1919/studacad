@@ -1,13 +1,19 @@
 import type {
   AuditEvent,
+  AvailabilityException,
+  AvailabilityRule,
   Booking,
+  BookingLocationDetail,
+  BookingParticipant,
   Course,
+  ExamLevel,
   Json,
   Message,
   ObjectFile,
   LedgerEntry,
   LedgerTransaction,
   PublicTutorMarketplaceProfile,
+  SessionFormat,
   TutorApplication,
   TutorApplicationDocument,
   TutorApplicationFormat,
@@ -15,6 +21,8 @@ import type {
   TutorApplicationStatus,
   TutorApplicationSubject,
   TutorProfile,
+  TutorProfileFormat,
+  TutorProfileSubject,
   TutorQualification,
   UserAccount,
   WalletAccount,
@@ -65,7 +73,13 @@ export type Database = {
       tutor_application_documents: Table<TutorApplicationDocument, TutorApplicationDocument, Record<string, never>>;
       tutor_application_reviews: Table<TutorApplicationReview, Record<string, never>, Record<string, never>>;
       tutor_profiles: Table<TutorProfile, Record<string, never>, Partial<TutorProfile>>;
+      tutor_profile_subjects: Table<TutorProfileSubject, Record<string, never>, Partial<TutorProfileSubject>>;
+      tutor_profile_formats: Table<TutorProfileFormat, Record<string, never>, Partial<TutorProfileFormat>>;
+      availability_rules: Table<AvailabilityRule, Record<string, never>, Partial<AvailabilityRule>>;
+      availability_exceptions: Table<AvailabilityException, Record<string, never>, Partial<AvailabilityException>>;
       bookings: Table<Booking, Record<string, never>, Partial<Booking>>;
+      booking_location_details: Table<BookingLocationDetail, Record<string, never>, Record<string, never>>;
+      booking_participants: Table<BookingParticipant, Record<string, never>, Partial<BookingParticipant>>;
       courses: Table<Course, Record<string, never>, Partial<Course>>;
       messages: Table<Message, Record<string, never>, Partial<Message>>;
       wallet_accounts: Table<WalletAccount, {
@@ -130,6 +144,55 @@ export type Database = {
           p_idempotency_key: string;
         };
         Returns: string;
+      };
+      list_tutor_slots: {
+        Args: {
+          p_tutor_slug: string;
+          p_from: string;
+          p_to: string;
+          p_format: SessionFormat;
+          p_examination: ExamLevel;
+          p_subject: string;
+        };
+        Returns: Array<{
+          tutor_profile_id: string;
+          starts_at: string;
+          ends_at: string;
+          timezone: string;
+          format: SessionFormat;
+          examination: ExamLevel;
+          subject: string;
+          price_credits: number;
+          capacity: number;
+          remaining_capacity: number;
+          location_note: string | null;
+        }>;
+      };
+      replace_tutor_availability: {
+        Args: { p_actor_user_id: string; p_rules: Json; p_exceptions: Json; p_settings: Json };
+        Returns: string;
+      };
+      create_confirmed_booking: {
+        Args: {
+          p_learner_user_id: string;
+          p_tutor_slug: string;
+          p_format: SessionFormat;
+          p_examination: ExamLevel;
+          p_subject: string;
+          p_starts_at: string;
+          p_display_timezone: string;
+          p_learner_location: string | null;
+          p_idempotency_key: string;
+        };
+        Returns: Json;
+      };
+      cancel_booking_with_refund: {
+        Args: { p_actor_user_id: string; p_booking_id: string; p_reason: string; p_idempotency_key: string };
+        Returns: Json;
+      };
+      record_booking_outcome: {
+        Args: { p_actor_user_id: string; p_booking_id: string; p_target_status: Booking["status"]; p_reason: string; p_idempotency_key: string };
+        Returns: Json;
       };
     };
     Enums: {
