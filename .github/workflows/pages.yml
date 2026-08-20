@@ -42,7 +42,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Exclude server-only API routes
-        run: mv app/api ../studacad-api-routes
+        run: mv app/api ../studacad-api-routes && mv app/auth ../studacad-auth-routes && mv proxy.ts ../studacad-proxy.ts
 
       - name: Build static preview
         run: pnpm exec next build
@@ -51,6 +51,7 @@ jobs:
           STUDACAD_ENV: preview
           STUDACAD_APP_URL: ${{ steps.pages.outputs.origin }}${{ steps.pages.outputs.base_path }}
           STUDACAD_RELEASE_SHA: ${{ github.sha }}
+          NEXT_PUBLIC_STUDACAD_STATIC_PREVIEW: true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4

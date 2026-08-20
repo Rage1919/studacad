@@ -6,6 +6,7 @@ import { useLms } from "./components/LmsProvider";
 import { TutorMenu } from "./components/TutorMenu";
 import { WalletIcon } from "./components/WalletIcon";
 import { ReferralIcon } from "./components/ReferralIcon";
+import { AccountNav } from "./components/AccountNav";
 import { tutors } from "./lib/tutors";
 
 const Arrow = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5" /></svg>;
@@ -41,7 +42,7 @@ const featuredTutors = tutors.filter(tutor => ["masego", "thabo", "keneilwe", "k
 
 export default function Home() {
   const { credits } = useLms();
-  const [modal, setModal] = useState<"search" | "login" | null>(null);
+  const [modal, setModal] = useState<"search" | null>(null);
   const [examination, setExamination] = useState("PSLE");
   const [subject, setSubject] = useState("Mathematics");
   const examSubjects = useMemo(() => Array.from(new Set(subjects.filter(item => item.exam === examination).map(item => item.name))), [examination]);
@@ -81,7 +82,7 @@ export default function Home() {
             <WalletIcon /><strong>{credits.toLocaleString()}</strong>
           </Link>
           <button className="help" aria-label="Help">?</button>
-          <button className="login" onClick={() => setModal("login")}>↪ <span>Log in</span></button>
+          <AccountNav />
         </div>
       </header>
 
@@ -187,13 +188,11 @@ export default function Home() {
 
       {modal && <div className="modal-backdrop" onMouseDown={() => setModal(null)}><div className="modal" onMouseDown={event => event.stopPropagation()}>
         <button className="modal-close" onClick={() => setModal(null)}>×</button>
-        {modal === "search" ? <>
+        <>
           <p className="eyebrow">Find your Studacad match</p><h2>Which subject needs support?</h2><label>Examination<select value={examination} onChange={event => { const exam = event.target.value; setExamination(exam); setSubject(subjects.find(item => item.exam === exam)?.name ?? "Mathematics"); }}><option>PSLE</option><option>JCE</option><option>BGCSE</option></select></label>
           <label>Subject<select value={subject} onChange={event => setSubject(event.target.value)}>{examSubjects.map(name => <option key={name}>{name}</option>)}</select></label>
           <button className="primary modal-primary" onClick={beginSearch}>See matching tutors <Arrow /></button><small className="fine-print">No payment required · Change your subject anytime</small>
-        </> : <>
-          <p className="eyebrow">Welcome back</p><h2>Log in to Studacad</h2><button className="social-login">G <span>Continue with Google</span></button><button className="social-login">◎ <span>Continue with Apple</span></button><div className="divider"><span>or</span></div><label>Email<input type="email" placeholder="you@example.com" /></label><button className="primary modal-primary">Continue with email <Arrow /></button><small className="fine-print">Demo only — no account will be created.</small>
-        </>}
+        </>
       </div></div>}
     </main>
   );
