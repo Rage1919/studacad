@@ -168,3 +168,69 @@ test("financial and audit records are append-only", async () => {
     await db.close();
   }
 });
+
+test("tutor onboarding enforces reviewer authority and publishes only approved active profiles", async () => {
+  const db = new PGlite();
+  try {
+    await apply(db, await readMigrationFiles());
+    await db.exec(`
+      insert into public.user_accounts (id, auth_subject, email, display_name, status, email_verified_at)
+      values
+        ('10000000-0000-4000-8000-000000000011', '20000000-0000-4000-8000-000000000011', 'applicant@example.test', 'Masego Tutor', 'active', now()),
+        ('10000000-0000-4000-8000-000000000012', '20000000-0000-4000-8000-000000000012', 'admin@example.test', 'Admin', 'active', now());
+      insert into public.user_roles (user_id, role)
+      values ('10000000-0000-4000-8000-000000000011', 'learner'), ('10000000-0000-4000-8000-000000000012', 'admin');
+    `);
+    const saved = await db.query(`
+      select public.save_tutor_application(
+        '10000000-0000-4000-8000-000000000011', null::uuid,
+        '{
+          "legalName":"Masego Tutor","phoneE164":"+26771234567","district":"South-East","town":"Gaborone",
+          "headline":"Patient mathematics tutor for Botswana learners",
+          "biography":"I use careful explanations, worked examples, and exam-style practice to help every learner build confidence and answer questions independently.",
+          "teachingExperience":"3–5 years","qualification":"Bachelor of Education","institution":"University of Botswana",
+          "languages":["English","Setswana"],"basePriceCredits":80,"sessionDurationMinutes":60,
+          "days":["Mon","Wed"],"startTime":"16:00","endTime":"19:00","consent":true,
+          "subjectEntries":[{"examination":"PSLE","subject":"Mathematics"}],"formats":["online_1to1"]
+        }'::jsonb
+      ) as id
+    `);
+    const applicationId = saved.rows[0].id;
+    const documents = [
+      ["identity", "tutor_identity", "identity.pdf", "application/pdf"],
+      ["qualification", "tutor_qualification", "qualification.pdf", "application/pdf"],
+      ["profile_image", "profile_image", "profile.jpg", "image/jpeg"]
+    ];
+    for (const [documentType, kind, filename, contentType] of documents) {
+      await db.query(`
+        select public.register_tutor_application_document(
+          $1, $2, $3, $4::public.object_kind, $5, $6, $7, 1024, repeat('a', 64), 'test-clean'
+        )
+      `, ["10000000-0000-4000-8000-000000000011", applicationId, documentType, kind, `applicant/${filename}`, filename, contentType]);
+    }
+
+    await db.query("select public.transition_tutor_application($1, $2, 'submitted', null, null)", ["10000000-0000-4000-8000-000000000011", applicationId]);
+    await assert.rejects(
+      db.query("select public.transition_tutor_application($1, $2, 'submitted', null, null)", ["10000000-0000-4000-8000-000000000011", applicationId]),
+      /Invalid or unauthorized/
+    );
+    await assert.rejects(
+      db.query("select public.transition_tutor_application($1, $2, 'under_review', null, null)", ["10000000-0000-4000-8000-000000000011", applicationId]),
+      /Invalid or unauthorized/
+    );
+    assert.equal((await db.query("select count(*)::integer as count from public.public_tutor_marketplace_profiles")).rows[0].count, 0);
+
+    await db.query("select public.transition_tutor_application($1, $2, 'under_review', 'Evidence opened', null)", ["10000000-0000-4000-8000-000000000012", applicationId]);
+    await db.query("select public.transition_tutor_application($1, $2, 'approved', 'Evidence verified', 'Your application is approved.')", ["10000000-0000-4000-8000-000000000012", applicationId]);
+    assert.equal((await db.query("select count(*)::integer as count from public.public_tutor_marketplace_profiles")).rows[0].count, 1);
+
+    await db.query("select public.transition_tutor_application($1, $2, 'suspended', 'Policy investigation', 'Your profile is temporarily suspended.')", ["10000000-0000-4000-8000-000000000012", applicationId]);
+    assert.equal((await db.query("select count(*)::integer as count from public.public_tutor_marketplace_profiles")).rows[0].count, 0);
+    await db.exec("update public.object_files set retention_until = now() - interval '1 day' where kind = 'tutor_identity'");
+    const expiredFile = (await db.query("select id from public.object_files where kind = 'tutor_identity'")).rows[0];
+    assert.equal((await db.query("select public.finalize_expired_object_deletion($1) as deleted", [expiredFile.id])).rows[0].deleted, true);
+    assert.equal((await db.query("select count(*)::integer as count from public.audit_events where action = 'storage.retention_deleted'")).rows[0].count, 1);
+  } finally {
+    await db.close();
+  }
+});

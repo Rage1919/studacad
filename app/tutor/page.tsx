@@ -13,6 +13,7 @@ const MessageIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M
 const HeartIcon = ({ filled = false }: { filled?: boolean }) => <svg viewBox="0 0 24 24" aria-hidden="true" className={filled ? "filled" : ""}><path d="M12 20s-7-4.3-7-10a4 4 0 0 1 7-2.7A4 4 0 0 1 19 10c0 5.7-7 10-7 10Z" /></svg>;
 const ShareIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V3m0 0L8 7m4-4 4 4" /><path d="M7 10H5v10h14V10h-2" /></svg>;
 const WhatsAppIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.6a8 8 0 0 1-11.8 7L4 20l1.4-4A8 8 0 1 1 20 11.6Z" /><path d="M8.5 7.8c.4 2.8 2.6 5 5.4 5.6l1.1-1.1 2 .9-.3 2c-.2.8-1 1.3-1.8 1.2-5.1-.7-9-4.7-9.4-9.8-.1-.8.5-1.6 1.3-1.8l2-.2.8 2.1-1.1 1.1Z" /></svg>;
+const staticPreview = process.env.NEXT_PUBLIC_STUDACAD_STATIC_PREVIEW === "true";
 
 type SessionFormat = Tutor["sessionFormats"][number];
 type ScheduleMode = "private" | "group";
@@ -76,8 +77,16 @@ export default function TutorProfilePage() {
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("id") ?? "";
-    const match = findTutor(id) ?? null;
-    setTutor(match);
+    if (staticPreview) {
+      setTutor(findTutor(id) ?? null);
+      return;
+    }
+    void fetch(`/api/tutors/${encodeURIComponent(id)}`)
+      .then(async response => {
+        const result = await response.json() as { tutor?: Tutor | null };
+        setTutor(response.ok ? result.tutor ?? null : null);
+      })
+      .catch(() => setTutor(null));
   }, []);
 
   if (tutor === undefined) return <main className="lms-page"><LmsHeader /><div className="loading-state">Loading tutor profile…</div></main>;

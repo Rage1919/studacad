@@ -25,6 +25,8 @@ Before public launch, the existing private Sites deployment acts as `staging`. A
 | `SUPABASE_SECRET_KEY` | Yes | Staging/production | Data-platform owner | Server-only administrative API key |
 | `SUPABASE_PRIVATE_BUCKET` | No | Staging/production | Data-platform owner | Must be `studacad-private` |
 | `DATABASE_URL` | Yes | Migrations/maintenance | Data-platform owner | PostgreSQL session-pooler connection URL |
+| `STUDACAD_MALWARE_SCAN_URL` | No | Server tutor uploads | Security/operations owner | HTTPS endpoint for synchronous private-evidence scanning |
+| `STUDACAD_MALWARE_SCAN_TOKEN` | Yes | Server tutor uploads | Security/operations owner | Bearer credential for the malware-scanning gateway |
 
 Each roadmap issue must add its variables to this table and to `.env.example`. Secrets must be created in the provider’s environment store, restricted to the minimum set of maintainers, rotated after suspected exposure or staff/contractor access changes, and never copied into issues, pull requests, screenshots, logs, or client-prefixed variables.
 

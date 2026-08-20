@@ -16,7 +16,7 @@ export default function TutorProfilePage() {
       <section className="tutor-onboarding-shell">
         <div className="tutor-onboarding-topbar">
           <Link href="/become-a-tutor#apply"><span aria-hidden="true">←</span> Back to overview</Link>
-          <span>Demo application · Saved on this screen only</span>
+          <span>Private application · Drafts save to your account</span>
         </div>
         <TutorProfileForm />
       </section>

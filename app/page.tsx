@@ -1,13 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useLms } from "./components/LmsProvider";
 import { TutorMenu } from "./components/TutorMenu";
 import { WalletIcon } from "./components/WalletIcon";
 import { ReferralIcon } from "./components/ReferralIcon";
 import { AccountNav } from "./components/AccountNav";
-import { tutors } from "./lib/tutors";
+import { tutors as demoTutors, type Tutor } from "./lib/tutors";
 
 const Arrow = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5" /></svg>;
 const Star = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.5 6.3-.9L12 2.8Z" /></svg>;
@@ -38,14 +38,23 @@ const popularSubjectRows = (["PSLE", "JCE", "BGCSE"] as const).map(exam => ({
     .slice(0, 3)
 }));
 
-const featuredTutors = tutors.filter(tutor => ["masego", "thabo", "keneilwe", "kabelo", "naledi", "kagiso"].includes(tutor.id));
+const staticPreview = process.env.NEXT_PUBLIC_STUDACAD_STATIC_PREVIEW === "true";
 
 export default function Home() {
   const { credits } = useLms();
   const [modal, setModal] = useState<"search" | null>(null);
   const [examination, setExamination] = useState("PSLE");
   const [subject, setSubject] = useState("Mathematics");
+  const [featuredTutors, setFeaturedTutors] = useState<Tutor[]>(staticPreview ? demoTutors.slice(0, 6) : []);
   const examSubjects = useMemo(() => Array.from(new Set(subjects.filter(item => item.exam === examination).map(item => item.name))), [examination]);
+
+  useEffect(() => {
+    if (staticPreview) return;
+    void fetch("/api/tutors")
+      .then(response => response.ok ? response.json() : Promise.reject(new Error("Tutor marketplace unavailable")))
+      .then((result: { tutors?: Tutor[] }) => setFeaturedTutors((result.tutors ?? []).slice(0, 6)))
+      .catch(() => setFeaturedTutors([]));
+  }, []);
 
   const beginSearch = () => {
     setModal(null);
@@ -92,7 +101,7 @@ export default function Home() {
           <h1>Get exam ready<br />with the right<br />support</h1>
           <div className="button-row hero-actions"><button className="primary hero-cta" onClick={() => setModal("search")}>Find a subject tutor <Arrow /></button><Link className="outline" href="/learn">Browse courses</Link></div>
           <div className="mini-proof">
-            <div className="faces"><img src={tutors[0].image} alt="" /><img src={tutors[1].image} alt="" /><img src={tutors[2].image} alt="" /></div>
+            {featuredTutors.length > 0 && <div className="faces">{featuredTutors.slice(0, 3).map(tutor => <img key={tutor.id} src={tutor.image} alt="" />)}</div>}
             <span>Focused on <strong>PSLE, JCE &amp; BGCSE</strong></span>
           </div>
         </div>
@@ -163,7 +172,7 @@ export default function Home() {
       <section className="how" id="how">
         <p className="eyebrow">One connected learning journey</p><h2>How Studacad works</h2>
         <div className="steps">
-          <article><span className="step-number">1</span><div className="step-art art-one"><div className="search-chip">⌕ BGCSE Maths · today</div><div className="mini-profile"><img src={tutors[0].image} alt="" /><span><strong>Masego</strong><small>Mathematics · 4.9 ★</small></span></div></div><h3>Find subject support</h3><p>Choose your examination and subject, then match with a tutor by price, availability, and teaching style.</p></article>
+          <article><span className="step-number">1</span><div className="step-art art-one"><div className="search-chip">⌕ BGCSE Maths · today</div>{featuredTutors[0] && <div className="mini-profile"><img src={featuredTutors[0].image} alt="" /><span><strong>{featuredTutors[0].name}</strong><small>{featuredTutors[0].subject} · {featuredTutors[0].rating} ★</small></span></div>}</div><h3>Find subject support</h3><p>Choose your examination and subject, then match with a tutor by price, availability, and teaching style.</p></article>
           <article><span className="step-number">2</span><div className="step-art art-two"><div className="bubble b1">Let&apos;s factorise x² + 5x + 6.</div><div className="bubble b2">I get it now! ✨</div><div className="sound-wave">▂▄▆▃▇▄▂</div></div><h3>Learn live and online</h3><p>Use credits to book focused one-to-one tutorials built around your PSLE, JCE, or BGCSE goals.</p></article>
           <article><span className="step-number">3</span><div className="step-art art-three"><div className="streak"><strong>86%</strong><span>quiz score</span></div><div className="chart"><i /><i /><i /><i /><i /></div></div><h3>Revise and test</h3><p>Continue in My Learning with videos, revision papers, and short tests that record progress and reward mastery.</p></article>
         </div>
