@@ -1,0 +1,35 @@
+{
+  "profile": "conservative-initial-launch",
+  "publicSearch": {
+    "concurrency": 50,
+    "requests": 500,
+    "p95Milliseconds": 1000,
+    "maximumErrorRate": 0.01
+  },
+  "slotCalculation": {
+    "concurrency": 25,
+    "requests": 250,
+    "p95Milliseconds": 1500,
+    "maximumErrorRate": 0.01
+  },
+  "simultaneousBooking": {
+    "contendersPerPrivateSlot": 10,
+    "expectedConfirmed": 1,
+    "maximumP95Milliseconds": 2000
+  },
+  "messageBurst": {
+    "concurrentUsers": 20,
+    "messagesPerUserPerMinute": 10,
+    "maximumErrorRate": 0.01
+  },
+  "notificationBurst": {
+    "events": 1000,
+    "maximumQueueAgeSeconds": 300,
+    "maximumDeadLetters": 0
+  },
+  "webhookReplay": {
+    "events": 500,
+    "duplicateRatio": 0.5,
+    "expectedDuplicateFinancialEffects": 0
+  }
+}

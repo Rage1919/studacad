@@ -78,6 +78,9 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Validate release-readiness evidence contract
+        run: pnpm readiness:check
+
       - name: Build server deployment artifact
         run: pnpm build
 

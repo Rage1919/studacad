@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-08-20",
+  "decision": "NO_GO",
+  "decisionOwner": "Product owner (Rage1919)",
+  "summary": "Repository-level controls are implemented and locally verified, but production-like staging, external providers, review attestations, monitoring, restore/load drills, DNS, and the stacked roadmap merge are incomplete.",
+  "gates": [
+    {
+      "id": "automated-suite",
+      "status": "verified-local",
+      "owner": "Engineering owner",
+      "evidence": [
+        "pnpm typecheck",
+        "pnpm lint",
+        "pnpm format:check",
+        "pnpm test",
+        "pnpm build",
+        "pnpm test:e2e"
+      ]
+    },
+    {
+      "id": "staging-journeys",
+      "status": "blocked-external",
+      "owner": "Release owner",
+      "evidence": ["docs/release/staging-readiness-checklist.md"]
+    },
+    {
+      "id": "observability-slos",
+      "status": "implemented-unprovisioned",
+      "owner": "Technical operations owner",
+      "evidence": [
+        "/api/health",
+        "/api/internal/operations",
+        "docs/operations/observability-and-slos.md"
+      ]
+    },
+    {
+      "id": "recovery-drills",
+      "status": "blocked-external",
+      "owner": "Data-platform owner",
+      "evidence": [
+        "pnpm db:verify-restore",
+        "docs/runbooks/recovery-and-provider-drills.md"
+      ]
+    },
+    {
+      "id": "capacity-load",
+      "status": "implemented-unexercised",
+      "owner": "Engineering owner",
+      "evidence": [
+        "config/release-capacity.json",
+        "pnpm load:staging",
+        "docs/release/launch-capacity-and-load-plan.md"
+      ]
+    },
+    {
+      "id": "security-privacy-review",
+      "status": "verified-local-external-review-pending",
+      "owner": "Security and policy owners",
+      "evidence": ["docs/release/final-security-privacy-review.md"]
+    },
+    {
+      "id": "release-rollback",
+      "status": "documented-unexercised",
+      "owner": "Release owner",
+      "evidence": ["docs/release/go-live-and-rollback-plan.md"]
+    },
+    {
+      "id": "roadmap-disposition",
+      "status": "blocked-unmerged",
+      "owner": "Product owner (Rage1919)",
+      "evidence": ["docs/release/roadmap-disposition.md"]
+    }
+  ],
+  "knownDefects": {
+    "critical": 0,
+    "high": 0,
+    "basis": "No critical or high software defect is known from the completed local automated suite; GitHub CI and production-like staging evidence remain required."
+  },
+  "launchRisks": [
+    {
+      "id": "R-001",
+      "severity": "launch-blocker",
+      "owner": "Product and deployment owners",
+      "risk": "studacad.com DNS, TLS, and a production server deployment are not provisioned.",
+      "disposition": "Deferred external setup; keep the public launch closed."
+    },
+    {
+      "id": "R-002",
+      "severity": "launch-blocker",
+      "owner": "Security operations owner",
+      "risk": "No production malware scanner exists for tutor evidence.",
+      "disposition": "Tutor evidence uploads fail closed; do not launch tutor onboarding until provisioned and tested."
+    },
+    {
+      "id": "R-003",
+      "severity": "launch-blocker",
+      "owner": "Provider owners",
+      "risk": "Meet, transactional email, and WhatsApp production accounts and credentials are not provisioned.",
+      "disposition": "Provider copies and meeting provisioning remain unavailable; complete test-account staging drills before launch."
+    },
+    {
+      "id": "R-004",
+      "severity": "launch-blocker",
+      "owner": "Policy owners",
+      "risk": "Qualified legal, privacy, safeguarding, and accessibility review attestations are absent.",
+      "disposition": "Do not represent the policies or operating model as professionally approved."
+    },
+    {
+      "id": "R-005",
+      "severity": "launch-blocker",
+      "owner": "Technical operations and data-platform owners",
+      "risk": "Monitoring, alert routing, backup restore timing, load tests, and failure drills have not run against production-like staging.",
+      "disposition": "Run and sign the evidence checklist before go-live."
+    },
+    {
+      "id": "R-006",
+      "severity": "launch-blocker",
+      "owner": "Product owner (Rage1919)",
+      "risk": "The ordered roadmap exists as a stacked draft pull-request chain and is not merged to the release branch.",
+      "disposition": "Review and merge in order only after each check is green."
+    },
+    {
+      "id": "R-007",
+      "severity": "accepted-feature-deferral",
+      "owner": "Product owner (Rage1919)",
+      "risk": "Online payment-gateway checkout is intentionally deferred.",
+      "disposition": "Keep online deposits unavailable; only audited verified offline deposits issue one credit per whole BWP."
+    }
+  ]
+}
