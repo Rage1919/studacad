@@ -39,7 +39,7 @@ jobs:
 
       - name: Configure Pages
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Exclude server-only API routes
         run: mv app/api ../studacad-api-routes && mv app/auth ../studacad-auth-routes && mv proxy.ts ../studacad-proxy.ts
