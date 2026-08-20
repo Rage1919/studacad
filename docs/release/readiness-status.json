@@ -3,11 +3,11 @@
   "reviewedAt": "2026-08-20",
   "decision": "NO_GO",
   "decisionOwner": "Product owner (Rage1919)",
-  "summary": "Repository-level controls are implemented and locally verified, but production-like staging, external providers, review attestations, monitoring, restore/load drills, DNS, and the stacked roadmap merge are incomplete.",
+  "summary": "The protected roadmap stack, private server deployment, studacad.com DNS, and TLS are complete. Public launch remains blocked by a production-like database/auth environment, external providers, review attestations, monitoring, and restore/load/failure drills.",
   "gates": [
     {
       "id": "automated-suite",
-      "status": "verified-local",
+      "status": "verified-integrated",
       "owner": "Engineering owner",
       "evidence": [
         "pnpm typecheck",
@@ -67,7 +67,7 @@
     },
     {
       "id": "roadmap-disposition",
-      "status": "blocked-unmerged",
+      "status": "verified-merged",
       "owner": "Product owner (Rage1919)",
       "evidence": ["docs/release/roadmap-disposition.md"]
     }
@@ -75,15 +75,15 @@
   "knownDefects": {
     "critical": 0,
     "high": 0,
-    "basis": "No critical or high software defect is known from the completed local automated suite; GitHub CI and production-like staging evidence remain required."
+    "basis": "No critical or high software defect is known from the completed local and protected integrated GitHub suites; production-like staging evidence remains required."
   },
   "launchRisks": [
     {
       "id": "R-001",
-      "severity": "launch-blocker",
+      "severity": "resolved",
       "owner": "Product and deployment owners",
-      "risk": "studacad.com DNS, TLS, and a production server deployment are not provisioned.",
-      "disposition": "Deferred external setup; keep the public launch closed."
+      "risk": "studacad.com DNS, TLS, and a server-capable deployment were not provisioned.",
+      "disposition": "Resolved 2026-08-20: authoritative DNS, TLS, and the owner-only Sites release-candidate deployment are active. Keep public access closed until the remaining gates pass."
     },
     {
       "id": "R-002",
@@ -115,10 +115,10 @@
     },
     {
       "id": "R-006",
-      "severity": "launch-blocker",
+      "severity": "resolved",
       "owner": "Product owner (Rage1919)",
-      "risk": "The ordered roadmap exists as a stacked draft pull-request chain and is not merged to the release branch.",
-      "disposition": "Review and merge in order only after each check is green."
+      "risk": "The ordered roadmap existed as an unmerged stacked draft pull-request chain.",
+      "disposition": "Resolved 2026-08-20: PRs #30 through #45 were updated, protected-check validated, and merged into main in dependency order."
     },
     {
       "id": "R-007",
@@ -126,6 +126,13 @@
       "owner": "Product owner (Rage1919)",
       "risk": "Online payment-gateway checkout is intentionally deferred.",
       "disposition": "Keep online deposits unavailable; only audited verified offline deposits issue one credit per whole BWP."
+    },
+    {
+      "id": "R-008",
+      "severity": "launch-blocker",
+      "owner": "Data-platform and identity owners",
+      "risk": "A production-like Supabase database, private storage, authentication project, migrations, and initial admin are not provisioned and evidenced.",
+      "disposition": "Keep account and transactional journeys fail-closed; provision staging, apply and verify migrations, configure auth, and attach isolation/journey evidence before public launch."
     }
   ]
 }
