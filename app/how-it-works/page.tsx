@@ -98,8 +98,8 @@ export default function HowItWorksPage() {
             <Link className="primary" href="/tutors">
               Find a tutor
             </Link>
-            <Link className="how-outline" href="/learn">
-              Explore learning
+            <Link className="how-outline" href="/courses">
+              Explore courses
             </Link>
           </div>
         </div>

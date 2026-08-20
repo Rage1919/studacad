@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { StudacadFooter } from "../components/StudacadFooter";
 import "./help.css";
 const faqs = [
   [
@@ -33,38 +32,35 @@ const faqs = [
 ];
 export default function Help() {
   return (
-    <>
-      <main className="help-page">
-        <nav>
-          <Link href="/">Studacad</Link>
-          <Link href="/contact">Contact support</Link>
-        </nav>
-        <header>
-          <p className="eyebrow">Help centre</p>
-          <h1>Answers for learning, booking, and tutoring</h1>
-          <p>
-            Standard cases target an initial response within one business day.
-            Safety cases target four hours. For imminent danger, contact local
-            emergency services first.
-          </p>
-        </header>
-        <section>
-          {faqs.map(([q, a]) => (
-            <details key={q}>
-              <summary>{q}</summary>
-              <p>{a}</p>
-            </details>
-          ))}
-        </section>
-        <aside>
-          <h2>Still need help?</h2>
-          <p>
-            Sign in to create a private case with a trackable Studacad case ID.
-          </p>
-          <Link href="/contact">Contact support →</Link>
-        </aside>
-      </main>
-      <StudacadFooter />
-    </>
+    <main className="help-page">
+      <nav>
+        <Link href="/">Studacad</Link>
+        <Link href="/contact">Contact support</Link>
+      </nav>
+      <header>
+        <p className="eyebrow">Help centre</p>
+        <h1>Answers for learning, booking, and tutoring</h1>
+        <p>
+          Standard cases target an initial response within one business day.
+          Safety cases target four hours. For imminent danger, contact local
+          emergency services first.
+        </p>
+      </header>
+      <section>
+        {faqs.map(([q, a]) => (
+          <details key={q}>
+            <summary>{q}</summary>
+            <p>{a}</p>
+          </details>
+        ))}
+      </section>
+      <aside>
+        <h2>Still need help?</h2>
+        <p>
+          Sign in to create a private case with a trackable Studacad case ID.
+        </p>
+        <Link href="/contact">Contact support →</Link>
+      </aside>
+    </main>
   );
 }

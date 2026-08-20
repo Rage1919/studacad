@@ -142,7 +142,7 @@ export default function MessagesPage() {
                 ))}
               </div>
               <div className="conversation-actions">
-                <Link className="outline" href={`/tutor?id=${first.tutorId}`}>
+                <Link className="outline" href={`/tutors/${first.tutorId}`}>
                   Continue conversation
                 </Link>
                 <button

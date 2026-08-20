@@ -40,9 +40,9 @@ export function StudacadFooter() {
         </div>
         <div>
           <h4>Learning tools</h4>
-          <Link href="/learn">Tutorial videos</Link>
-          <Link href="/learn">Revision papers</Link>
-          <Link href="/learn">Lesson tests</Link>
+          <Link href="/courses">Published courses</Link>
+          <Link href="/courses">Course lesson outlines</Link>
+          <Link href="/learn">My learning</Link>
           <Link href="/#schools">School support</Link>
         </div>
         <div>

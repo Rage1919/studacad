@@ -234,7 +234,7 @@ export default function BookingsPage() {
               </a>
             )}
             {booking.tutorSlug && (
-              <Link href={`/tutor?id=${booking.tutorSlug}`}>Tutor profile</Link>
+              <Link href={`/tutors/${booking.tutorSlug}`}>Tutor profile</Link>
             )}
             {booking.canCancel && (
               <button

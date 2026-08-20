@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useLms } from "./components/LmsProvider";
 import { TutorMenu } from "./components/TutorMenu";
@@ -8,6 +8,7 @@ import { WalletIcon } from "./components/WalletIcon";
 import { ReferralIcon } from "./components/ReferralIcon";
 import { AccountNav } from "./components/AccountNav";
 import type { Tutor } from "./lib/tutors";
+import { useDialogFocus } from "./lib/useDialogFocus";
 
 const Arrow = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -56,6 +57,8 @@ export default function Home() {
   const [featuredTutors, setFeaturedTutors] = useState<Tutor[]>([]);
   const [featuredLoading, setFeaturedLoading] = useState(true);
   const [featuredError, setFeaturedError] = useState("");
+  const closeSearch = useCallback(() => setModal(null), []);
+  const searchDialogRef = useDialogFocus(modal === "search", closeSearch);
   const examSubjects = useMemo(
     () =>
       Array.from(
@@ -89,7 +92,7 @@ export default function Home() {
   }, []);
 
   const beginSearch = () => {
-    setModal(null);
+    closeSearch();
     window.location.href = `/tutors?exam=${encodeURIComponent(examination)}&subject=${encodeURIComponent(subject)}`;
   };
 
@@ -171,7 +174,7 @@ export default function Home() {
             >
               Find a subject tutor <Arrow />
             </button>
-            <Link className="outline" href="/learn">
+            <Link className="outline" href="/courses">
               Browse courses
             </Link>
           </div>
@@ -179,7 +182,14 @@ export default function Home() {
             {featuredTutors.length > 0 && (
               <div className="faces">
                 {featuredTutors.slice(0, 3).map((tutor) => (
-                  <img key={tutor.id} src={tutor.image} alt="" />
+                  <img
+                    key={tutor.id}
+                    src={tutor.image}
+                    alt=""
+                    width={320}
+                    height={320}
+                    decoding="async"
+                  />
                 ))}
               </div>
             )}
@@ -198,11 +208,18 @@ export default function Home() {
             <img
               src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=1000&q=88"
               alt="Tutor teaching a Botswana examination subject online"
+              width={1000}
+              height={667}
+              decoding="async"
+              fetchPriority="high"
             />
             <div className="student-pip">
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=85"
                 alt="Student in an online tutorial"
+                width={400}
+                height={400}
+                decoding="async"
               />
             </div>
             <div className="lesson-pill">
@@ -347,6 +364,10 @@ export default function Home() {
                 <img
                   src={tutor.image}
                   alt={`${tutor.name}, ${tutor.examination} ${tutor.subject} tutor`}
+                  width={900}
+                  height={900}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <em className="featured-badge">Approved profile</em>
               </div>
@@ -369,7 +390,7 @@ export default function Home() {
                   <span>
                     <strong>{tutor.price}</strong> credits / 50-min lesson
                   </span>
-                  <Link href={`/tutor?id=${tutor.id}`}>View profile</Link>
+                  <Link href={`/tutors/${tutor.id}`}>View profile</Link>
                 </div>
               </div>
             </article>
@@ -408,7 +429,14 @@ export default function Home() {
               <div className="search-chip">⌕ BGCSE Maths · today</div>
               {featuredTutors[0] && (
                 <div className="mini-profile">
-                  <img src={featuredTutors[0].image} alt="" />
+                  <img
+                    src={featuredTutors[0].image}
+                    alt=""
+                    width={320}
+                    height={320}
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <span>
                     <strong>{featuredTutors[0].name}</strong>
                     <small>
@@ -515,6 +543,10 @@ export default function Home() {
           <img
             src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=1000&q=85"
             alt="Subject tutor teaching online"
+            width={1000}
+            height={667}
+            loading="lazy"
+            decoding="async"
           />
         </div>
       </section>
@@ -561,17 +593,26 @@ export default function Home() {
       </section>
 
       {modal && (
-        <div className="modal-backdrop" onMouseDown={() => setModal(null)}>
-          <div
+        <div className="modal-backdrop" onMouseDown={closeSearch}>
+          <section
+            ref={searchDialogRef}
             className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="home-search-heading"
             onMouseDown={(event) => event.stopPropagation()}
           >
-            <button className="modal-close" onClick={() => setModal(null)}>
+            <button
+              className="modal-close"
+              type="button"
+              aria-label="Close tutor search"
+              onClick={closeSearch}
+            >
               ×
             </button>
             <>
               <p className="eyebrow">Find your Studacad match</p>
-              <h2>Which subject needs support?</h2>
+              <h2 id="home-search-heading">Which subject needs support?</h2>
               <label>
                 Examination
                 <select
@@ -608,7 +649,7 @@ export default function Home() {
                 No payment required · Change your subject anytime
               </small>
             </>
-          </div>
+          </section>
         </div>
       )}
     </main>
