@@ -48,6 +48,9 @@ jobs:
         run: pnpm exec next build
         env:
           PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          STUDACAD_ENV: preview
+          STUDACAD_APP_URL: ${{ steps.pages.outputs.origin }}${{ steps.pages.outputs.base_path }}
+          STUDACAD_RELEASE_SHA: ${{ github.sha }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
