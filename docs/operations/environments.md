@@ -33,6 +33,12 @@ Before public launch, the existing private Sites deployment acts as `staging`. A
 | `GOOGLE_MEET_ORGANIZER_EMAIL` | No | Meet provisioning | Google Workspace owner | Account whose authorization creates Studacad spaces |
 | `GOOGLE_MEET_LINK_RELEASE_MINUTES` | No | Optional | Product/operations owner | Minutes before start when participants can retrieve a link; defaults to 1440 |
 | `MEET_PROVISIONER_SECRET` | Yes | Meet provisioning | Deployment owner | At least 32 random characters used only by the scheduled internal worker call |
+| `WHATSAPP_ACCESS_TOKEN` | Yes | Optional WhatsApp delivery | Messaging owner | Cloud API token stored server-side only |
+| `WHATSAPP_PHONE_NUMBER_ID` | No | Optional WhatsApp delivery | Messaging owner | Meta phone-number resource ID |
+| `WHATSAPP_GRAPH_VERSION` | No | Optional WhatsApp delivery | Messaging owner | Explicit reviewed API version such as `v23.0` |
+| `WHATSAPP_VERIFY_TOKEN` | Yes | WhatsApp webhooks | Messaging owner | Random subscription challenge token |
+| `WHATSAPP_APP_SECRET` | Yes | WhatsApp webhooks | Messaging owner | Validates `X-Hub-Signature-256`; required outside development/test |
+| `MESSAGE_DELIVERY_SECRET` | Yes | WhatsApp delivery worker | Deployment owner | At least 32 random characters used only by the scheduled internal worker call |
 
 Each roadmap issue must add its variables to this table and to `.env.example`. Secrets must be created in the provider’s environment store, restricted to the minimum set of maintainers, rotated after suspected exposure or staff/contractor access changes, and never copied into issues, pull requests, screenshots, logs, or client-prefixed variables.
 

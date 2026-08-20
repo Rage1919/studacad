@@ -32,6 +32,8 @@ export const ratePolicyFor = (method, pathname) => {
     return { scope: "auth-email", limit: 5, windowMs: 15 * 60_000 };
   if (method === "POST" && pathname === "/api/whatsapp")
     return { scope: "whatsapp-webhook", limit: 300, windowMs: 60_000 };
+  if (method === "POST" && pathname === "/api/messages")
+    return { scope: "message-send", limit: 30, windowMs: 60_000 };
   if (
     method === "POST" &&
     /\/api\/tutor-applications\/[^/]+\/documents$/.test(pathname)
