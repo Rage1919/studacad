@@ -1,0 +1,27 @@
+.notification-admin {
+  max-width: 1000px;
+  margin: auto;
+  padding: 2rem 1.25rem 5rem;
+  color: #10233f;
+}
+.notification-admin header {
+  padding: 2rem 0;
+}
+.notification-admin section {
+  background: #fff;
+  border: 1px solid #dbe5e9;
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin: 1rem 0;
+}
+.notification-admin article {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.3rem;
+  border-top: 1px solid #e1e9ec;
+  padding: 1rem 0;
+}
+.notification-admin article small {
+  grid-column: 1/-1;
+  color: #5a6a76;
+}

@@ -1,0 +1,63 @@
+.notification-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 2rem 1.25rem 5rem;
+  color: #10233f;
+}
+.notification-page header {
+  padding: 2rem 0;
+}
+.notification-page h1 {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+}
+.preference-card,
+.notification-list {
+  display: grid;
+  gap: 0.9rem;
+  background: #fff;
+  border: 1px solid #dbe5e9;
+  border-radius: 18px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.preference-card label {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+}
+.preference-card button {
+  justify-self: start;
+  border: 0;
+  border-radius: 9px;
+  background: #10233f;
+  color: #fff;
+  padding: 0.8rem 1.1rem;
+}
+.notification-list button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.3rem;
+  text-align: left;
+  border: 0;
+  border-top: 1px solid #e2eaed;
+  background: transparent;
+  padding: 1rem 0;
+  color: inherit;
+}
+.notification-list button.unread span {
+  font-weight: 800;
+}
+.notification-list small {
+  grid-column: 1;
+}
+.notification-list time {
+  color: #586a77;
+}
+@media (max-width: 600px) {
+  .notification-list button {
+    grid-template-columns: 1fr;
+  }
+  .notification-list time {
+    grid-column: 1;
+  }
+}

@@ -27,6 +27,8 @@ const expectedTables = [
   "message_deliveries",
   "message_reports",
   "notifications",
+  "notification_preferences",
+  "notification_suppressions",
   "object_files",
   "payment_refunds",
   "payments",

@@ -18,6 +18,7 @@ This is the durable record of product defaults and explicit owner decisions made
 | 2026-08-20 | Messaging | In-app messaging is the durable source of truth. WhatsApp is an optional delivery copy only for an admin-verified private tutor channel; missing credentials or provider failures never discard the in-app message or open a generated phone-number link. | Default privacy and reliability decision. Messages are limited to 2,000 characters and 30 sends per minute per network address/process. |
 | 2026-08-20 | Tutor economics | Studacad retains 20% of completed booking credits; the tutor receives 80%, rounded to whole credits. Earnings remain pending for the seven-day dispute window. | Default conservative marketplace policy. Refund rounding is cumulative so the ledger always balances. |
 | 2026-08-20 | Tutor payouts | Manual payouts require at least 100 available credits; one tutor credit settles as BWP 1.00. Destinations are verified by an admin and stored only as a masked label plus an external KYC case reference. | Default while a payout provider is deferred. Failed payouts return the reservation and may be retried with an audited new attempt. |
+| 2026-08-20 | Notifications | In-app notification records are authoritative. Email is the only external notification channel; security, application, booking-change, meeting, payment, refund, and payout email is essential. Users may disable lesson-reminder and new-message email. | Default consent-aware scope. Marketing is excluded. Booking reminders are scheduled at 24 hours and one hour and are cancelled/recomputed on booking changes. |
 
 ## Deferred owner/external setup
 
@@ -26,3 +27,4 @@ This is the durable record of product defaults and explicit owner decisions made
 - Select a production malware-scanning provider before enabling tutor-document uploads in production.
 - Create the dedicated Google Workspace Meet organizer, complete OAuth consent/verification if Google requires it, and store its Meet credentials in the deployment secret store.
 - Provision a WhatsApp Business/Cloud API account, explicitly select a supported Graph API version, configure the signed webhook, and store its credentials before enabling WhatsApp delivery.
+- Select a transactional email gateway, verify `studacad.com` sender authentication, configure the signed bounce/complaint webhook, and store notification credentials before enabling external email delivery.

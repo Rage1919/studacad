@@ -150,6 +150,8 @@ test("every user-triggered API mutation retains same-origin CSRF enforcement", a
     join("app", "api", "internal", "meet", "provision", "route.ts"),
     join("app", "api", "internal", "messages", "deliver", "route.ts"),
     join("app", "api", "internal", "earnings", "release", "route.ts"),
+    join("app", "api", "internal", "notifications", "deliver", "route.ts"),
+    join("app", "api", "webhooks", "email", "route.ts"),
   ]);
   for (const path of routes) {
     const source = await readFile(path, "utf8");
