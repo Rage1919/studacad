@@ -69,6 +69,9 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
+      - name: Check formatting
+        run: pnpm format:check
+
       - name: Lint
         run: pnpm lint
 
@@ -77,3 +80,12 @@ jobs:
 
       - name: Build server deployment artifact
         run: pnpm build
+
+      - name: Install Chromium for browser checks
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Browser security and sign-in checks
+        run: pnpm test:e2e
+
+      - name: Audit production dependencies
+        run: pnpm security:dependencies

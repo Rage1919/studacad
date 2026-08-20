@@ -4,6 +4,7 @@ import { authErrorResponse, requireViewer } from "../../../../../server/auth/vie
 import { findActiveUserByEmail } from "../../../../../server/db/repositories/user-accounts";
 import { creditsForBwp, normalizeVerifiedDeposit } from "../../../../../server/wallet/policy.mjs";
 import { recordVerifiedDeposit } from "../../../../../server/wallet/repository";
+import { appendCorrelatedAudit } from "../../../../../server/security/request-audit";
 
 export async function POST(request: Request) {
   try {
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
       depositReference: normalized.value.depositReference,
       idempotencyKey: normalized.value.idempotencyKey
     });
+    await appendCorrelatedAudit({ request, actorUserId: viewer.id, action: "wallet.verified_deposit_request", entityType: "ledger_transaction", entityId: transactionId, metadata: { amountBwp: normalized.value.amountBwp } });
     return Response.json({
       transactionId,
       learner: { email: learner.email, displayName: learner.display_name },

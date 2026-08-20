@@ -3,6 +3,7 @@ import { assertSameOrigin, CsrfError } from "../../../server/auth/csrf.mjs";
 import { authErrorResponse, requireViewer } from "../../../server/auth/viewer";
 import { normalizeBookingRequest } from "../../../server/bookings/policy.mjs";
 import { bookingErrorResponse, createConfirmedBooking, listBookingsForViewer } from "../../../server/bookings/repository";
+import { appendCorrelatedAudit } from "../../../server/security/request-audit";
 
 export async function GET() {
   try {
@@ -28,6 +29,9 @@ export async function POST(request: Request) {
       displayTimezone: normalized.value.timezone, learnerLocation: normalized.value.learnerLocation || null,
       idempotencyKey: normalized.value.idempotencyKey
     });
+    if (booking && typeof booking === "object" && !Array.isArray(booking) && typeof booking.bookingId === "string") {
+      await appendCorrelatedAudit({ request, actorUserId: viewer.id, action: "booking.create_request", entityType: "booking", entityId: booking.bookingId });
+    }
     return Response.json({ booking }, { status: 201, headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     if (error instanceof CsrfError) return Response.json({ error: error.message }, { status: 403 });

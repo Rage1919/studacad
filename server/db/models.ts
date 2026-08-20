@@ -318,6 +318,18 @@ export type LedgerEntry = {
   created_at: IsoTimestamp;
 }
 
+export type ProviderWebhookEvent = {
+  id: Uuid;
+  provider: string;
+  provider_event_id: string;
+  event_type: string;
+  payload_sha256: string;
+  status: "received" | "processed" | "ignored" | "failed";
+  failure_reason: string | null;
+  received_at: IsoTimestamp;
+  processed_at: IsoTimestamp | null;
+}
+
 export type AuditEvent = {
   id: Uuid;
   actor_user_id: Uuid | null;
