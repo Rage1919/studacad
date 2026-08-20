@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { LmsHeader } from "../components/LmsHeader";
+import { publicMetadata } from "../lib/seo";
 import { TutorApplicationForm } from "./TutorApplicationForm";
 import "./become-a-tutor.css";
 
-export const metadata: Metadata = {
-  title: "Become a tutor | Studacad",
+export const metadata = publicMetadata({
+  title: "Become a verified tutor",
   description:
     "Teach PSLE, JCE, and BGCSE learners across Botswana with Studacad. Set your schedule, subject focus, and lesson format.",
-};
+  path: "/become-a-tutor",
+});
 
 const steps = [
   [
@@ -105,16 +106,26 @@ export default function BecomeATutorPage() {
               className="tutor-hero-slice slice-one"
               src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=1000&q=88"
               alt=""
+              width={1000}
+              height={667}
+              decoding="async"
             />
             <img
               className="tutor-hero-slice slice-two"
               src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=1000&q=88"
               alt=""
+              width={1000}
+              height={667}
+              decoding="async"
             />
             <img
               className="tutor-hero-main"
               src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=1000&q=88"
               alt="Tutor smiling while teaching from a laptop"
+              width={1000}
+              height={667}
+              decoding="async"
+              fetchPriority="high"
             />
             <span className="tutor-photo-note note-one">Set your hours</span>
             <span className="tutor-photo-note note-two">
@@ -157,11 +168,19 @@ export default function BecomeATutorPage() {
           <img
             src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1100&q=88"
             alt="Tutors collaborating around a laptop"
+            width={1100}
+            height={733}
+            loading="lazy"
+            decoding="async"
           />
           <div className="tutor-reach-crop">
             <img
               src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1100&q=88"
               alt=""
+              width={1100}
+              height={733}
+              loading="lazy"
+              decoding="async"
             />
           </div>
           <span>
@@ -176,6 +195,10 @@ export default function BecomeATutorPage() {
             className="story-front"
             src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=88"
             alt="Tutor preparing an online lesson"
+            width={900}
+            height={900}
+            loading="lazy"
+            decoding="async"
           />
         </div>
         <div className="tutor-story-copy">
@@ -212,6 +235,10 @@ export default function BecomeATutorPage() {
           <img
             src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1100&q=88"
             alt="Tutor preparing an online lesson"
+            width={1100}
+            height={733}
+            loading="lazy"
+            decoding="async"
           />
         </div>
         <div className="tutor-apply-copy">

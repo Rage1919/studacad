@@ -1850,3 +1850,20 @@ footer {
     transition-duration: 0.01ms !important;
   }
 }
+
+.skip-link {
+  position: fixed;
+  z-index: 10000;
+  top: 12px;
+  left: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #fff;
+  background: #111;
+  font-weight: 700;
+  transform: translateY(-180%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}

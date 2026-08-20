@@ -277,11 +277,15 @@ export default function TutorsPage() {
             <article className="search-tutor-card" key={tutor.id}>
               <Link
                 className={`search-tutor-photo ${tutor.color}`}
-                href={`/tutor?id=${tutor.id}`}
+                href={`/tutors/${tutor.id}`}
               >
                 <img
                   src={tutor.image}
                   alt={`${tutor.name}, ${tutor.examination} ${tutor.subject} tutor`}
+                  width={900}
+                  height={900}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <span>
                   Next: {nextMatchingSlot(tutor.availability, availability)}
@@ -312,7 +316,7 @@ export default function TutorsPage() {
                   <span>
                     <strong>{tutor.price}</strong> credits / 50 min
                   </span>
-                  <Link href={`/tutor?id=${tutor.id}`}>View profile →</Link>
+                  <Link href={`/tutors/${tutor.id}`}>View profile →</Link>
                 </div>
               </div>
             </article>

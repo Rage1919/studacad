@@ -53,6 +53,86 @@ test("a fresh marketplace shows an honest empty state", async ({ page }) => {
   await expect(page.getByText("Demo learner", { exact: false })).toHaveCount(0);
 });
 
+test("keyboard navigation reaches content and the tutor-search dialog restores focus", async ({
+  page,
+}) => {
+  await page.route("**/api/tutors", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ tutors: [] }),
+    }),
+  );
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  const skip = page.getByRole("link", { name: "Skip to main content" });
+  await expect(skip).toBeFocused();
+  await skip.press("Enter");
+  await expect(page.locator("#main-content")).toBeFocused();
+
+  const opener = page.getByRole("button", { name: "Find a subject tutor" });
+  await opener.click();
+  const dialog = page.getByRole("dialog", {
+    name: "Which subject needs support?",
+  });
+  await expect(dialog).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Close tutor search" }),
+  ).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(opener).toBeFocused();
+});
+
+test("public homepage stays within local layout-shift and load guardrails", async ({
+  page,
+}) => {
+  await page.route("**/api/tutors", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ tutors: [] }),
+    }),
+  );
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.addInitScript(() => {
+    const measuredWindow = window as Window & { __studacadCls?: number };
+    measuredWindow.__studacadCls = 0;
+    new PerformanceObserver((list) => {
+      for (const item of list.getEntries()) {
+        const entry = item as PerformanceEntry & {
+          hadRecentInput: boolean;
+          value: number;
+        };
+        if (!entry.hadRecentInput)
+          measuredWindow.__studacadCls =
+            (measuredWindow.__studacadCls ?? 0) + entry.value;
+      }
+    }).observe({ type: "layout-shift", buffered: true });
+  });
+  await page.goto("/");
+  await page.waitForTimeout(750);
+  const metrics = await page.evaluate(() => {
+    const measuredWindow = window as Window & { __studacadCls?: number };
+    const navigation = performance.getEntriesByType(
+      "navigation",
+    )[0] as PerformanceNavigationTiming;
+    const paints = performance.getEntriesByType("largest-contentful-paint");
+    return {
+      cls: measuredWindow.__studacadCls ?? 0,
+      lcp: paints.at(-1)?.startTime ?? 0,
+      responseStart: navigation?.responseStart ?? 0,
+      animationDuration: getComputedStyle(
+        document.querySelector(".brand-mark") ?? document.body,
+      ).animationDuration,
+    };
+  });
+  expect(metrics.cls).toBeLessThanOrEqual(0.1);
+  expect(metrics.lcp).toBeLessThanOrEqual(4_000);
+  expect(metrics.responseStart).toBeLessThanOrEqual(1_500);
+  expect(["0.01ms", "0.00001s", "1e-05s"]).toContain(metrics.animationDuration);
+});
+
 test("oversized API requests fail before route execution", async ({
   request,
 }) => {

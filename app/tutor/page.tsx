@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LmsHeader } from "../components/LmsHeader";
 import { useLms } from "../components/LmsProvider";
 import type { Tutor } from "../lib/tutors";
 import type { TutorMessage } from "../lib/tutorMessages";
 import { useTutorFavourites } from "../lib/useTutorFavourites";
 import { useTutorMessages } from "../lib/useTutorMessages";
+import { useDialogFocus } from "../lib/useDialogFocus";
 
 const MessageIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -77,7 +78,7 @@ const displaySlot = (slot: string) => {
     : slot;
 };
 
-export default function TutorProfilePage() {
+export default function TutorProfilePage({ slug }: { slug?: string }) {
   const { credits, refreshWallet } = useLms();
   const {
     favouriteIds,
@@ -111,6 +112,10 @@ export default function TutorProfilePage() {
   const [messageError, setMessageError] = useState(false);
   const [messageSending, setMessageSending] = useState(false);
   const [actionNotice, setActionNotice] = useState("");
+  const closeSchedule = useCallback(() => setScheduleOpen(false), []);
+  const closeMessage = useCallback(() => setMessageOpen(false), []);
+  const scheduleDialogRef = useDialogFocus(scheduleOpen, closeSchedule);
+  const messageDialogRef = useDialogFocus(messageOpen, closeMessage);
   const {
     messages: messageHistory,
     error: messageLoadError,
@@ -118,7 +123,8 @@ export default function TutorProfilePage() {
   } = useTutorMessages(tutor?.id);
 
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("id") ?? "";
+    const id =
+      slug ?? new URLSearchParams(window.location.search).get("id") ?? "";
     setTutor(undefined);
     setTutorLoadError("");
     void fetch(`/api/tutors/${encodeURIComponent(id)}`)
@@ -143,7 +149,7 @@ export default function TutorProfilePage() {
             : "Unable to load the tutor profile.",
         );
       });
-  }, [profileAttempt]);
+  }, [profileAttempt, slug]);
 
   useEffect(() => {
     if (!tutor) return;
@@ -458,6 +464,9 @@ export default function TutorProfilePage() {
               <img
                 src={tutor.image}
                 alt={`${tutor.name}, ${tutor.examination} ${tutor.subject} tutor`}
+                width={900}
+                height={900}
+                decoding="async"
               />
               <span>Approved tutor</span>
             </div>
@@ -565,6 +574,8 @@ export default function TutorProfilePage() {
                   preload="metadata"
                   poster={tutor.image}
                   aria-label={`${tutor.name}'s introductory video`}
+                  width={1280}
+                  height={720}
                 >
                   <source src={tutor.introVideo} type="video/mp4" />
                   Your browser does not support video playback.
@@ -827,10 +838,11 @@ export default function TutorProfilePage() {
           className="schedule-modal-backdrop"
           role="presentation"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setScheduleOpen(false);
+            if (event.target === event.currentTarget) closeSchedule();
           }}
         >
           <section
+            ref={scheduleDialogRef}
             className="weekly-schedule-modal"
             role="dialog"
             aria-modal="true"
@@ -844,7 +856,7 @@ export default function TutorProfilePage() {
               <button
                 type="button"
                 aria-label="Close weekly schedule"
-                onClick={() => setScheduleOpen(false)}
+                onClick={closeSchedule}
               >
                 ×
               </button>
@@ -972,7 +984,7 @@ export default function TutorProfilePage() {
               <button
                 className="primary"
                 type="button"
-                onClick={() => setScheduleOpen(false)}
+                onClick={closeSchedule}
                 disabled={selectedLessonSlots[scheduleMode].length === 0}
               >
                 Use selected time
@@ -987,10 +999,11 @@ export default function TutorProfilePage() {
           className="message-modal-backdrop"
           role="presentation"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setMessageOpen(false);
+            if (event.target === event.currentTarget) closeMessage();
           }}
         >
           <section
+            ref={messageDialogRef}
             className="message-modal"
             role="dialog"
             aria-modal="true"
@@ -1000,12 +1013,18 @@ export default function TutorProfilePage() {
               className="message-close"
               type="button"
               aria-label="Close message window"
-              onClick={() => setMessageOpen(false)}
+              onClick={closeMessage}
             >
               ×
             </button>
             <div className="message-tutor">
-              <img src={tutor.image} alt="" />
+              <img
+                src={tutor.image}
+                alt=""
+                width={160}
+                height={160}
+                decoding="async"
+              />
               <div>
                 <p className="eyebrow">Message before booking</p>
                 <h2 id="message-heading">Ask {tutor.name} a question</h2>
@@ -1075,7 +1094,7 @@ export default function TutorProfilePage() {
               <button
                 type="button"
                 className="secondary"
-                onClick={() => setMessageOpen(false)}
+                onClick={closeMessage}
               >
                 Cancel
               </button>
