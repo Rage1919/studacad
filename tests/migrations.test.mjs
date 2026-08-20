@@ -35,6 +35,7 @@ const expectedTables = [
   "referral_rewards",
   "tutor_applications",
   "tutor_earnings",
+  "tutor_favourites",
   "tutor_payouts",
   "tutor_profiles",
   "user_accounts",

@@ -46,3 +46,27 @@ export async function createAuthorizedPrivateDownload(input: {
   });
   return signedUrl;
 }
+
+export async function createAuthorizedLearningResourceDownload(input: {
+  resourceId: string;
+  learnerUserId: string;
+  expiresInSeconds?: number;
+}): Promise<string> {
+  const client = getDatabaseAdminClient();
+  const resource = await client.from("course_resources").select("*").eq("id", input.resourceId).single();
+  if (resource.error) throw new Error("Learning resource not found.", { cause: resource.error });
+  const purchase = await client.from("course_purchases").select("*")
+    .eq("learner_user_id", input.learnerUserId).eq("course_id", resource.data.course_id).eq("status", "completed").maybeSingle();
+  if (purchase.error || !purchase.data) throw new Error("Learning resource access denied.", { cause: purchase.error ?? undefined });
+  const file = await client.from("object_files").select("*").eq("id", resource.data.file_id).is("deleted_at", null).single();
+  if (file.error || file.data.scan_status !== "clean") throw new Error("Learning resource is not available.", { cause: file.error ?? undefined });
+  const signedUrl = await storage.createSignedDownloadUrl(file.data.object_key, input.expiresInSeconds);
+  await appendAuditEvent({
+    actorUserId: input.learnerUserId,
+    action: "learning_resource.download_url_issued",
+    entityType: "course_resource",
+    entityId: resource.data.id,
+    metadata: { expiresInSeconds: input.expiresInSeconds ?? 300 }
+  });
+  return signedUrl;
+}

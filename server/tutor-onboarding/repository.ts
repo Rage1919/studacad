@@ -214,6 +214,7 @@ export async function createTutorDocumentDownload(fileId: string, viewer: { id: 
 
 export type PublicTutorDto = {
   id: string;
+  profileId: string;
   name: string;
   examination: "PSLE" | "JCE" | "BGCSE";
   subject: string;
@@ -245,6 +246,7 @@ const mapPublicTutor = async (profile: PublicTutorMarketplaceProfile): Promise<P
   const formats = Array.isArray(profile.formats) ? profile.formats.filter(item => typeof item === "string").map(item => item.replaceAll("_", "-")) as PublicTutorDto["sessionFormats"] : [];
   return {
     id: profile.slug,
+    profileId: profile.id,
     name: profile.display_name,
     examination: primary.examination as PublicTutorDto["examination"],
     subject: primary.subject,

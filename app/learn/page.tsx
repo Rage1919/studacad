@@ -7,16 +7,19 @@ import { useLms } from "../components/LmsProvider";
 import { credit } from "../lib/lms";
 
 export default function LearningHub() {
-  const { courses, purchasedCourseIds, completedLessonIds, quizScores, purchaseCourse, credits } = useLms();
+  const { courses, purchasedCourseIds, completedLessonIds, quizScores, purchaseCourse, credits, ready, learningError } = useLms();
   const [notice, setNotice] = useState("");
+  const [purchasing, setPurchasing] = useState("");
   const purchased = courses.filter(course => purchasedCourseIds.includes(course.id));
   const discover = courses.filter(course => !purchasedCourseIds.includes(course.id));
   const totalLessons = purchased.reduce((sum, course) => sum + course.lessons.length, 0);
   const completedCount = completedLessonIds.filter(id => purchased.some(course => course.lessons.some(lesson => lesson.id === id))).length;
 
-  const buy = (courseId: string) => {
-    const result = purchaseCourse(courseId);
+  const buy = async (courseId: string) => {
+    setPurchasing(courseId);
+    const result = await purchaseCourse(courseId);
     setNotice(result.message);
+    setPurchasing("");
     window.setTimeout(() => setNotice(""), 3500);
   };
 
@@ -24,6 +27,8 @@ export default function LearningHub() {
     <main className="lms-page">
       <LmsHeader current="learn" />
       {notice && <div className="toast" role="status">{notice}</div>}
+      {!ready && <div className="loading-state">Loading your learning library…</div>}
+      {learningError && <div className="empty-state"><strong>Learning data is temporarily unavailable.</strong><p>{learningError}</p></div>}
       <section className="lms-hero">
         <div><p className="eyebrow">My Studacad</p><h1>Your exam prep dashboard</h1><p>Book subject support, watch syllabus-focused tutorials, download revision papers, and check your understanding after every lesson.</p></div>
         <div className="learning-stats">
@@ -54,7 +59,7 @@ export default function LearningHub() {
         <div className="course-grid discover-grid">
           {discover.map(course => <article className="course-card" key={course.id} style={{ "--course-color": course.color } as React.CSSProperties}>
             <div className="course-banner"><span>{course.examination} · {course.subject}</span></div>
-            <div className="course-body"><p className="course-author">{course.lessons.length} lessons · With {course.instructor}</p><h3>{course.title}</h3><p>{course.description}</p><div className="course-purchase"><strong>{credit(course.price)}</strong><button onClick={() => buy(course.id)} disabled={credits < course.price}>{credits < course.price ? "Top up to unlock" : "Buy course"}</button></div></div>
+            <div className="course-body"><p className="course-author">{course.lessons.length} lessons · With {course.instructor}</p><h3>{course.title}</h3><p>{course.description}</p><div className="course-purchase"><strong>{credit(course.price)}</strong><button onClick={() => void buy(course.id)} disabled={credits < course.price || purchasing === course.id}>{credits < course.price ? "Top up to unlock" : purchasing === course.id ? "Purchasing…" : "Buy course"}</button></div></div>
           </article>)}
           {discover.length === 0 && <div className="empty-state"><strong>Your library is full.</strong><p>You own every course currently available.</p></div>}
         </div>

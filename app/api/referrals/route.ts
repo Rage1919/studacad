@@ -1,52 +1,29 @@
-import { findTutor } from "../../lib/tutors";
-import { listReferralRewards, recordReferralReward } from "../../lib/referralRewards";
 import { readRuntimeEnvironment } from "../../../server/runtime-env.mjs";
 import { assertSameOrigin, CsrfError } from "../../../server/auth/csrf.mjs";
 import { authErrorResponse, requireViewer } from "../../../server/auth/viewer";
+import { normalizeReferralCode } from "../../../server/learning/policy.mjs";
+import { attachReferralCode, getReferralStatus, learningErrorResponse } from "../../../server/learning/repository";
 
-const validCode = (value: string) => /^[A-Z0-9-]{6,32}$/.test(value);
-
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    await requireViewer();
-    const referralCode = (new URL(request.url).searchParams.get("code") ?? "").trim().toUpperCase();
-    if (!validCode(referralCode)) return Response.json({ rewards: [] });
-    return Response.json({ rewards: listReferralRewards(referralCode) }, { headers: { "Cache-Control": "private, no-store" } });
+    const viewer = await requireViewer();
+    return Response.json(await getReferralStatus(viewer.id), { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
-    return authErrorResponse(error);
+    try { return authErrorResponse(error); } catch { return learningErrorResponse(error); }
   }
 }
 
 export async function POST(request: Request) {
   try {
     assertSameOrigin(request, readRuntimeEnvironment(process.env).appUrl);
-    await requireViewer();
+    const viewer = await requireViewer(["learner"]);
+    const body = await request.json().catch(() => null) as { code?: unknown } | null;
+    const normalized = normalizeReferralCode(body?.code);
+    if (!normalized.valid) return Response.json({ error: "A valid referral code is required." }, { status: 400 });
+    const attributionId = await attachReferralCode(viewer.id, normalized.code);
+    return Response.json({ attributionId }, { status: 201, headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     if (error instanceof CsrfError) return Response.json({ error: error.message }, { status: 403 });
-    return authErrorResponse(error);
+    try { return authErrorResponse(error); } catch { return learningErrorResponse(error); }
   }
-  const body = await request.json().catch(() => null) as {
-    referralCode?: string;
-    visitorId?: string;
-    trialBookingId?: string;
-    tutorId?: string;
-  } | null;
-  const referralCode = body?.referralCode?.trim().toUpperCase() ?? "";
-  const visitorId = body?.visitorId?.trim() ?? "";
-  const trialBookingId = body?.trialBookingId?.trim() ?? "";
-  const tutor = findTutor(body?.tutorId ?? "");
-
-  if (!validCode(referralCode) || !visitorId || !trialBookingId || !tutor) {
-    return Response.json({ error: "Valid referral and trial booking details are required" }, { status: 400 });
-  }
-
-  const result = recordReferralReward({
-    referralCode,
-    visitorId,
-    trialBookingId,
-    tutorId: tutor.id,
-    tutorName: tutor.name
-  });
-  return Response.json(result, { status: result.created ? 201 : 200 });
 }
-
