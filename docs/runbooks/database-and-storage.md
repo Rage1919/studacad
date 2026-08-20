@@ -66,9 +66,10 @@ Restore procedure:
 2. Create a new non-public Supabase project in the approved region.
 3. Restore the selected logical backup using the provider's documented restore tooling.
 4. Run `pnpm db:migrate` from the release being restored.
-5. Verify migration history, row counts, foreign keys, ledger totals, private bucket access, and critical smoke tests.
-6. Change staging secrets first, validate, then switch production secrets.
-7. Keep the old project read-only until the recovery window closes.
+5. Set `STUDACAD_RESTORE_DRILL_ACK=restored-non-production` and run `pnpm db:verify-restore`; retain its timed output.
+6. Verify migration history, row counts, foreign keys, ledger totals, private bucket access, and critical smoke tests.
+7. Change staging secrets first, validate, then switch production secrets.
+8. Keep the old project read-only until the recovery window closes.
 
 ## Rollback
 

@@ -1,5 +1,7 @@
 # Deploy and rollback Studacad
 
+The final release gate, support coverage, feature-closure rules, and launch stop conditions are maintained in `docs/release/go-live-and-rollback-plan.md`.
+
 ## Preconditions
 
 - The target commit is pushed to GitHub and its `Validate, test, and build` check is green.

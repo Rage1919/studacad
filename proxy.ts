@@ -12,6 +12,10 @@ import {
   requestId,
   securityHeaders,
 } from "./server/security/http-policy.mjs";
+import {
+  logOperationalEvent,
+  operationalRoute,
+} from "./server/operations/structured-log.mjs";
 
 const applyHeaders = (
   response: NextResponse,
@@ -51,6 +55,16 @@ export async function proxy(request: NextRequest) {
       contentLength === -1 ||
       (contentLength !== null && contentLength > bodyLimit)
     ) {
+      logOperationalEvent({
+        level: "warn",
+        event: "http.request_rejected",
+        requestId: correlationId,
+        details: {
+          reason: "body_limit",
+          method: request.method,
+          route: operationalRoute(request.nextUrl.pathname),
+        },
+      });
       return applyHeaders(
         NextResponse.json(
           { error: "Request body is too large." },
@@ -66,6 +80,17 @@ export async function proxy(request: NextRequest) {
       policy,
     );
     if (!rate.allowed) {
+      logOperationalEvent({
+        level: "warn",
+        event: "http.request_rejected",
+        requestId: correlationId,
+        details: {
+          reason: "rate_limit",
+          method: request.method,
+          route: operationalRoute(request.nextUrl.pathname),
+          scope: policy.scope,
+        },
+      });
       const limited = NextResponse.json(
         { error: "Too many requests. Try again later." },
         { status: 429 },

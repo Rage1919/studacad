@@ -8,7 +8,7 @@
     "build": "vinext build && node scripts/performance/check-budgets.mjs && node scripts/prepare-sites.mjs",
     "start": "node scripts/validate-runtime-env.mjs && node scripts/validate-database-env.mjs && vinext start",
     "lint": "eslint . --max-warnings 0",
-    "format:check": "prettier --check next.config.mjs proxy.ts playwright.config.ts app/api/whatsapp/route.ts server/security server/meet server/messages tests/e2e",
+    "format:check": "prettier --check next.config.mjs proxy.ts playwright.config.ts app/api/whatsapp/route.ts app/api/internal/operations/route.ts app/api/internal/earnings/release/route.ts app/api/internal/meet/provision/route.ts app/api/internal/messages/deliver/route.ts app/api/internal/notifications/deliver/route.ts server/security server/meet server/messages server/operations scripts/release scripts/load scripts/database/verify-restored-database.mjs tests/e2e tests/production-readiness.test.mjs",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
     "test:e2e": "playwright test",
@@ -17,9 +17,13 @@
     "env:check": "node scripts/validate-runtime-env.mjs",
     "db:env:check": "node scripts/validate-database-env.mjs",
     "db:migrate": "node scripts/database/migrate.mjs",
+    "db:verify-restore": "node scripts/database/verify-restored-database.mjs",
     "db:seed:development": "node scripts/database/seed-development.mjs",
     "storage:delete-expired": "node scripts/storage/delete-expired-objects.mjs",
     "auth:bootstrap-admin": "node scripts/auth/bootstrap-admin.mjs",
+    "readiness:check": "node scripts/release/check-readiness.mjs --scope=repository",
+    "readiness:staging": "node scripts/release/check-readiness.mjs --scope=staging",
+    "load:staging": "node scripts/load/staging-public-load.mjs",
     "check": "pnpm env:check && pnpm db:env:check && pnpm format:check && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
   },
   "dependencies": {

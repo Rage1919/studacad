@@ -430,6 +430,10 @@ export type Database = {
       };
     };
     Functions: {
+      operational_readiness_snapshot: {
+        Args: Record<string, never>;
+        Returns: Json;
+      };
       save_tutor_application: {
         Args: {
           p_applicant_user_id: string;

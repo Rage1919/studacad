@@ -2,43 +2,44 @@
 
 ## Environment contract
 
-| Environment | Purpose | Access | Server features |
-| --- | --- | --- | --- |
-| `development` | Local feature development | Developer machine | Yes, using local/test services |
-| `test` | Deterministic CI checks | CI only | Provider fakes/test accounts only |
-| `preview` | GitHub Pages UI review | Public preview URL | No; `app/api` is removed before export |
-| `staging` | Private production-like candidate | Project owner and approved reviewers | Yes |
-| `production` | Canonical public service | Public after release approval | Yes |
+| Environment   | Purpose                           | Access                               | Server features                        |
+| ------------- | --------------------------------- | ------------------------------------ | -------------------------------------- |
+| `development` | Local feature development         | Developer machine                    | Yes, using local/test services         |
+| `test`        | Deterministic CI checks           | CI only                              | Provider fakes/test accounts only      |
+| `preview`     | GitHub Pages UI review            | Public preview URL                   | No; `app/api` is removed before export |
+| `staging`     | Private production-like candidate | Project owner and approved reviewers | Yes                                    |
+| `production`  | Canonical public service          | Public after release approval        | Yes                                    |
 
 Before public launch, the existing private Sites deployment acts as `staging`. At launch it becomes `production`; a future requirement for simultaneous long-lived staging and production must be resolved before post-launch changes are promoted.
 
 ## Required variables
 
-| Name | Secret | Required | Owner | Purpose |
-| --- | --- | --- | --- | --- |
-| `STUDACAD_ENV` | No | Always | Deployment owner | Selects the validated environment contract |
-| `STUDACAD_APP_URL` | No | Always | Deployment owner | Canonical absolute origin; HTTPS outside local/test |
-| `STUDACAD_RELEASE_SHA` | No | Recommended | Deployment pipeline | Identifies the deployed commit |
-| `STUDACAD_DEPLOYED_AT` | No | Recommended | Deployment pipeline | ISO-8601 deployment timestamp |
-| `SUPABASE_URL` | No | Staging/production | Data-platform owner | HTTPS endpoint for the selected Supabase project |
-| `SUPABASE_PUBLISHABLE_KEY` | No | Staging/production | Data-platform owner | Browser/server key used with row-level authorization |
-| `SUPABASE_SECRET_KEY` | Yes | Staging/production | Data-platform owner | Server-only administrative API key |
-| `SUPABASE_PRIVATE_BUCKET` | No | Staging/production | Data-platform owner | Must be `studacad-private` |
-| `DATABASE_URL` | Yes | Migrations/maintenance | Data-platform owner | PostgreSQL session-pooler connection URL |
-| `STUDACAD_MALWARE_SCAN_URL` | No | Server tutor uploads | Security/operations owner | HTTPS endpoint for synchronous private-evidence scanning |
-| `STUDACAD_MALWARE_SCAN_TOKEN` | Yes | Server tutor uploads | Security/operations owner | Bearer credential for the malware-scanning gateway |
-| `GOOGLE_MEET_CLIENT_ID` | No | Meet provisioning | Google Workspace owner | OAuth client for the dedicated Meet organizer |
-| `GOOGLE_MEET_CLIENT_SECRET` | Yes | Meet provisioning | Google Workspace owner | Server-only OAuth client credential |
-| `GOOGLE_MEET_REFRESH_TOKEN` | Yes | Meet provisioning | Google Workspace owner | Refresh credential for the dedicated organizer account |
-| `GOOGLE_MEET_ORGANIZER_EMAIL` | No | Meet provisioning | Google Workspace owner | Account whose authorization creates Studacad spaces |
-| `GOOGLE_MEET_LINK_RELEASE_MINUTES` | No | Optional | Product/operations owner | Minutes before start when participants can retrieve a link; defaults to 1440 |
-| `MEET_PROVISIONER_SECRET` | Yes | Meet provisioning | Deployment owner | At least 32 random characters used only by the scheduled internal worker call |
-| `WHATSAPP_ACCESS_TOKEN` | Yes | Optional WhatsApp delivery | Messaging owner | Cloud API token stored server-side only |
-| `WHATSAPP_PHONE_NUMBER_ID` | No | Optional WhatsApp delivery | Messaging owner | Meta phone-number resource ID |
-| `WHATSAPP_GRAPH_VERSION` | No | Optional WhatsApp delivery | Messaging owner | Explicit reviewed API version such as `v23.0` |
-| `WHATSAPP_VERIFY_TOKEN` | Yes | WhatsApp webhooks | Messaging owner | Random subscription challenge token |
-| `WHATSAPP_APP_SECRET` | Yes | WhatsApp webhooks | Messaging owner | Validates `X-Hub-Signature-256`; required outside development/test |
-| `MESSAGE_DELIVERY_SECRET` | Yes | WhatsApp delivery worker | Deployment owner | At least 32 random characters used only by the scheduled internal worker call |
+| Name                               | Secret | Required                      | Owner                      | Purpose                                                                             |
+| ---------------------------------- | ------ | ----------------------------- | -------------------------- | ----------------------------------------------------------------------------------- |
+| `STUDACAD_ENV`                     | No     | Always                        | Deployment owner           | Selects the validated environment contract                                          |
+| `STUDACAD_APP_URL`                 | No     | Always                        | Deployment owner           | Canonical absolute origin; HTTPS outside local/test                                 |
+| `STUDACAD_RELEASE_SHA`             | No     | Recommended                   | Deployment pipeline        | Identifies the deployed commit                                                      |
+| `STUDACAD_DEPLOYED_AT`             | No     | Recommended                   | Deployment pipeline        | ISO-8601 deployment timestamp                                                       |
+| `SUPABASE_URL`                     | No     | Staging/production            | Data-platform owner        | HTTPS endpoint for the selected Supabase project                                    |
+| `SUPABASE_PUBLISHABLE_KEY`         | No     | Staging/production            | Data-platform owner        | Browser/server key used with row-level authorization                                |
+| `SUPABASE_SECRET_KEY`              | Yes    | Staging/production            | Data-platform owner        | Server-only administrative API key                                                  |
+| `SUPABASE_PRIVATE_BUCKET`          | No     | Staging/production            | Data-platform owner        | Must be `studacad-private`                                                          |
+| `DATABASE_URL`                     | Yes    | Migrations/maintenance        | Data-platform owner        | PostgreSQL session-pooler connection URL                                            |
+| `OPERATIONS_HEALTH_SECRET`         | Yes    | Staging/production monitoring | Technical operations owner | Authenticates the private operational snapshot probe; at least 32 random characters |
+| `STUDACAD_MALWARE_SCAN_URL`        | No     | Server tutor uploads          | Security/operations owner  | HTTPS endpoint for synchronous private-evidence scanning                            |
+| `STUDACAD_MALWARE_SCAN_TOKEN`      | Yes    | Server tutor uploads          | Security/operations owner  | Bearer credential for the malware-scanning gateway                                  |
+| `GOOGLE_MEET_CLIENT_ID`            | No     | Meet provisioning             | Google Workspace owner     | OAuth client for the dedicated Meet organizer                                       |
+| `GOOGLE_MEET_CLIENT_SECRET`        | Yes    | Meet provisioning             | Google Workspace owner     | Server-only OAuth client credential                                                 |
+| `GOOGLE_MEET_REFRESH_TOKEN`        | Yes    | Meet provisioning             | Google Workspace owner     | Refresh credential for the dedicated organizer account                              |
+| `GOOGLE_MEET_ORGANIZER_EMAIL`      | No     | Meet provisioning             | Google Workspace owner     | Account whose authorization creates Studacad spaces                                 |
+| `GOOGLE_MEET_LINK_RELEASE_MINUTES` | No     | Optional                      | Product/operations owner   | Minutes before start when participants can retrieve a link; defaults to 1440        |
+| `MEET_PROVISIONER_SECRET`          | Yes    | Meet provisioning             | Deployment owner           | At least 32 random characters used only by the scheduled internal worker call       |
+| `WHATSAPP_ACCESS_TOKEN`            | Yes    | Optional WhatsApp delivery    | Messaging owner            | Cloud API token stored server-side only                                             |
+| `WHATSAPP_PHONE_NUMBER_ID`         | No     | Optional WhatsApp delivery    | Messaging owner            | Meta phone-number resource ID                                                       |
+| `WHATSAPP_GRAPH_VERSION`           | No     | Optional WhatsApp delivery    | Messaging owner            | Explicit reviewed API version such as `v23.0`                                       |
+| `WHATSAPP_VERIFY_TOKEN`            | Yes    | WhatsApp webhooks             | Messaging owner            | Random subscription challenge token                                                 |
+| `WHATSAPP_APP_SECRET`              | Yes    | WhatsApp webhooks             | Messaging owner            | Validates `X-Hub-Signature-256`; required outside development/test                  |
+| `MESSAGE_DELIVERY_SECRET`          | Yes    | WhatsApp delivery worker      | Deployment owner           | At least 32 random characters used only by the scheduled internal worker call       |
 
 Each roadmap issue must add its variables to this table and to `.env.example`. Secrets must be created in the provider’s environment store, restricted to the minimum set of maintainers, rotated after suspected exposure or staff/contractor access changes, and never copied into issues, pull requests, screenshots, logs, or client-prefixed variables.
 
