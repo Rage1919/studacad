@@ -552,6 +552,87 @@ export type ProviderWebhookEvent = {
   processed_at: IsoTimestamp | null;
 };
 
+export type TutorEarning = {
+  id: Uuid;
+  tutor_user_id: Uuid;
+  booking_id: Uuid;
+  gross_credits: number;
+  platform_fee_credits: number;
+  net_credits: number;
+  refunded_credits: number;
+  status: "pending" | "available" | "held" | "paid" | "reversed";
+  available_at: IsoTimestamp | null;
+  ledger_transaction_id: Uuid | null;
+  released_gross_credits: number | null;
+  released_platform_fee_credits: number | null;
+  released_net_credits: number | null;
+  released_at: IsoTimestamp | null;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
+};
+
+export type TutorPayoutDestination = {
+  id: Uuid;
+  tutor_user_id: Uuid;
+  provider: "manual_bank" | "manual_mobile_money";
+  masked_reference: string;
+  external_kyc_reference: string;
+  status: "verified" | "disabled";
+  verified_by_user_id: Uuid;
+  verified_at: IsoTimestamp;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
+};
+
+export type TutorPayout = {
+  id: Uuid;
+  tutor_user_id: Uuid;
+  status:
+    "requested" | "reviewing" | "processing" | "paid" | "failed" | "cancelled";
+  amount_minor: number;
+  currency: "BWP";
+  provider: string;
+  provider_payout_id: string | null;
+  destination_reference: string;
+  idempotency_key: string;
+  ledger_transaction_id: Uuid | null;
+  requested_at: IsoTimestamp;
+  paid_at: IsoTimestamp | null;
+  updated_at: IsoTimestamp;
+  credits: number;
+  destination_id: Uuid;
+  approved_by_user_id: Uuid | null;
+  failure_reason: string | null;
+  attempt_count: number;
+};
+
+export type TutorPayoutEvent = {
+  id: Uuid;
+  payout_id: Uuid;
+  from_status: TutorPayout["status"] | null;
+  to_status: TutorPayout["status"];
+  attempt_count: number;
+  actor_user_id: Uuid;
+  provider_reference: string | null;
+  reason: string | null;
+  ledger_transaction_id: Uuid | null;
+  created_at: IsoTimestamp;
+};
+
+export type BookingRefund = {
+  id: Uuid;
+  booking_id: Uuid;
+  learner_user_id: Uuid;
+  credits: number;
+  tutor_adjustment_credits: number;
+  platform_adjustment_credits: number;
+  reason: string;
+  idempotency_key: string;
+  ledger_transaction_id: Uuid;
+  actor_user_id: Uuid;
+  created_at: IsoTimestamp;
+};
+
 export type AuditEvent = {
   id: Uuid;
   actor_user_id: Uuid | null;

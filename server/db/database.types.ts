@@ -6,6 +6,7 @@ import type {
   BookingMeeting,
   BookingLocationDetail,
   BookingParticipant,
+  BookingRefund,
   ContactBlock,
   Conversation,
   ConversationParticipant,
@@ -42,6 +43,10 @@ import type {
   TutorProfileSubject,
   TutorQualification,
   TutorMessagingChannel,
+  TutorEarning,
+  TutorPayout,
+  TutorPayoutDestination,
+  TutorPayoutEvent,
   TutorFavouriteRecord,
   UserAccount,
   WalletAccount,
@@ -329,6 +334,31 @@ export type Database = {
         > & { id?: string; failure_reason?: string | null },
         Partial<ProviderWebhookEvent>
       >;
+      tutor_earnings: Table<
+        TutorEarning,
+        Record<string, never>,
+        Partial<TutorEarning>
+      >;
+      tutor_payout_destinations: Table<
+        TutorPayoutDestination,
+        Record<string, never>,
+        Partial<TutorPayoutDestination>
+      >;
+      tutor_payouts: Table<
+        TutorPayout,
+        Record<string, never>,
+        Partial<TutorPayout>
+      >;
+      tutor_payout_events: Table<
+        TutorPayoutEvent,
+        Record<string, never>,
+        Record<string, never>
+      >;
+      booking_refunds: Table<
+        BookingRefund,
+        Record<string, never>,
+        Record<string, never>
+      >;
       audit_events: Table<
         AuditEvent,
         Omit<AuditEvent, "id" | "created_at"> & { id?: string },
@@ -520,6 +550,54 @@ export type Database = {
         };
         Returns: Course["status"];
       };
+      release_available_tutor_earnings: {
+        Args: { p_limit?: number };
+        Returns: number;
+      };
+      tutor_payout_available_credits: {
+        Args: { p_tutor_user_id: string };
+        Returns: number;
+      };
+      verify_tutor_payout_destination: {
+        Args: {
+          p_actor: string;
+          p_tutor: string;
+          p_provider: string;
+          p_masked: string;
+          p_kyc_ref: string;
+        };
+        Returns: string;
+      };
+      request_tutor_payout: {
+        Args: {
+          p_tutor: string;
+          p_destination: string;
+          p_credits: number;
+          p_key: string;
+        };
+        Returns: string;
+      };
+      admin_transition_tutor_payout: {
+        Args: {
+          p_actor: string;
+          p_payout: string;
+          p_target: TutorPayout["status"];
+          p_provider_ref?: string | null;
+          p_reason?: string | null;
+        };
+        Returns: TutorPayout["status"];
+      };
+      admin_refund_booking: {
+        Args: {
+          p_actor: string;
+          p_booking: string;
+          p_learner: string;
+          p_credits: number;
+          p_reason: string;
+          p_key: string;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       account_status: UserAccount["status"];
@@ -527,6 +605,7 @@ export type Database = {
       booking_status: Booking["status"];
       tutor_application_status: TutorApplicationStatus;
       course_status: Course["status"];
+      payout_status: TutorPayout["status"];
     };
     CompositeTypes: Record<string, never>;
   };

@@ -1,0 +1,80 @@
+.payout-admin {
+  max-width: 1100px;
+  margin: auto;
+  padding: 2rem 1.25rem 5rem;
+  color: #10233f;
+}
+.payout-admin header {
+  padding: 2rem 0;
+}
+.payout-admin h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+.reconcile {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  border-radius: 12px;
+}
+.reconcile.good {
+  background: #dff5e8;
+}
+.reconcile.bad {
+  background: #ffe2df;
+}
+.ops-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.ops-grid form,
+.payout-list {
+  display: grid;
+  gap: 0.75rem;
+  background: white;
+  border: 1px solid #dce5ea;
+  padding: 1.25rem;
+  border-radius: 16px;
+}
+.ops-grid input,
+.ops-grid select,
+.ops-grid textarea {
+  padding: 0.7rem;
+  border: 1px solid #9bacba;
+  border-radius: 8px;
+}
+.payout-admin button {
+  border: 0;
+  border-radius: 8px;
+  background: #10233f;
+  color: white;
+  padding: 0.7rem 1rem;
+}
+.payout-list article {
+  padding: 1rem 0;
+  border-top: 1px solid #e4ebee;
+}
+.payout-list article > div:first-child {
+  display: flex;
+  justify-content: space-between;
+}
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+.notice {
+  background: #e9f7f2;
+  padding: 1rem;
+  border-radius: 10px;
+}
+@media (max-width: 750px) {
+  .ops-grid {
+    grid-template-columns: 1fr;
+  }
+  .reconcile {
+    display: grid;
+    gap: 0.3rem;
+  }
+}
