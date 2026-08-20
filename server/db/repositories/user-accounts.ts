@@ -13,6 +13,18 @@ export async function findUserByAuthSubject(authSubject: string): Promise<UserAc
   return data;
 }
 
+export async function findActiveUserByEmail(email: string): Promise<UserAccount | null> {
+  const { data, error } = await getDatabaseAdminClient()
+    .from("user_accounts")
+    .select("*")
+    .eq("email", email.trim().toLowerCase())
+    .eq("status", "active")
+    .maybeSingle();
+
+  if (error) throw new Error("Unable to load the learner account.", { cause: error });
+  return data;
+}
+
 export async function createUserAccount(input: {
   authSubject: string;
   email: string;

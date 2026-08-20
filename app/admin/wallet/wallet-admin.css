@@ -1,0 +1,13 @@
+.wallet-admin-page { min-height: 100vh; background: var(--cream); }
+.wallet-admin-hero { padding: 55px clamp(24px, 7vw, 105px); display: flex; align-items: end; justify-content: space-between; gap: 35px; border-bottom: 2px solid var(--ink); background: var(--yellow); }
+.wallet-admin-hero h1 { max-width: 850px; margin: 8px 0 14px; font-size: clamp(40px, 6vw, 72px); line-height: .95; letter-spacing: -4px; }
+.wallet-admin-hero p:last-child { max-width: 720px; line-height: 1.55; }
+.wallet-admin-hero > a { flex: 0 0 auto; padding: 12px 16px; border: 2px solid var(--ink); border-radius: 5px; background: white; font-weight: 900; }
+.wallet-admin-workspace { background: var(--cream); }
+.deposit-warning { margin-bottom: 24px; padding: 14px; display: grid; gap: 4px; border: 2px solid #7f1d1d; border-radius: 6px; background: #fef2f2; color: #7f1d1d; }
+.deposit-warning span, .verified-deposit-form > small, .verified-deposit-form label small { font-size: 11px; line-height: 1.45; }
+.verified-deposit-form > small { display: block; margin: -10px 0 20px; color: #5c5c5c; }
+.verified-deposit-form label small { display: block; margin-top: 6px; color: #5c5c5c; }
+.verified-deposit-form button:disabled { opacity: .6; cursor: wait; }
+.deposit-notice { margin: 18px 0 0; padding: 12px; border: 2px solid var(--ink); border-radius: 5px; background: #fff7cc; overflow-wrap: anywhere; }
+@media (max-width: 760px) { .wallet-admin-hero { align-items: start; flex-direction: column; }.wallet-admin-hero h1 { letter-spacing: -2px; } }

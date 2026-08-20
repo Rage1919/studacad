@@ -5,6 +5,8 @@ import type {
   Json,
   Message,
   ObjectFile,
+  LedgerEntry,
+  LedgerTransaction,
   PublicTutorMarketplaceProfile,
   TutorApplication,
   TutorApplicationDocument,
@@ -15,6 +17,7 @@ import type {
   TutorProfile,
   TutorQualification,
   UserAccount,
+  WalletAccount,
   WalletBalance
 } from "./models";
 
@@ -65,6 +68,13 @@ export type Database = {
       bookings: Table<Booking, Record<string, never>, Partial<Booking>>;
       courses: Table<Course, Record<string, never>, Partial<Course>>;
       messages: Table<Message, Record<string, never>, Partial<Message>>;
+      wallet_accounts: Table<WalletAccount, {
+        id?: string;
+        owner_user_id?: string | null;
+        system_code?: string | null;
+      }, Pick<WalletAccount, "closed_at">>;
+      ledger_transactions: Table<LedgerTransaction, Record<string, never>, Record<string, never>>;
+      ledger_entries: Table<LedgerEntry, Record<string, never>, Record<string, never>>;
       audit_events: Table<AuditEvent, Omit<AuditEvent, "id" | "created_at"> & { id?: string }, Record<string, never>>;
     };
     Views: {
@@ -110,6 +120,16 @@ export type Database = {
       finalize_expired_object_deletion: {
         Args: { p_file_id: string };
         Returns: boolean;
+      };
+      record_verified_deposit: {
+        Args: {
+          p_actor_user_id: string;
+          p_learner_user_id: string;
+          p_amount_bwp: number;
+          p_deposit_reference: string;
+          p_idempotency_key: string;
+        };
+        Returns: string;
       };
     };
     Enums: {

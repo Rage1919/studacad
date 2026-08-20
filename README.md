@@ -42,3 +42,7 @@ Accounts use server-managed Supabase passwordless email sessions. Configure the 
 ## Tutor verification
 
 Tutor drafts, private verification uploads, review decisions, approved profiles, and profile revisions are durable and account-scoped. Only approved, active profiles are returned by the production marketplace APIs. Deployments must configure a compatible malware-scanning gateway; uploads fail closed without one outside development/test. See [tutor onboarding and verification](docs/security/tutor-onboarding-and-verification.md).
+
+## Credits wallet
+
+Wallet balances and activity come from an immutable, server-authoritative ledger. The current pricing rule is one credit per whole Botswana pula received, with no bonus tiers. Online checkout is deferred; administrators may record only independently verified offline deposits through the audited workflow described in [wallet operations](docs/wallet-operations.md).
