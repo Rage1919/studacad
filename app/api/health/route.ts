@@ -1,10 +1,14 @@
 import { readRuntimeEnvironment } from "../../../server/runtime-env.mjs";
+import { databaseIsRequired, readDatabaseEnvironment } from "../../../server/database-env.mjs";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET() {
   const environment = readRuntimeEnvironment(process.env);
+  const database = databaseIsRequired(process.env)
+    ? readDatabaseEnvironment(process.env)
+    : null;
 
   return Response.json(
     {
@@ -12,7 +16,10 @@ export async function GET() {
       service: "studacad",
       environment: environment.name,
       release: environment.releaseSha,
-      deployedAt: environment.deployedAt
+      deployedAt: environment.deployedAt,
+      dependencies: {
+        database: database ? "configured" : "not-required"
+      }
     },
     {
       headers: {

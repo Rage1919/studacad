@@ -22,6 +22,25 @@ jobs:
       STUDACAD_ENV: test
       STUDACAD_APP_URL: https://studacad.test
       STUDACAD_RELEASE_SHA: ${{ github.sha }}
+      SUPABASE_URL: https://example.supabase.co
+      SUPABASE_PUBLISHABLE_KEY: test-publishable-key-000000000000
+      SUPABASE_SECRET_KEY: test-secret-key-0000000000000000
+      SUPABASE_PRIVATE_BUCKET: studacad-private
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/studacad_test
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: studacad_test
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d studacad_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -42,7 +61,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Validate environment contract
-        run: pnpm env:check
+        run: pnpm env:check && pnpm db:env:check
+
+      - name: Smoke test migrations against empty PostgreSQL
+        run: pnpm db:migrate && pnpm db:migrate
 
       - name: Type check
         run: pnpm typecheck
