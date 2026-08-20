@@ -109,7 +109,8 @@ test("policy register hashes match the published policy sources", async () => {
   );
   for (const [key, route] of Object.entries(mapping)) {
     const source = await read(`app/${route}/page.tsx`);
-    const hash = createHash("sha256").update(source).digest("hex");
+    const normalizedSource = source.replaceAll("\r\n", "\n");
+    const hash = createHash("sha256").update(normalizedSource).digest("hex");
     assert.match(
       migration,
       new RegExp(`\\('${key}','2026-08-20',[^\\n]+,'${hash}'\\)`),
