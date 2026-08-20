@@ -50,9 +50,7 @@ test("a fresh marketplace shows an honest empty state", async ({ page }) => {
       name: "No approved tutors match every filter",
     }),
   ).toBeVisible();
-  await expect(page.getByText("Demo learner", { exact: false })).toHaveCount(
-    0,
-  );
+  await expect(page.getByText("Demo learner", { exact: false })).toHaveCount(0);
 });
 
 test("oversized API requests fail before route execution", async ({
