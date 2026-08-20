@@ -29,6 +29,7 @@ test("email-link sign-in uses a neutral response", async ({ page }) => {
   );
   await page.goto("/login");
   await page.getByLabel("Email address").fill("learner@example.test");
+  await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Email me a secure link" }).click();
   await expect(page.getByRole("status")).toContainText(
     "If that address can receive mail",

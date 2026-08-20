@@ -95,6 +95,14 @@ const catalog = Object.freeze({
     "Payout cancelled",
     "Your payout request was cancelled and the reserved credits were returned.",
   ],
+  "support.case_created": [
+    "Support request received",
+    "Your support request has a case ID and is waiting for triage.",
+  ],
+  "support.case_updated": [
+    "Support case updated",
+    "A support specialist replied to your case. Sign in to read the update.",
+  ],
 });
 
 export const notificationTemplateKeys = Object.freeze(Object.keys(catalog));

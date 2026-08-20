@@ -251,6 +251,12 @@ export default function TutorProfilePage() {
       return;
     }
     if (!selectedSlot) return;
+    if (
+      !window.confirm(
+        "Confirm this booking and accept the current Terms, Safety rules, and Cancellation and Refund Policy?",
+      )
+    )
+      return;
     setBookingLoading(true);
     setNotice("");
     try {
@@ -269,6 +275,7 @@ export default function TutorProfilePage() {
           learnerLocation:
             selectedFormat === "student-place" ? studentAddress.trim() : "",
           idempotencyKey: crypto.randomUUID(),
+          acceptPolicies: true,
         }),
       });
       const result = (await response.json()) as {
@@ -331,6 +338,36 @@ export default function TutorProfilePage() {
       document.execCommand("copy");
       textArea.remove();
       setActionNotice("Tutor profile link copied.");
+    }
+  };
+
+  const reportTutorConcern = async () => {
+    const reason = window
+      .prompt(
+        "Describe the tutor safety or conduct concern. Do not include passwords, bank details, or identity documents.",
+      )
+      ?.trim();
+    if (!reason) return;
+    try {
+      const response = await fetch(
+        `/api/tutors/${encodeURIComponent(tutor.id)}/report`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reason }),
+        },
+      );
+      const result = (await response.json()) as {
+        caseNumber?: string;
+        error?: string;
+      };
+      if (!response.ok)
+        throw new Error(result.error ?? "Unable to submit the report.");
+      setActionNotice(`Report received as support case ${result.caseNumber}.`);
+    } catch (error) {
+      setActionNotice(
+        error instanceof Error ? error.message : "Unable to submit the report.",
+      );
     }
   };
 
@@ -477,6 +514,15 @@ export default function TutorProfilePage() {
             >
               <ShareIcon />
               <span className="sr-only">Share profile</span>
+            </button>
+            <button
+              type="button"
+              aria-label={`Report ${tutor.name}`}
+              title={`Report ${tutor.name}`}
+              onClick={() => void reportTutorConcern()}
+            >
+              <span aria-hidden="true">⚑</span>
+              <span className="sr-only">Report {tutor.name}</span>
             </button>
           </div>
           {actionNotice && (

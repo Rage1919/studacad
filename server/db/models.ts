@@ -685,6 +685,89 @@ export type NotificationSuppression = {
   created_at: IsoTimestamp;
 };
 
+export type PolicyDocument = {
+  key: string;
+  version: string;
+  title: string;
+  effective_at: IsoTimestamp;
+  review_due_at: IsoTimestamp;
+  status: "current" | "retired";
+  content_sha256: string;
+  created_at: IsoTimestamp;
+};
+export type UserPolicyAcceptance = {
+  id: Uuid;
+  user_id: Uuid;
+  policy_key: string;
+  policy_version: string;
+  context:
+    | "registration"
+    | "account"
+    | "booking"
+    | "course_purchase"
+    | "tutor_submission";
+  context_reference: string;
+  accepted_at: IsoTimestamp;
+  ip_hash: string | null;
+};
+export type PolicyReview = {
+  id: Uuid;
+  policy_version: string;
+  review_kind: "owner" | "legal" | "privacy" | "safeguarding" | "accessibility";
+  reviewer_name: string;
+  reviewed_by_user_id: Uuid;
+  outcome: "approved" | "changes_required";
+  evidence_reference: string;
+  next_review_at: IsoTimestamp;
+  created_at: IsoTimestamp;
+};
+export type SupportCase = {
+  id: Uuid;
+  case_number: string;
+  requester_user_id: Uuid;
+  category:
+    | "account"
+    | "booking"
+    | "payment"
+    | "tutor"
+    | "safety"
+    | "privacy"
+    | "accessibility"
+    | "technical"
+    | "other";
+  subject: string;
+  status: "open" | "triaged" | "waiting_on_user" | "resolved" | "closed";
+  priority: "urgent" | "high" | "normal" | "low";
+  booking_id: Uuid | null;
+  assigned_to_user_id: Uuid | null;
+  response_due_at: IsoTimestamp;
+  resolved_at: IsoTimestamp | null;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
+};
+export type SupportCaseMessage = {
+  id: Uuid;
+  support_case_id: Uuid;
+  author_user_id: Uuid;
+  body: string;
+  internal: boolean;
+  created_at: IsoTimestamp;
+};
+export type TutorReport = {
+  id: Uuid;
+  reporter_user_id: Uuid;
+  tutor_profile_id: Uuid;
+  booking_id: Uuid | null;
+  reason: string;
+  status: "open" | "reviewing" | "resolved" | "dismissed";
+  support_case_id: Uuid;
+  reviewed_by_user_id: Uuid | null;
+  reviewed_at: IsoTimestamp | null;
+  resolution_note: string | null;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
+};
+
 export type AuditEvent = {
   id: Uuid;
   actor_user_id: Uuid | null;
