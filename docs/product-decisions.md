@@ -14,9 +14,11 @@ This is the durable record of product defaults and explicit owner decisions made
 | 2026-08-19 | Routine decisions | When a roadmap item needs a reversible, low-risk product choice, use the safest conventional default and record it in this document. Defer external-account setup and choices with material commercial/legal impact. | Standing authorization from the product owner. |
 | 2026-08-20 | Abuse limits | Apply conservative application-level limits by route class: 5 sign-in-link requests per 15 minutes, 10 document uploads per hour, 20 verified-deposit requests per minute, 120 other mutations per minute, and 600 reads per minute per network address/process. | Default safety decision. These are a baseline, not a substitute for hosting-provider/WAF limits at final go-live. |
 | 2026-08-20 | Browser security | Use a request nonce CSP, deny framing and unused browser capabilities, and enable two-year HSTS with preload only in production. | Default safety decision verified against the built app in Chromium. |
+| 2026-08-20 | Google Meet | Create spaces through OAuth for one dedicated organizer, release the join link to booking participants 24 hours before start, retain the same space across reschedules, and revoke Studacad access on cancellation. | Default least-privilege and low-surprise policy. Unknown provider outcomes require support instead of an automatic retry that could create a duplicate space. |
 
 ## Deferred owner/external setup
 
 - Point `studacad.com` at the selected production hosting environment and complete the live DNS/TLS verification.
 - Select and provision a live payment gateway; gateway checkout and webhook work must remain disabled until credentials and commercial terms are available.
 - Select a production malware-scanning provider before enabling tutor-document uploads in production.
+- Create the dedicated Google Workspace Meet organizer, complete OAuth consent/verification if Google requires it, and store its Meet credentials in the deployment secret store.

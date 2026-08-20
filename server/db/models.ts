@@ -1,16 +1,60 @@
 export type IsoTimestamp = string;
 export type Uuid = string;
 
-export type AccountStatus = "pending_verification" | "active" | "suspended" | "deletion_requested" | "deleted";
+export type AccountStatus =
+  | "pending_verification"
+  | "active"
+  | "suspended"
+  | "deletion_requested"
+  | "deleted";
 export type AppRole = "learner" | "tutor" | "admin";
 export type ExamLevel = "PSLE" | "JCE" | "BGCSE";
-export type SessionFormat = "online_1to1" | "online_group" | "tutor_place" | "student_place";
-export type TutorApplicationStatus = "draft" | "submitted" | "under_review" | "changes_requested" | "approved" | "rejected" | "suspended" | "withdrawn";
-export type TutorProfileStatus = "draft" | "pending_review" | "active" | "suspended" | "archived";
-export type BookingStatus = "pending" | "held" | "confirmed" | "cancelled_by_learner" | "cancelled_by_tutor" | "completed" | "no_show" | "disputed" | "expired" | "refunded";
+export type SessionFormat =
+  "online_1to1" | "online_group" | "tutor_place" | "student_place";
+export type TutorApplicationStatus =
+  | "draft"
+  | "submitted"
+  | "under_review"
+  | "changes_requested"
+  | "approved"
+  | "rejected"
+  | "suspended"
+  | "withdrawn";
+export type TutorProfileStatus =
+  "draft" | "pending_review" | "active" | "suspended" | "archived";
+export type BookingStatus =
+  | "pending"
+  | "held"
+  | "confirmed"
+  | "cancelled_by_learner"
+  | "cancelled_by_tutor"
+  | "completed"
+  | "no_show"
+  | "disputed"
+  | "expired"
+  | "refunded";
 export type CourseStatus = "draft" | "published" | "archived";
-export type PaymentStatus = "created" | "pending" | "paid" | "failed" | "cancelled" | "expired" | "partially_refunded" | "refunded" | "disputed";
-export type LedgerTransactionKind = "topup" | "purchase" | "reward" | "refund" | "adjustment" | "hold" | "release" | "chargeback" | "earning" | "payout";
+export type PaymentStatus =
+  | "created"
+  | "pending"
+  | "paid"
+  | "failed"
+  | "cancelled"
+  | "expired"
+  | "partially_refunded"
+  | "refunded"
+  | "disputed";
+export type LedgerTransactionKind =
+  | "topup"
+  | "purchase"
+  | "reward"
+  | "refund"
+  | "adjustment"
+  | "hold"
+  | "release"
+  | "chargeback"
+  | "earning"
+  | "payout";
 
 export type UserAccount = {
   id: Uuid;
@@ -26,12 +70,17 @@ export type UserAccount = {
   created_at: IsoTimestamp;
   updated_at: IsoTimestamp;
   deleted_at: IsoTimestamp | null;
-}
+};
 
 export type ObjectFile = {
   id: Uuid;
   owner_user_id: Uuid;
-  kind: "tutor_identity" | "tutor_qualification" | "learning_resource" | "message_attachment" | "profile_image";
+  kind:
+    | "tutor_identity"
+    | "tutor_qualification"
+    | "learning_resource"
+    | "message_attachment"
+    | "profile_image";
   bucket: "studacad-private";
   object_key: string;
   original_filename: string;
@@ -43,7 +92,7 @@ export type ObjectFile = {
   retention_until: IsoTimestamp | null;
   created_at: IsoTimestamp;
   deleted_at: IsoTimestamp | null;
-}
+};
 
 export type TutorApplication = {
   id: Uuid;
@@ -69,18 +118,18 @@ export type TutorApplication = {
   withdrawn_at: IsoTimestamp | null;
   created_at: IsoTimestamp;
   updated_at: IsoTimestamp;
-}
+};
 
 export type TutorApplicationSubject = {
   application_id: Uuid;
   examination: ExamLevel;
   subject: string;
-}
+};
 
 export type TutorApplicationFormat = {
   application_id: Uuid;
   format: SessionFormat;
-}
+};
 
 export type TutorQualification = {
   id: Uuid;
@@ -91,14 +140,14 @@ export type TutorQualification = {
   awarded_on: string | null;
   expires_on: string | null;
   created_at: IsoTimestamp;
-}
+};
 
 export type TutorApplicationDocument = {
   application_id: Uuid;
   file_id: Uuid;
   document_type: string;
   created_at: IsoTimestamp;
-}
+};
 
 export type TutorApplicationReview = {
   id: Uuid;
@@ -109,7 +158,7 @@ export type TutorApplicationReview = {
   internal_note: string | null;
   applicant_message: string | null;
   created_at: IsoTimestamp;
-}
+};
 
 export type PublicTutorMarketplaceProfile = {
   id: Uuid;
@@ -129,7 +178,7 @@ export type PublicTutorMarketplaceProfile = {
   profile_image_content_type: string;
   subjects: Json;
   formats: Json;
-}
+};
 
 export type TutorProfile = {
   id: Uuid;
@@ -148,21 +197,21 @@ export type TutorProfile = {
   published_at: IsoTimestamp | null;
   created_at: IsoTimestamp;
   updated_at: IsoTimestamp;
-}
+};
 
 export type TutorProfileSubject = {
   tutor_profile_id: Uuid;
   examination: ExamLevel;
   subject: string;
   price_credits: number;
-}
+};
 
 export type TutorProfileFormat = {
   tutor_profile_id: Uuid;
   format: SessionFormat;
   location_note: string | null;
   group_capacity: number;
-}
+};
 
 export type Booking = {
   id: Uuid;
@@ -184,7 +233,7 @@ export type Booking = {
   created_at: IsoTimestamp;
   updated_at: IsoTimestamp;
   slot: string;
-}
+};
 
 export type AvailabilityRule = {
   id: Uuid;
@@ -202,7 +251,7 @@ export type AvailabilityRule = {
   effective_until: string | null;
   created_at: IsoTimestamp;
   updated_at: IsoTimestamp;
-}
+};
 
 export type AvailabilityException = {
   id: Uuid;
@@ -212,21 +261,45 @@ export type AvailabilityException = {
   available: boolean;
   reason: string | null;
   created_at: IsoTimestamp;
-}
+};
 
 export type BookingParticipant = {
   booking_id: Uuid;
   learner_user_id: Uuid;
   joined_at: IsoTimestamp;
   cancelled_at: IsoTimestamp | null;
-}
+};
+
+export type BookingMeeting = {
+  booking_id: Uuid;
+  provider: "google_meet";
+  status:
+    | "pending"
+    | "provisioning"
+    | "ready"
+    | "retry_required"
+    | "support_required"
+    | "revoked";
+  provider_space_name: string | null;
+  meeting_uri: string | null;
+  creator_user_id: Uuid;
+  provider_creator: string | null;
+  attempt_count: number;
+  last_error_code: string | null;
+  next_retry_at: IsoTimestamp | null;
+  requested_at: IsoTimestamp;
+  provisioned_at: IsoTimestamp | null;
+  revoked_at: IsoTimestamp | null;
+  created_at: IsoTimestamp;
+  updated_at: IsoTimestamp;
+};
 
 export type BookingLocationDetail = {
   booking_id: Uuid;
   learner_address: string | null;
   tutor_location_note: string | null;
   created_at: IsoTimestamp;
-}
+};
 
 export type Course = {
   id: Uuid;
@@ -243,7 +316,7 @@ export type Course = {
   created_by_user_id: Uuid;
   created_at: IsoTimestamp;
   updated_at: IsoTimestamp;
-}
+};
 
 export type LessonRecord = {
   id: Uuid;
@@ -259,18 +332,88 @@ export type LessonRecord = {
   status: CourseStatus;
   created_at: IsoTimestamp;
   updated_at: IsoTimestamp;
-}
+};
 
-export type QuizQuestionRecord = { id: Uuid; lesson_id: Uuid; prompt: string; position: number; points: number; created_at: IsoTimestamp }
-export type QuizOptionRecord = { id: Uuid; question_id: Uuid; label: string; position: number; is_correct: boolean }
-export type CoursePurchaseRecord = { id: Uuid; learner_user_id: Uuid; course_id: Uuid; status: "pending" | "completed" | "refunded" | "cancelled"; price_credits: number; idempotency_key: string; purchased_at: IsoTimestamp | null; refunded_at: IsoTimestamp | null; created_at: IsoTimestamp }
-export type LessonProgressRecord = { learner_user_id: Uuid; lesson_id: Uuid; status: "not_started" | "in_progress" | "completed"; best_score_percent: number | null; started_at: IsoTimestamp | null; completed_at: IsoTimestamp | null; updated_at: IsoTimestamp }
-export type QuizAttemptRecord = { id: Uuid; learner_user_id: Uuid; lesson_id: Uuid; score_points: number; possible_points: number; passed: boolean; idempotency_key: string; submitted_at: IsoTimestamp }
-export type QuizAttemptAnswerRecord = { attempt_id: Uuid; question_id: Uuid; selected_option_id: Uuid; awarded_points: number }
-export type TutorFavouriteRecord = { learner_user_id: Uuid; tutor_profile_id: Uuid; created_at: IsoTimestamp }
-export type ReferralCodeRecord = { id: Uuid; owner_user_id: Uuid; code: string; created_at: IsoTimestamp; disabled_at: IsoTimestamp | null }
-export type ReferralAttributionRecord = { id: Uuid; referral_code_id: Uuid; referred_user_id: Uuid; attributed_at: IsoTimestamp }
-export type ReferralRewardRecord = { id: Uuid; attribution_id: Uuid; qualifying_booking_id: Uuid; credits: number; status: "pending" | "earned" | "reversed"; ledger_transaction_id: Uuid | null; created_at: IsoTimestamp; earned_at: IsoTimestamp | null; reversed_at: IsoTimestamp | null }
+export type QuizQuestionRecord = {
+  id: Uuid;
+  lesson_id: Uuid;
+  prompt: string;
+  position: number;
+  points: number;
+  created_at: IsoTimestamp;
+};
+export type QuizOptionRecord = {
+  id: Uuid;
+  question_id: Uuid;
+  label: string;
+  position: number;
+  is_correct: boolean;
+};
+export type CoursePurchaseRecord = {
+  id: Uuid;
+  learner_user_id: Uuid;
+  course_id: Uuid;
+  status: "pending" | "completed" | "refunded" | "cancelled";
+  price_credits: number;
+  idempotency_key: string;
+  purchased_at: IsoTimestamp | null;
+  refunded_at: IsoTimestamp | null;
+  created_at: IsoTimestamp;
+};
+export type LessonProgressRecord = {
+  learner_user_id: Uuid;
+  lesson_id: Uuid;
+  status: "not_started" | "in_progress" | "completed";
+  best_score_percent: number | null;
+  started_at: IsoTimestamp | null;
+  completed_at: IsoTimestamp | null;
+  updated_at: IsoTimestamp;
+};
+export type QuizAttemptRecord = {
+  id: Uuid;
+  learner_user_id: Uuid;
+  lesson_id: Uuid;
+  score_points: number;
+  possible_points: number;
+  passed: boolean;
+  idempotency_key: string;
+  submitted_at: IsoTimestamp;
+};
+export type QuizAttemptAnswerRecord = {
+  attempt_id: Uuid;
+  question_id: Uuid;
+  selected_option_id: Uuid;
+  awarded_points: number;
+};
+export type TutorFavouriteRecord = {
+  learner_user_id: Uuid;
+  tutor_profile_id: Uuid;
+  created_at: IsoTimestamp;
+};
+export type ReferralCodeRecord = {
+  id: Uuid;
+  owner_user_id: Uuid;
+  code: string;
+  created_at: IsoTimestamp;
+  disabled_at: IsoTimestamp | null;
+};
+export type ReferralAttributionRecord = {
+  id: Uuid;
+  referral_code_id: Uuid;
+  referred_user_id: Uuid;
+  attributed_at: IsoTimestamp;
+};
+export type ReferralRewardRecord = {
+  id: Uuid;
+  attribution_id: Uuid;
+  qualifying_booking_id: Uuid;
+  credits: number;
+  status: "pending" | "earned" | "reversed";
+  ledger_transaction_id: Uuid | null;
+  created_at: IsoTimestamp;
+  earned_at: IsoTimestamp | null;
+  reversed_at: IsoTimestamp | null;
+};
 
 export type Message = {
   id: Uuid;
@@ -283,12 +426,12 @@ export type Message = {
   created_at: IsoTimestamp;
   edited_at: IsoTimestamp | null;
   deleted_at: IsoTimestamp | null;
-}
+};
 
 export type WalletBalance = {
   wallet_account_id: Uuid;
   balance_credits: number;
-}
+};
 
 export type WalletAccount = {
   id: Uuid;
@@ -296,7 +439,7 @@ export type WalletAccount = {
   system_code: string | null;
   created_at: IsoTimestamp;
   closed_at: IsoTimestamp | null;
-}
+};
 
 export type LedgerTransaction = {
   id: Uuid;
@@ -308,7 +451,7 @@ export type LedgerTransaction = {
   actor_user_id: Uuid | null;
   metadata: Json;
   created_at: IsoTimestamp;
-}
+};
 
 export type LedgerEntry = {
   id: Uuid;
@@ -316,7 +459,7 @@ export type LedgerEntry = {
   wallet_account_id: Uuid;
   amount_credits: number;
   created_at: IsoTimestamp;
-}
+};
 
 export type ProviderWebhookEvent = {
   id: Uuid;
@@ -328,7 +471,7 @@ export type ProviderWebhookEvent = {
   failure_reason: string | null;
   received_at: IsoTimestamp;
   processed_at: IsoTimestamp | null;
-}
+};
 
 export type AuditEvent = {
   id: Uuid;
@@ -342,6 +485,12 @@ export type AuditEvent = {
   after_state: Json | null;
   metadata: Json;
   created_at: IsoTimestamp;
-}
+};
 
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];

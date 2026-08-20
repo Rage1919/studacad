@@ -9,6 +9,7 @@ const expectedTables = [
   "availability_rules",
   "booking_participants",
   "booking_location_details",
+  "booking_meetings",
   "booking_status_events",
   "bookings",
   "conversation_participants",
@@ -40,7 +41,7 @@ const expectedTables = [
   "tutor_profiles",
   "user_accounts",
   "user_roles",
-  "wallet_accounts"
+  "wallet_accounts",
 ];
 
 async function apply(db, migrations) {
@@ -54,7 +55,7 @@ async function tableNames(db) {
     where schemaname = 'public'
     order by tablename
   `);
-  return result.rows.map(row => row.tablename);
+  return result.rows.map((row) => row.tablename);
 }
 
 test("migrations build the complete schema from an empty database", async () => {
@@ -63,7 +64,8 @@ test("migrations build the complete schema from an empty database", async () => 
     const migrations = await readMigrationFiles();
     await apply(db, migrations);
     const actual = await tableNames(db);
-    for (const table of expectedTables) assert.ok(actual.includes(table), `missing table ${table}`);
+    for (const table of expectedTables)
+      assert.ok(actual.includes(table), `missing table ${table}`);
 
     const rowSecurity = await db.query(`
       select count(*)::integer as count
@@ -127,7 +129,8 @@ test("critical idempotency and tutor-overlap constraints fail closed", async () 
       values ('test', 'event-one', 'payment.completed', repeat('a', 64), 'processed');
     `);
 
-    await assert.rejects(db.exec(`
+    await assert.rejects(
+      db.exec(`
       insert into public.bookings (
         tutor_profile_id, created_by_user_id, format, examination, subject, starts_at, ends_at,
         timezone, price_per_learner_credits, status, idempotency_key
@@ -137,12 +140,17 @@ test("critical idempotency and tutor-overlap constraints fail closed", async () 
         'online_1to1', 'PSLE', 'Mathematics', '2026-09-01T10:30:00Z', '2026-09-01T11:30:00Z',
         'Africa/Gaborone', 80, 'confirmed', 'booking-two'
       )
-    `), /overlapping active booking/);
+    `),
+      /overlapping active booking/,
+    );
 
-    await assert.rejects(db.exec(`
+    await assert.rejects(
+      db.exec(`
       insert into public.provider_webhook_events (provider, provider_event_id, event_type, payload_sha256, status)
       values ('test', 'event-one', 'payment.completed', repeat('b', 64), 'processed')
-    `), /unique|duplicate/i);
+    `),
+      /unique|duplicate/i,
+    );
   } finally {
     await db.close();
   }
@@ -164,7 +172,7 @@ test("financial and audit records are append-only", async () => {
     `);
     await assert.rejects(
       db.exec("update public.ledger_entries set amount_credits = 2"),
-      /append-only/
+      /append-only/,
     );
   } finally {
     await db.close();
@@ -193,10 +201,16 @@ test("verified deposits are authorized, idempotent, balanced, and priced one-to-
       "10000000-0000-4000-8000-000000000022",
       250,
       "BANK-2026-001",
-      "verified-deposit-001"
+      "verified-deposit-001",
     ];
-    const first = await db.query("select public.record_verified_deposit($1, $2, $3, $4, $5) as id", args);
-    const replay = await db.query("select public.record_verified_deposit($1, $2, $3, $4, $5) as id", args);
+    const first = await db.query(
+      "select public.record_verified_deposit($1, $2, $3, $4, $5) as id",
+      args,
+    );
+    const replay = await db.query(
+      "select public.record_verified_deposit($1, $2, $3, $4, $5) as id",
+      args,
+    );
     assert.equal(replay.rows[0].id, first.rows[0].id);
 
     const learnerBalance = await db.query(`
@@ -206,28 +220,53 @@ test("verified deposits are authorized, idempotent, balanced, and priced one-to-
       where wallet.owner_user_id = '10000000-0000-4000-8000-000000000022'
     `);
     assert.equal(learnerBalance.rows[0].balance, 250);
-    const transaction = await db.query(`
+    const transaction = await db.query(
+      `
       select sum(entry.amount_credits)::integer as net, count(*)::integer as entry_count
       from public.ledger_entries entry
       where entry.transaction_id = $1
-    `, [first.rows[0].id]);
+    `,
+      [first.rows[0].id],
+    );
     assert.deepEqual(transaction.rows[0], { net: 0, entry_count: 2 });
-    const payment = await db.query("select amount_minor::integer, credits from public.payments");
+    const payment = await db.query(
+      "select amount_minor::integer, credits from public.payments",
+    );
     assert.deepEqual(payment.rows[0], { amount_minor: 25000, credits: 250 });
-    assert.equal((await db.query("select count(*)::integer as count from public.audit_events where action = 'wallet.verified_deposit_recorded'")).rows[0].count, 1);
+    assert.equal(
+      (
+        await db.query(
+          "select count(*)::integer as count from public.audit_events where action = 'wallet.verified_deposit_recorded'",
+        )
+      ).rows[0].count,
+      1,
+    );
 
     await assert.rejects(
-      db.query("select public.record_verified_deposit($1, $2, $3, $4, $5)", [args[0], args[1], 251, args[3], args[4]]),
-      /different deposit details/
+      db.query("select public.record_verified_deposit($1, $2, $3, $4, $5)", [
+        args[0],
+        args[1],
+        251,
+        args[3],
+        args[4],
+      ]),
+      /different deposit details/,
     );
     await assert.rejects(
-      db.query("select public.record_verified_deposit($1, $2, $3, $4, $5)", ["10000000-0000-4000-8000-000000000023", ...args.slice(1, 4), "verified-deposit-002"]),
-      /Only an active administrator/
+      db.query("select public.record_verified_deposit($1, $2, $3, $4, $5)", [
+        "10000000-0000-4000-8000-000000000023",
+        ...args.slice(1, 4),
+        "verified-deposit-002",
+      ]),
+      /Only an active administrator/,
     );
-    await assert.rejects(db.exec(`
+    await assert.rejects(
+      db.exec(`
       insert into public.payments (user_id, provider, status, amount_minor, currency, credits, checkout_reference)
       values ('10000000-0000-4000-8000-000000000022', 'test', 'paid', 25000, 'BWP', 300, 'invalid-parity')
-    `), /payments_bwp_credit_parity/);
+    `),
+      /payments_bwp_credit_parity/,
+    );
   } finally {
     await db.close();
   }
@@ -291,9 +330,27 @@ test("availability produces bookable slots and booking holds/refunds credits ato
         '{"subjects":[{"examination":"PSLE","subject":"Mathematics","price_credits":80}],"formats":[{"format":"online_1to1","group_capacity":1,"location_note":"Online"},{"format":"online_group","group_capacity":2,"location_note":"Online group"}]}'::jsonb
       )
     `);
-    await db.query("select public.record_verified_deposit($1, $2, 200, 'BOOKING-DEPOSIT-1', 'booking-deposit-001')", ["10000000-0000-4000-8000-000000000031", "10000000-0000-4000-8000-000000000033"]);
-    await db.query("select public.record_verified_deposit($1, $2, 200, 'BOOKING-DEPOSIT-2', 'booking-deposit-002')", ["10000000-0000-4000-8000-000000000031", "10000000-0000-4000-8000-000000000034"]);
-    await db.query("select public.record_verified_deposit($1, $2, 200, 'BOOKING-DEPOSIT-3', 'booking-deposit-003')", ["10000000-0000-4000-8000-000000000031", "10000000-0000-4000-8000-000000000035"]);
+    await db.query(
+      "select public.record_verified_deposit($1, $2, 200, 'BOOKING-DEPOSIT-1', 'booking-deposit-001')",
+      [
+        "10000000-0000-4000-8000-000000000031",
+        "10000000-0000-4000-8000-000000000033",
+      ],
+    );
+    await db.query(
+      "select public.record_verified_deposit($1, $2, 200, 'BOOKING-DEPOSIT-2', 'booking-deposit-002')",
+      [
+        "10000000-0000-4000-8000-000000000031",
+        "10000000-0000-4000-8000-000000000034",
+      ],
+    );
+    await db.query(
+      "select public.record_verified_deposit($1, $2, 200, 'BOOKING-DEPOSIT-3', 'booking-deposit-003')",
+      [
+        "10000000-0000-4000-8000-000000000031",
+        "10000000-0000-4000-8000-000000000035",
+      ],
+    );
 
     const slots = await db.query(`
       select * from public.list_tutor_slots(
@@ -303,42 +360,136 @@ test("availability produces bookable slots and booking holds/refunds credits ato
     assert.ok(slots.rows.length >= 2);
     assert.equal(slots.rows[0].price_credits, 80);
     await assert.rejects(
-      db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9)", ["10000000-0000-4000-8000-000000000036", "booking-tutor", "online_1to1", "PSLE", "Mathematics", slots.rows[1].starts_at, "Africa/Gaborone", null, "empty-wallet-booking"]),
-      /Insufficient credits/
+      db.query(
+        "select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+        [
+          "10000000-0000-4000-8000-000000000036",
+          "booking-tutor",
+          "online_1to1",
+          "PSLE",
+          "Mathematics",
+          slots.rows[1].starts_at,
+          "Africa/Gaborone",
+          null,
+          "empty-wallet-booking",
+        ],
+      ),
+      /Insufficient credits/,
     );
     const startsAt = slots.rows[0].starts_at;
-    const args = ["10000000-0000-4000-8000-000000000033", "booking-tutor", "online_1to1", "PSLE", "Mathematics", startsAt, "Africa/Gaborone", null, "booking-request-001"];
-    const first = await db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking", args);
-    const replay = await db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking", args);
-    assert.equal(replay.rows[0].booking.bookingId, first.rows[0].booking.bookingId);
+    const args = [
+      "10000000-0000-4000-8000-000000000033",
+      "booking-tutor",
+      "online_1to1",
+      "PSLE",
+      "Mathematics",
+      startsAt,
+      "Africa/Gaborone",
+      null,
+      "booking-request-001",
+    ];
+    const first = await db.query(
+      "select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking",
+      args,
+    );
+    const replay = await db.query(
+      "select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking",
+      args,
+    );
+    assert.equal(
+      replay.rows[0].booking.bookingId,
+      first.rows[0].booking.bookingId,
+    );
     assert.equal(replay.rows[0].booking.replayed, true);
-    const learnerWallet = async learnerId => (await db.query(`
+    const learnerWallet = async (learnerId) =>
+      (
+        await db.query(
+          `
       select coalesce(balance.balance_credits, 0)::integer as balance
       from public.wallet_accounts wallet
       left join public.wallet_balances balance on balance.wallet_account_id = wallet.id
       where wallet.owner_user_id = $1
-    `, [learnerId])).rows[0].balance;
+    `,
+          [learnerId],
+        )
+      ).rows[0].balance;
     assert.equal(await learnerWallet(args[0]), 120);
     await assert.rejects(
-      db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9)", ["10000000-0000-4000-8000-000000000034", ...args.slice(1, 8), "booking-request-002"]),
-      /no longer available/
+      db.query(
+        "select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+        [
+          "10000000-0000-4000-8000-000000000034",
+          ...args.slice(1, 8),
+          "booking-request-002",
+        ],
+      ),
+      /no longer available/,
     );
     const bookingId = first.rows[0].booking.bookingId;
-    const cancelled = await db.query("select public.cancel_booking_with_refund($1, $2, 'Schedule changed', 'cancel-booking-001') as cancellation", [args[0], bookingId]);
+    const cancelled = await db.query(
+      "select public.cancel_booking_with_refund($1, $2, 'Schedule changed', 'cancel-booking-001') as cancellation",
+      [args[0], bookingId],
+    );
     assert.equal(cancelled.rows[0].cancellation.status, "cancelled_by_learner");
     assert.equal(await learnerWallet(args[0]), 200);
-    assert.equal((await db.query("select count(*)::integer as count from public.ledger_transactions where booking_id = $1", [bookingId])).rows[0].count, 2);
+    assert.equal(
+      (
+        await db.query(
+          "select count(*)::integer as count from public.ledger_transactions where booking_id = $1",
+          [bookingId],
+        )
+      ).rows[0].count,
+      2,
+    );
 
-    const groupSlots = await db.query("select * from public.list_tutor_slots('booking-tutor', now(), now() + interval '14 days', 'online_group', 'PSLE', 'Mathematics')");
+    const groupSlots = await db.query(
+      "select * from public.list_tutor_slots('booking-tutor', now(), now() + interval '14 days', 'online_group', 'PSLE', 'Mathematics')",
+    );
     const groupStart = groupSlots.rows[0].starts_at;
-    const groupBase = ["booking-tutor", "online_group", "PSLE", "Mathematics", groupStart, "Africa/Gaborone", null];
-    const groupOne = await db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking", [args[0], ...groupBase, "group-booking-001"]);
-    const groupTwo = await db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking", ["10000000-0000-4000-8000-000000000034", ...groupBase, "group-booking-002"]);
-    assert.equal(groupTwo.rows[0].booking.bookingId, groupOne.rows[0].booking.bookingId);
-    assert.equal((await db.query("select count(*)::integer as count from public.booking_participants where booking_id = $1 and cancelled_at is null", [groupOne.rows[0].booking.bookingId])).rows[0].count, 2);
+    const groupBase = [
+      "booking-tutor",
+      "online_group",
+      "PSLE",
+      "Mathematics",
+      groupStart,
+      "Africa/Gaborone",
+      null,
+    ];
+    const groupOne = await db.query(
+      "select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking",
+      [args[0], ...groupBase, "group-booking-001"],
+    );
+    const groupTwo = await db.query(
+      "select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9) as booking",
+      [
+        "10000000-0000-4000-8000-000000000034",
+        ...groupBase,
+        "group-booking-002",
+      ],
+    );
+    assert.equal(
+      groupTwo.rows[0].booking.bookingId,
+      groupOne.rows[0].booking.bookingId,
+    );
+    assert.equal(
+      (
+        await db.query(
+          "select count(*)::integer as count from public.booking_participants where booking_id = $1 and cancelled_at is null",
+          [groupOne.rows[0].booking.bookingId],
+        )
+      ).rows[0].count,
+      2,
+    );
     await assert.rejects(
-      db.query("select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9)", ["10000000-0000-4000-8000-000000000035", ...groupBase, "group-booking-003"]),
-      /no longer available|group is full/
+      db.query(
+        "select public.create_confirmed_booking($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+        [
+          "10000000-0000-4000-8000-000000000035",
+          ...groupBase,
+          "group-booking-003",
+        ],
+      ),
+      /no longer available|group is full/,
     );
   } finally {
     await db.close();
@@ -365,14 +516,34 @@ test("slot generation remains ordered across daylight-saving gaps and folds", as
         ('40000000-0000-4000-8000-000000000041', 0, '01:00', '04:00', 'America/New_York', 'online_1to1', 60, 0, '2027-03-14', '2027-03-14'),
         ('40000000-0000-4000-8000-000000000041', 0, '00:00', '03:00', 'America/New_York', 'online_1to1', 60, 0, '2027-11-07', '2027-11-07');
     `);
-    const spring = await db.query("select starts_at, ends_at from public.list_tutor_slots('dst-tutor', '2027-03-14T00:00:00Z', '2027-03-15T00:00:00Z', 'online_1to1', 'PSLE', 'Mathematics')");
-    const fall = await db.query("select starts_at, ends_at from public.list_tutor_slots('dst-tutor', '2027-11-07T00:00:00Z', '2027-11-08T00:00:00Z', 'online_1to1', 'PSLE', 'Mathematics')");
+    const spring = await db.query(
+      "select starts_at, ends_at from public.list_tutor_slots('dst-tutor', '2027-03-14T00:00:00Z', '2027-03-15T00:00:00Z', 'online_1to1', 'PSLE', 'Mathematics')",
+    );
+    const fall = await db.query(
+      "select starts_at, ends_at from public.list_tutor_slots('dst-tutor', '2027-11-07T00:00:00Z', '2027-11-08T00:00:00Z', 'online_1to1', 'PSLE', 'Mathematics')",
+    );
     assert.equal(spring.rows.length, 2);
     assert.equal(fall.rows.length, 4);
     for (const rows of [spring.rows, fall.rows]) {
-      assert.equal(new Set(rows.map(row => new Date(row.starts_at).toISOString())).size, rows.length);
-      assert.ok(rows.every(row => new Date(row.ends_at).getTime() - new Date(row.starts_at).getTime() === 3_600_000));
-      assert.ok(rows.every((row, index) => index === 0 || new Date(row.starts_at) > new Date(rows[index - 1].starts_at)));
+      assert.equal(
+        new Set(rows.map((row) => new Date(row.starts_at).toISOString())).size,
+        rows.length,
+      );
+      assert.ok(
+        rows.every(
+          (row) =>
+            new Date(row.ends_at).getTime() -
+              new Date(row.starts_at).getTime() ===
+            3_600_000,
+        ),
+      );
+      assert.ok(
+        rows.every(
+          (row, index) =>
+            index === 0 ||
+            new Date(row.starts_at) > new Date(rows[index - 1].starts_at),
+        ),
+      );
     }
   } finally {
     await db.close();
@@ -408,38 +579,165 @@ test("tutor onboarding enforces reviewer authority and publishes only approved a
     const applicationId = saved.rows[0].id;
     const documents = [
       ["identity", "tutor_identity", "identity.pdf", "application/pdf"],
-      ["qualification", "tutor_qualification", "qualification.pdf", "application/pdf"],
-      ["profile_image", "profile_image", "profile.jpg", "image/jpeg"]
+      [
+        "qualification",
+        "tutor_qualification",
+        "qualification.pdf",
+        "application/pdf",
+      ],
+      ["profile_image", "profile_image", "profile.jpg", "image/jpeg"],
     ];
     for (const [documentType, kind, filename, contentType] of documents) {
-      await db.query(`
+      await db.query(
+        `
         select public.register_tutor_application_document(
           $1, $2, $3, $4::public.object_kind, $5, $6, $7, 1024, repeat('a', 64), 'test-clean'
         )
-      `, ["10000000-0000-4000-8000-000000000011", applicationId, documentType, kind, `applicant/${filename}`, filename, contentType]);
+      `,
+        [
+          "10000000-0000-4000-8000-000000000011",
+          applicationId,
+          documentType,
+          kind,
+          `applicant/${filename}`,
+          filename,
+          contentType,
+        ],
+      );
     }
 
-    await db.query("select public.transition_tutor_application($1, $2, 'submitted', null, null)", ["10000000-0000-4000-8000-000000000011", applicationId]);
-    await assert.rejects(
-      db.query("select public.transition_tutor_application($1, $2, 'submitted', null, null)", ["10000000-0000-4000-8000-000000000011", applicationId]),
-      /Invalid or unauthorized/
+    await db.query(
+      "select public.transition_tutor_application($1, $2, 'submitted', null, null)",
+      ["10000000-0000-4000-8000-000000000011", applicationId],
     );
     await assert.rejects(
-      db.query("select public.transition_tutor_application($1, $2, 'under_review', null, null)", ["10000000-0000-4000-8000-000000000011", applicationId]),
-      /Invalid or unauthorized/
+      db.query(
+        "select public.transition_tutor_application($1, $2, 'submitted', null, null)",
+        ["10000000-0000-4000-8000-000000000011", applicationId],
+      ),
+      /Invalid or unauthorized/,
     );
-    assert.equal((await db.query("select count(*)::integer as count from public.public_tutor_marketplace_profiles")).rows[0].count, 0);
+    await assert.rejects(
+      db.query(
+        "select public.transition_tutor_application($1, $2, 'under_review', null, null)",
+        ["10000000-0000-4000-8000-000000000011", applicationId],
+      ),
+      /Invalid or unauthorized/,
+    );
+    assert.equal(
+      (
+        await db.query(
+          "select count(*)::integer as count from public.public_tutor_marketplace_profiles",
+        )
+      ).rows[0].count,
+      0,
+    );
 
-    await db.query("select public.transition_tutor_application($1, $2, 'under_review', 'Evidence opened', null)", ["10000000-0000-4000-8000-000000000012", applicationId]);
-    await db.query("select public.transition_tutor_application($1, $2, 'approved', 'Evidence verified', 'Your application is approved.')", ["10000000-0000-4000-8000-000000000012", applicationId]);
-    assert.equal((await db.query("select count(*)::integer as count from public.public_tutor_marketplace_profiles")).rows[0].count, 1);
+    await db.query(
+      "select public.transition_tutor_application($1, $2, 'under_review', 'Evidence opened', null)",
+      ["10000000-0000-4000-8000-000000000012", applicationId],
+    );
+    await db.query(
+      "select public.transition_tutor_application($1, $2, 'approved', 'Evidence verified', 'Your application is approved.')",
+      ["10000000-0000-4000-8000-000000000012", applicationId],
+    );
+    assert.equal(
+      (
+        await db.query(
+          "select count(*)::integer as count from public.public_tutor_marketplace_profiles",
+        )
+      ).rows[0].count,
+      1,
+    );
 
-    await db.query("select public.transition_tutor_application($1, $2, 'suspended', 'Policy investigation', 'Your profile is temporarily suspended.')", ["10000000-0000-4000-8000-000000000012", applicationId]);
-    assert.equal((await db.query("select count(*)::integer as count from public.public_tutor_marketplace_profiles")).rows[0].count, 0);
-    await db.exec("update public.object_files set retention_until = now() - interval '1 day' where kind = 'tutor_identity'");
-    const expiredFile = (await db.query("select id from public.object_files where kind = 'tutor_identity'")).rows[0];
-    assert.equal((await db.query("select public.finalize_expired_object_deletion($1) as deleted", [expiredFile.id])).rows[0].deleted, true);
-    assert.equal((await db.query("select count(*)::integer as count from public.audit_events where action = 'storage.retention_deleted'")).rows[0].count, 1);
+    await db.query(
+      "select public.transition_tutor_application($1, $2, 'suspended', 'Policy investigation', 'Your profile is temporarily suspended.')",
+      ["10000000-0000-4000-8000-000000000012", applicationId],
+    );
+    assert.equal(
+      (
+        await db.query(
+          "select count(*)::integer as count from public.public_tutor_marketplace_profiles",
+        )
+      ).rows[0].count,
+      0,
+    );
+    await db.exec(
+      "update public.object_files set retention_until = now() - interval '1 day' where kind = 'tutor_identity'",
+    );
+    const expiredFile = (
+      await db.query(
+        "select id from public.object_files where kind = 'tutor_identity'",
+      )
+    ).rows[0];
+    assert.equal(
+      (
+        await db.query(
+          "select public.finalize_expired_object_deletion($1) as deleted",
+          [expiredFile.id],
+        )
+      ).rows[0].deleted,
+      true,
+    );
+    assert.equal(
+      (
+        await db.query(
+          "select count(*)::integer as count from public.audit_events where action = 'storage.retention_deleted'",
+        )
+      ).rows[0].count,
+      1,
+    );
+  } finally {
+    await db.close();
+  }
+});
+
+test("confirmed online bookings create one Meet lifecycle record and cancellation revokes it", async () => {
+  const db = new PGlite();
+  try {
+    await apply(db, await readMigrationFiles());
+    await db.exec(`
+      insert into public.user_accounts (id, auth_subject, email, display_name, status, email_verified_at)
+      values
+        ('10000000-0000-4000-8000-000000000091', '20000000-0000-4000-8000-000000000091', 'meet-tutor@example.test', 'Meet Tutor', 'active', now()),
+        ('10000000-0000-4000-8000-000000000092', '20000000-0000-4000-8000-000000000092', 'meet-learner@example.test', 'Meet Learner', 'active', now());
+      insert into public.tutor_applications (id, applicant_user_id, status)
+      values ('30000000-0000-4000-8000-000000000091', '10000000-0000-4000-8000-000000000091', 'approved');
+      insert into public.tutor_profiles (id, tutor_user_id, approved_application_id, status, slug, headline, about, location, base_price_credits)
+      values ('40000000-0000-4000-8000-000000000091', '10000000-0000-4000-8000-000000000091', '30000000-0000-4000-8000-000000000091', 'active', 'meet-tutor', 'Meet tutor', 'Biography long enough for a persistent Meet lifecycle test.', 'Gaborone', 80);
+      insert into public.bookings (id, tutor_profile_id, created_by_user_id, format, examination, subject, starts_at, ends_at, timezone, price_per_learner_credits, status, idempotency_key)
+      values ('90000000-0000-4000-8000-000000000091', '40000000-0000-4000-8000-000000000091', '10000000-0000-4000-8000-000000000092', 'online_1to1', 'PSLE', 'Mathematics', now() + interval '2 days', now() + interval '2 days 1 hour', 'Africa/Gaborone', 80, 'confirmed', 'meet-booking');
+    `);
+    assert.deepEqual(
+      (
+        await db.query(
+          "select status, attempt_count from public.booking_meetings where booking_id = '90000000-0000-4000-8000-000000000091'",
+        )
+      ).rows[0],
+      { status: "pending", attempt_count: 0 },
+    );
+    await db.exec(
+      "update public.bookings set starts_at = starts_at + interval '1 hour', ends_at = ends_at + interval '1 hour' where id = '90000000-0000-4000-8000-000000000091'",
+    );
+    assert.equal(
+      (
+        await db.query(
+          "select count(*)::integer as count from public.booking_meetings where booking_id = '90000000-0000-4000-8000-000000000091'",
+        )
+      ).rows[0].count,
+      1,
+    );
+    await db.exec(
+      "update public.bookings set status = 'cancelled_by_learner' where id = '90000000-0000-4000-8000-000000000091'",
+    );
+    assert.equal(
+      (
+        await db.query(
+          "select status from public.booking_meetings where booking_id = '90000000-0000-4000-8000-000000000091'",
+        )
+      ).rows[0].status,
+      "revoked",
+    );
   } finally {
     await db.close();
   }
