@@ -3,7 +3,6 @@
 /* eslint-disable @next/next/no-html-link-for-pages -- Vinext's current Sites link interceptor prevents these authentication navigations in production. */
 
 import { FormEvent, useEffect, useState } from "react";
-import "../login/login.css";
 
 export default function RegisterPage() {
   const [displayName, setDisplayName] = useState("");
@@ -94,9 +93,15 @@ export default function RegisterPage() {
               required
             />
             <span>
-              I accept the current <a href="/terms" target="_blank">Terms</a>{" "}
-              and acknowledge the <a href="/privacy" target="_blank">Privacy Notice</a>.
-              A guardian should supervise an account where required.
+              I accept the current{" "}
+              <a href="/terms" target="_blank">
+                Terms
+              </a>{" "}
+              and acknowledge the{" "}
+              <a href="/privacy" target="_blank">
+                Privacy Notice
+              </a>
+              . A guardian should supervise an account where required.
             </span>
           </label>
           <button
@@ -109,7 +114,8 @@ export default function RegisterPage() {
         </form>
         {staticPreview && (
           <p className="auth-notice">
-            Registration is available on the server deployment, not this static preview.
+            Registration is available on the server deployment, not this static
+            preview.
           </p>
         )}
         {message && (

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "vinext build && node scripts/performance/check-budgets.mjs && node scripts/prepare-sites.mjs",
+    "build": "vinext build && node scripts/performance/check-budgets.mjs && node scripts/prepare-sites.mjs && node scripts/links/check-integrity.mjs",
     "start": "node scripts/validate-runtime-env.mjs && node scripts/validate-database-env.mjs && vinext start",
     "lint": "eslint . --max-warnings 0",
     "format:check": "prettier --check next.config.mjs proxy.ts playwright.config.ts app/api/whatsapp/route.ts app/api/internal/operations/route.ts app/api/internal/earnings/release/route.ts app/api/internal/meet/provision/route.ts app/api/internal/messages/deliver/route.ts app/api/internal/notifications/deliver/route.ts server/security server/meet server/messages server/operations scripts/release scripts/load scripts/database/verify-restored-database.mjs tests/e2e tests/production-readiness.test.mjs",
@@ -13,6 +13,7 @@
     "test": "node --test tests/*.test.mjs",
     "test:e2e": "playwright test",
     "performance:check": "node scripts/performance/check-budgets.mjs",
+    "links:check": "node scripts/links/check-integrity.mjs",
     "security:dependencies": "pnpm audit --prod --audit-level high",
     "env:check": "node scripts/validate-runtime-env.mjs",
     "db:env:check": "node scripts/validate-database-env.mjs",

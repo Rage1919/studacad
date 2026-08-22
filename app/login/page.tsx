@@ -3,7 +3,6 @@
 /* eslint-disable @next/next/no-html-link-for-pages -- Vinext's current Sites link interceptor prevents these authentication navigations in production. */
 
 import { FormEvent, useEffect, useState } from "react";
-import "./login.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -90,8 +89,9 @@ export default function LoginPage() {
           </p>
         )}
         <small>
-          New to Studacad? <a href="/register">Create an account</a>.
-          Secure links are single-use and expire according to the authentication policy.
+          New to Studacad? <a href="/register">Create an account</a>. Secure
+          links are single-use and expire according to the authentication
+          policy.
         </small>
       </section>
     </main>

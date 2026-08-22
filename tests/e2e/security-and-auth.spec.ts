@@ -29,8 +29,9 @@ test("email-link sign-in uses a neutral response", async ({ page }) => {
   );
   await page.goto("/login");
   await page.getByLabel("Email address").fill("learner@example.test");
-  await page.getByRole("checkbox").check();
-  await page.getByRole("button", { name: "Email me a secure link" }).click();
+  await page
+    .getByRole("button", { name: "Email me a secure sign-in link" })
+    .click();
   await expect(page.getByRole("status")).toContainText(
     "If that address can receive mail",
   );
@@ -152,7 +153,9 @@ test("oversized API requests fail before route execution", async ({
 
 test("sensitive sign-in requests are rate limited", async ({ request }) => {
   const headers = {
-    Origin: "https://studacad.test",
+    Origin: new URL(
+      process.env.STUDACAD_APP_URL ?? "http://127.0.0.1:3000",
+    ).origin,
     "Content-Type": "application/json",
     "X-Forwarded-For": "198.51.100.22",
   };

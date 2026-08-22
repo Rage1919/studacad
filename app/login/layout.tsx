@@ -1,4 +1,5 @@
 import { privateMetadata } from "../lib/seo";
+import "./login.css";
 
 export const metadata = privateMetadata(
   "Sign in",
