@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useAuth } from "./AuthProvider";
 
 export function AccountNav({ className = "login" }: { className?: string }) {
@@ -8,18 +7,18 @@ export function AccountNav({ className = "login" }: { className?: string }) {
   if (!ready) return null;
   if (signedIn)
     return (
-      <Link className={className} href="/account">
+      <a className={className} href="/account">
         ↪ <span>Account</span>
-      </Link>
+      </a>
     );
   return (
     <span className="auth-nav-guest">
-      <Link className={className} href="/login">
+      <a className={className} href="/login">
         <span>Log in</span>
-      </Link>
-      <Link className={`${className} register-link`} href="/register">
+      </a>
+      <a className={`${className} register-link`} href="/register">
         <span>Register</span>
-      </Link>
+      </a>
     </span>
   );
 }

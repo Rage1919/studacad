@@ -1,7 +1,8 @@
 "use client";
 
+/* eslint-disable @next/next/no-html-link-for-pages -- Vinext's current Sites link interceptor prevents these authentication navigations in production. */
+
 import { FormEvent, useEffect, useState } from "react";
-import Link from "next/link";
 import "../login/login.css";
 
 export default function RegisterPage() {
@@ -53,9 +54,9 @@ export default function RegisterPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link className="auth-brand" href="/">
+        <a className="auth-brand" href="/">
           Studacad
-        </Link>
+        </a>
         <p className="eyebrow">Create your learner account</p>
         <h1>Register for Studacad</h1>
         <p>
@@ -93,8 +94,8 @@ export default function RegisterPage() {
               required
             />
             <span>
-              I accept the current <Link href="/terms" target="_blank">Terms</Link>{" "}
-              and acknowledge the <Link href="/privacy" target="_blank">Privacy Notice</Link>.
+              I accept the current <a href="/terms" target="_blank">Terms</a>{" "}
+              and acknowledge the <a href="/privacy" target="_blank">Privacy Notice</a>.
               A guardian should supervise an account where required.
             </span>
           </label>
@@ -117,7 +118,7 @@ export default function RegisterPage() {
           </p>
         )}
         <small>
-          Already registered? <Link href="/login">Log in</Link>.
+          Already registered? <a href="/login">Log in</a>.
         </small>
       </section>
     </main>

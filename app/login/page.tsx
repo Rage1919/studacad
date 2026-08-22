@@ -1,7 +1,8 @@
 "use client";
 
+/* eslint-disable @next/next/no-html-link-for-pages -- Vinext's current Sites link interceptor prevents these authentication navigations in production. */
+
 import { FormEvent, useEffect, useState } from "react";
-import Link from "next/link";
 import "./login.css";
 
 export default function LoginPage() {
@@ -50,9 +51,9 @@ export default function LoginPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link className="auth-brand" href="/">
+        <a className="auth-brand" href="/">
           Studacad
-        </Link>
+        </a>
         <p className="eyebrow">One secure account</p>
         <h1>Sign in to Studacad</h1>
         <p>
@@ -89,7 +90,7 @@ export default function LoginPage() {
           </p>
         )}
         <small>
-          New to Studacad? <Link href="/register">Create an account</Link>.
+          New to Studacad? <a href="/register">Create an account</a>.
           Secure links are single-use and expire according to the authentication policy.
         </small>
       </section>
