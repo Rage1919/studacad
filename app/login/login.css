@@ -16,10 +16,11 @@
 .auth-brand {
   display: inline-block;
   margin-bottom: 28px;
-  color: #1261b5;
-  font-size: 1.6rem;
-  font-weight: 900;
+  line-height: 0;
   text-decoration: none;
+}
+.auth-brand .auth-logo {
+  height: 38px;
 }
 .auth-card h1 {
   margin: 0.25rem 0 1rem;

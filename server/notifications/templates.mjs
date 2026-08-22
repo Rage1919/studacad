@@ -116,11 +116,12 @@ export function renderNotification(templateKey, input) {
       .slice(0, 100) || "there";
   const appUrl = new URL(String(input?.appUrl ?? "https://studacad.com"))
     .origin;
+  const logoUrl = `${appUrl}/images/studacad-logo.png`;
   const [subject, line] = template;
   return {
     subject,
     text: `Hello ${recipientName},\n\n${line}\n\nOpen Studacad: ${appUrl}\n\nStudacad support will never ask for your password or one-time sign-in link.`,
-    html: `<p>Hello ${escapeHtml(recipientName)},</p><p>${escapeHtml(line)}</p><p><a href="${escapeHtml(appUrl)}">Open Studacad</a></p><p><small>Studacad support will never ask for your password or one-time sign-in link.</small></p>`,
+    html: `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f3f7fd"><tr><td align="center" style="padding:32px 16px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;background:#fff;border:1px solid #d6dfeb;border-radius:12px"><tr><td style="padding:28px 32px 18px;border-bottom:1px solid #d6dfeb"><a href="${escapeHtml(appUrl)}" style="display:inline-block;text-decoration:none"><img src="${escapeHtml(logoUrl)}" width="200" height="43" alt="Studacad" style="display:block;width:200px;max-width:100%;height:auto;border:0" /></a></td></tr><tr><td style="padding:36px 32px 32px"><p>Hello ${escapeHtml(recipientName)},</p><p>${escapeHtml(line)}</p><p><a href="${escapeHtml(appUrl)}" style="color:#0b3264;font-weight:700">Open Studacad</a></p><p style="color:#607086;font-size:13px"><small>Studacad support will never ask for your password or one-time sign-in link.</small></p></td></tr></table></td></tr></table>`,
   };
 }
 

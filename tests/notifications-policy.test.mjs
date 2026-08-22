@@ -33,6 +33,11 @@ test("transactional template catalog covers required events without sensitive co
       appUrl: "https://studacad.com",
     });
     assert.match(rendered.html, /&lt;Learner&gt;/);
+    assert.match(
+      rendered.html,
+      /https:\/\/studacad\.com\/images\/studacad-logo\.png/,
+    );
+    assert.match(rendered.html, /alt="Studacad"/);
     assert.doesNotMatch(
       `${rendered.text}${rendered.html}`,
       /meet\.google\.com|account number|password reset token/i,

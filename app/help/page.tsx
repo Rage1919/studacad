@@ -1,4 +1,5 @@
 import Link from "../components/SiteLink";
+import { StudacadLogo } from "../components/StudacadLogo";
 import "./help.css";
 const faqs = [
   [
@@ -34,7 +35,9 @@ export default function Help() {
   return (
     <main className="help-page">
       <nav>
-        <Link href="/">Studacad</Link>
+        <Link aria-label="Studacad home" href="/">
+          <StudacadLogo alt="" className="document-logo" />
+        </Link>
         <Link href="/contact">Contact support</Link>
       </nav>
       <header>

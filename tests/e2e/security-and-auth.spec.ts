@@ -124,7 +124,7 @@ test("public homepage stays within local layout-shift and load guardrails", asyn
       lcp: paints.at(-1)?.startTime ?? 0,
       responseStart: navigation?.responseStart ?? 0,
       animationDuration: getComputedStyle(
-        document.querySelector(".brand-mark") ?? document.body,
+        document.querySelector(".studacad-logo") ?? document.body,
       ).animationDuration,
     };
   });

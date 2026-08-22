@@ -13,6 +13,8 @@ test("authentication emails are fully Studacad branded", async () => {
     assert.match(template, /Studacad/);
     assert.doesNotMatch(template, /supabase/i);
     assert.match(template, /https:\/\/studacad\.com/);
+    assert.match(template, /https:\/\/studacad\.com\/images\/studacad-logo\.png/);
+    assert.match(template, /alt="Studacad"/);
     assert.match(template, /\{\{ \.RedirectTo \}\}/);
     assert.match(template, /\{\{ \.TokenHash \}\}/);
     assert.match(template, /type=email/);

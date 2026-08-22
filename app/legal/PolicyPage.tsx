@@ -1,5 +1,6 @@
 import Link from "../components/SiteLink";
 import { StudacadFooter } from "../components/StudacadFooter";
+import { StudacadLogo } from "../components/StudacadLogo";
 import "./legal.css";
 export type Policy = {
   title: string;
@@ -11,7 +12,9 @@ export function PolicyPage({ policy }: { policy: Policy }) {
     <>
       <main className="legal-page">
         <nav>
-          <Link href="/">Studacad</Link>
+          <Link aria-label="Studacad home" href="/">
+            <StudacadLogo alt="" className="document-logo" />
+          </Link>
           <Link href="/help">Help centre</Link>
         </nav>
         <header>

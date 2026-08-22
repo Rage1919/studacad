@@ -1,16 +1,12 @@
 import Link from "./SiteLink";
+import { StudacadLogo } from "./StudacadLogo";
 
 export function StudacadFooter() {
   return (
     <footer className="site-footer">
       <div className="footer-top">
         <Link className="brand footer-brand" href="/#top">
-          <span>Studacad</span>
-          <i className="brand-mark">
-            <b />
-            <b />
-            <b />
-          </i>
+          <StudacadLogo variant="white" />
         </Link>
         <p>
           Botswana tutors, courses, revision papers, and tests in one place.

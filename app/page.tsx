@@ -8,6 +8,7 @@ import { WalletIcon } from "./components/WalletIcon";
 import { ReferralIcon } from "./components/ReferralIcon";
 import { AccountNav } from "./components/AccountNav";
 import { useAuth } from "./components/AuthProvider";
+import { StudacadLogo } from "./components/StudacadLogo";
 import type { Tutor } from "./lib/tutors";
 import { useDialogFocus } from "./lib/useDialogFocus";
 
@@ -110,12 +111,7 @@ export default function Home() {
 
       <header className="nav">
         <Link className="brand" href="/" aria-label="Studacad home">
-          <span>Studacad</span>
-          <i className="brand-mark">
-            <b />
-            <b />
-            <b />
-          </i>
+          <StudacadLogo alt="" />
         </Link>
         <nav aria-label="Main navigation">
           <TutorMenu />

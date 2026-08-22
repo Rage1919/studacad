@@ -216,37 +216,23 @@ button:not(.onboarding-progress-card button) :is(span, small, strong),
   z-index: 10;
 }
 .brand {
-  font-family: "Manrope", sans-serif;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -1.3px;
   white-space: nowrap;
 }
-.brand-mark {
-  width: 20px;
-  height: 25px;
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 2px;
-  transform: rotate(-28deg);
-}
-.brand-mark b {
+.studacad-logo {
   display: block;
-  background: currentColor;
-  width: 5px;
-  border-radius: 4px;
+  width: auto;
+  height: 35px;
+  object-fit: contain;
+  user-select: none;
 }
-.brand-mark b:nth-child(1) {
-  height: 11px;
+.nav .studacad-logo,
+.lms-header .studacad-logo {
+  height: 36px;
 }
-.brand-mark b:nth-child(2) {
-  height: 19px;
-}
-.brand-mark b:nth-child(3) {
-  height: 14px;
+.document-logo {
+  height: 28px;
 }
 .nav nav {
   display: flex;
@@ -1449,7 +1435,10 @@ footer {
   border-bottom: 1px solid #3b3b3b;
 }
 .footer-brand {
-  font-size: 30px;
+  line-height: 0;
+}
+.footer-brand .studacad-logo {
+  height: 40px;
 }
 .footer-top p {
   color: #bdbdbd;
@@ -1654,7 +1643,11 @@ footer {
     padding: 0 17px;
   }
   .brand {
-    font-size: 23px;
+    max-width: 138px;
+  }
+  .nav .studacad-logo,
+  .lms-header .studacad-logo {
+    height: 30px;
   }
   .currency,
   .help {

@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages -- Vinext's current Sites link interceptor prevents these authentication navigations in production. */
 
 import { FormEvent, useEffect, useState } from "react";
+import { StudacadLogo } from "../components/StudacadLogo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -51,7 +52,7 @@ export default function LoginPage() {
     <main className="auth-page">
       <section className="auth-card">
         <a className="auth-brand" href="/">
-          Studacad
+          <StudacadLogo className="auth-logo" />
         </a>
         <p className="eyebrow">One secure account</p>
         <h1>Sign in to Studacad</h1>

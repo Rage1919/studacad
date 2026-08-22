@@ -7,6 +7,7 @@ import { WalletIcon } from "./WalletIcon";
 import { ReferralIcon } from "./ReferralIcon";
 import { AccountNav } from "./AccountNav";
 import { useAuth } from "./AuthProvider";
+import { StudacadLogo } from "./StudacadLogo";
 
 const MessageIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14v10H9l-4 3v-13Z" /><path d="M9 9h6M9 12h4" /></svg>;
 
@@ -15,7 +16,9 @@ export function LmsHeader({ current }: { current?: "learn" | "bookings" | "walle
   const { ready: authReady, signedIn } = useAuth();
   return (
     <header className="lms-header">
-      <Link className="brand" href="/"><span>Studacad</span><i className="brand-mark"><b /><b /><b /></i></Link>
+      <Link className="brand" href="/">
+        <StudacadLogo />
+      </Link>
       <nav aria-label="Learning navigation">
         <TutorMenu />
         <Link className={current === "how" ? "active" : ""} href="/how-it-works">How it works</Link>
