@@ -4,6 +4,8 @@
 
 Studacad uses Supabase Auth with passwordless email magic links and PKCE. Google and Apple buttons were removed because those providers are not configured. The email flow serves registration, sign-in, verification, and account recovery without revealing whether an address already exists.
 
+User-facing authentication email is Studacad branded. The hosted Auth project uses custom SMTP with sender name `Studacad Administrator` and `admin@studacad.com`; the registration and magic-link subjects and bodies live in `supabase/templates`. Those templates send a token hash to the Studacad callback URL rather than exposing the provider verification URL. The callback accepts both that token-hash flow and the legacy PKCE code flow so already-issued links remain valid during rollout.
+
 Configure these allowed redirect URLs in each Supabase project:
 
 - local: `http://localhost:3000/auth/callback`

@@ -7,11 +7,17 @@ import { createServerAuthClient } from "../../../server/auth/client";
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
+  const tokenHash = url.searchParams.get("token_hash");
+  const tokenType = url.searchParams.get("type");
   const next = safeReturnPath(url.searchParams.get("next"));
-  if (!code) return NextResponse.redirect(new URL("/login?error=invalid_link", url.origin));
+  const hasBrandedEmailToken = Boolean(tokenHash) && tokenType === "email";
+  if (!code && !hasBrandedEmailToken)
+    return NextResponse.redirect(new URL("/login?error=invalid_link", url.origin));
 
   const { client, responseHeaders } = await createServerAuthClient();
-  const exchanged = await client.auth.exchangeCodeForSession(code);
+  const exchanged = hasBrandedEmailToken
+    ? await client.auth.verifyOtp({ token_hash: tokenHash!, type: "email" })
+    : await client.auth.exchangeCodeForSession(code!);
   if (exchanged.error) return NextResponse.redirect(new URL("/login?error=expired_link", url.origin));
 
   const verified = await client.auth.getUser();
