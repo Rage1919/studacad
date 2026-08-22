@@ -1,13 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { accountAllowsSession, EMAIL_LINK_RESPONSE, hasRequiredRole, normalizeEmail, safeReturnPath, verifiedAuthIdentity } from "../server/auth/auth-policy.mjs";
+import { accountAllowsSession, EMAIL_LINK_RESPONSE, hasRequiredRole, normalizeDisplayName, normalizeEmail, REGISTRATION_LINK_RESPONSE, safeReturnPath, verifiedAuthIdentity } from "../server/auth/auth-policy.mjs";
 import { authCookieOptions } from "../server/auth/cookie-options.mjs";
 import { assertSameOrigin, CsrfError } from "../server/auth/csrf.mjs";
 
 test("normalizes valid email without exposing account existence", () => {
   assert.equal(normalizeEmail(" Learner@Example.COM "), "learner@example.com");
   assert.equal(normalizeEmail("not-an-email"), null);
-  assert.match(EMAIL_LINK_RESPONSE.message, /If that email can be used/);
+  assert.match(EMAIL_LINK_RESPONSE.message, /If that email belongs/);
+  assert.match(REGISTRATION_LINK_RESPONSE.message, /If that email can be registered/);
+  assert.equal(normalizeDisplayName("  Naledi   Molefe  "), "Naledi Molefe");
+  assert.equal(normalizeDisplayName("N"), null);
 });
 
 test("return paths cannot escape the Studacad origin", () => {

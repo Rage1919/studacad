@@ -1,6 +1,7 @@
 export type Tutor = {
   id: string;
   profileId?: string;
+  demo?: boolean;
   name: string;
   examination: "PSLE" | "JCE" | "BGCSE";
   subject: string;

@@ -6,11 +6,13 @@ import { TutorMenu } from "./TutorMenu";
 import { WalletIcon } from "./WalletIcon";
 import { ReferralIcon } from "./ReferralIcon";
 import { AccountNav } from "./AccountNav";
+import { useAuth } from "./AuthProvider";
 
 const MessageIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14v10H9l-4 3v-13Z" /><path d="M9 9h6M9 12h4" /></svg>;
 
 export function LmsHeader({ current }: { current?: "learn" | "bookings" | "wallet" | "how" | "messages" | "referral" | "become-tutor" }) {
   const { credits, walletReady } = useLms();
+  const { ready: authReady, signedIn } = useAuth();
   return (
     <header className="lms-header">
       <Link className="brand" href="/"><span>Studacad</span><i className="brand-mark"><b /><b /><b /></i></Link>
@@ -22,23 +24,27 @@ export function LmsHeader({ current }: { current?: "learn" | "bookings" | "walle
         <Link className={current === "bookings" ? "active" : ""} href="/bookings">Bookings</Link>
       </nav>
       <div className="lms-header-actions">
-        <Link className={`message-header-button ${current === "messages" ? "active" : ""}`} href="/messages" aria-label="Messages" title="Messages"><MessageIcon /></Link>
-        <Link
-          className={current === "referral" ? "active referral-header-link" : "referral-header-link"}
-          href="/referral"
-          aria-label="Refer a friend"
-          title="Refer a friend"
-        >
-          <ReferralIcon /><strong>Refer</strong>
-        </Link>
-        <Link
-          className={`wallet-pill ${current === "wallet" ? "active" : ""}`}
-          href="/wallet"
-          aria-label={walletReady ? `Wallet balance: ${credits.toLocaleString()} credits` : "Wallet balance loading"}
-          title="Wallet"
-        >
-          <WalletIcon /><strong>{walletReady ? credits.toLocaleString() : "…"}</strong>
-        </Link>
+        {authReady && signedIn && (
+          <>
+            <Link className={`message-header-button ${current === "messages" ? "active" : ""}`} href="/messages" aria-label="Messages" title="Messages"><MessageIcon /></Link>
+            <Link
+              className={current === "referral" ? "active referral-header-link" : "referral-header-link"}
+              href="/referral"
+              aria-label="Refer a friend"
+              title="Refer a friend"
+            >
+              <ReferralIcon /><strong>Refer</strong>
+            </Link>
+            <Link
+              className={`wallet-pill ${current === "wallet" ? "active" : ""}`}
+              href="/wallet"
+              aria-label={walletReady ? `Wallet balance: ${credits.toLocaleString()} credits` : "Wallet balance loading"}
+              title="Wallet"
+            >
+              <WalletIcon /><strong>{walletReady ? credits.toLocaleString() : "…"}</strong>
+            </Link>
+          </>
+        )}
         <AccountNav className="wallet-pill" />
       </div>
     </header>

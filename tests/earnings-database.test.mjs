@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import { readMigrationFiles } from "../scripts/database/migration-files.mjs";
+import { ensureSupabaseTestRoles } from "../scripts/database/test-roles.mjs";
 
 test("earnings release, refunds, payout failure, retry, and settlement remain balanced and idempotent", async () => {
   const db = new PGlite();
   try {
+    await ensureSupabaseTestRoles(db);
     for (const migration of await readMigrationFiles())
       await db.exec(migration.sql);
     await db.exec(`

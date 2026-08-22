@@ -66,6 +66,10 @@
   color: #6a7888;
   line-height: 1.5;
 }
+.auth-card small a {
+  color: #1261b5;
+  font-weight: 800;
+}
 .auth-card .policy-accept {
   display: flex;
   gap: 0.65rem;

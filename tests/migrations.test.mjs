@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import { readMigrationFiles } from "../scripts/database/migration-files.mjs";
+import { ensureSupabaseTestRoles } from "../scripts/database/test-roles.mjs";
 
 const expectedTables = [
   "audit_events",
@@ -60,6 +61,7 @@ const expectedTables = [
 ];
 
 async function apply(db, migrations) {
+  await ensureSupabaseTestRoles(db);
   for (const migration of migrations) await db.exec(migration.sql);
 }
 
@@ -91,6 +93,19 @@ test("migrations build the complete schema from an empty database", async () => 
         and pg_class.relrowsecurity = false
     `);
     assert.equal(rowSecurity.rows[0].count, 0);
+
+    const exposedDefiners = await db.query(`
+      select count(*)::integer as count
+      from pg_proc procedure
+      join pg_namespace namespace on namespace.oid = procedure.pronamespace
+      where namespace.nspname = 'public'
+        and procedure.prosecdef
+        and (
+          has_function_privilege('anon', procedure.oid, 'execute')
+          or has_function_privilege('authenticated', procedure.oid, 'execute')
+        )
+    `);
+    assert.equal(exposedDefiners.rows[0].count, 0);
   } finally {
     await db.close();
   }
@@ -642,7 +657,7 @@ test("tutor onboarding enforces reviewer authority and publishes only approved a
     assert.equal(
       (
         await db.query(
-          "select count(*)::integer as count from public.public_tutor_marketplace_profiles",
+          "select count(*)::integer as count from public.public_tutor_marketplace_profiles where is_demo = false",
         )
       ).rows[0].count,
       0,
@@ -659,7 +674,7 @@ test("tutor onboarding enforces reviewer authority and publishes only approved a
     assert.equal(
       (
         await db.query(
-          "select count(*)::integer as count from public.public_tutor_marketplace_profiles",
+          "select count(*)::integer as count from public.public_tutor_marketplace_profiles where is_demo = false",
         )
       ).rows[0].count,
       1,
@@ -672,7 +687,7 @@ test("tutor onboarding enforces reviewer authority and publishes only approved a
     assert.equal(
       (
         await db.query(
-          "select count(*)::integer as count from public.public_tutor_marketplace_profiles",
+          "select count(*)::integer as count from public.public_tutor_marketplace_profiles where is_demo = false",
         )
       ).rows[0].count,
       0,

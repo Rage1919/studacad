@@ -174,10 +174,12 @@ export type PublicTutorMarketplaceProfile = {
   published_at: IsoTimestamp;
   teaching_experience: string | null;
   languages: string[];
-  profile_image_object_key: string;
-  profile_image_content_type: string;
+  profile_image_object_key: string | null;
+  profile_image_content_type: string | null;
   subjects: Json;
   formats: Json;
+  is_demo: boolean;
+  profile_image_public_path: string | null;
 };
 
 export type TutorProfile = {
@@ -192,6 +194,8 @@ export type TutorProfile = {
   timezone: string;
   base_price_credits: number;
   profile_image_file_id: Uuid | null;
+  profile_image_public_path: string | null;
+  is_demo: boolean;
   average_rating: number;
   completed_booking_count: number;
   published_at: IsoTimestamp | null;

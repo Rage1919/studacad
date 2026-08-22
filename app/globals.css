@@ -428,6 +428,20 @@ button:not(.onboarding-progress-card button) :is(span, small, strong),
   background: var(--ink);
   color: white;
 }
+.auth-nav-guest {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.register-link {
+  background: var(--button);
+  border-color: var(--button);
+  color: white;
+}
+.register-link:hover {
+  background: #0b3264;
+  color: white;
+}
 
 .hero {
   min-height: 530px;

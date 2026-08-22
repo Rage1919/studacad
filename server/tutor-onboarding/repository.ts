@@ -399,6 +399,7 @@ export async function createTutorDocumentDownload(
 export type PublicTutorDto = {
   id: string;
   profileId: string;
+  demo: boolean;
   name: string;
   examination: "PSLE" | "JCE" | "BGCSE";
   subject: string;
@@ -441,10 +442,15 @@ const mapPublicTutor = async (
     typeof primary.subject !== "string"
   )
     return null;
-  const signed = await getDatabaseAdminClient()
-    .storage.from("studacad-private")
-    .createSignedUrl(profile.profile_image_object_key, 900);
-  if (signed.error || !signed.data.signedUrl) return null;
+  let image = profile.profile_image_public_path;
+  if (!image && profile.profile_image_object_key) {
+    const signed = await getDatabaseAdminClient()
+      .storage.from("studacad-private")
+      .createSignedUrl(profile.profile_image_object_key, 900);
+    if (signed.error || !signed.data.signedUrl) return null;
+    image = signed.data.signedUrl;
+  }
+  if (!image) return null;
   const formats = Array.isArray(profile.formats)
     ? (profile.formats
         .filter((item) => typeof item === "string")
@@ -455,6 +461,7 @@ const mapPublicTutor = async (
   return {
     id: profile.slug,
     profileId: profile.id,
+    demo: profile.is_demo,
     name: profile.display_name,
     examination: primary.examination as PublicTutorDto["examination"],
     subject: primary.subject,
@@ -462,7 +469,7 @@ const mapPublicTutor = async (
     lessons: `${profile.completed_booking_count.toLocaleString()} lessons`,
     price: profile.base_price_credits,
     color: "blue",
-    image: signed.data.signedUrl,
+    image,
     location: `${profile.location}, Botswana`,
     experience: profile.teaching_experience ?? "",
     headline: profile.headline,
@@ -478,7 +485,9 @@ const mapPublicTutor = async (
     resume: {
       education: [],
       experience: [],
-      certifications: ["Verification review completed by Studacad"],
+      certifications: profile.is_demo
+        ? ["Fictional profile created for platform demonstration"]
+        : ["Verification review completed by Studacad"],
     },
   };
 };

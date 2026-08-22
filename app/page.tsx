@@ -7,6 +7,7 @@ import { TutorMenu } from "./components/TutorMenu";
 import { WalletIcon } from "./components/WalletIcon";
 import { ReferralIcon } from "./components/ReferralIcon";
 import { AccountNav } from "./components/AccountNav";
+import { useAuth } from "./components/AuthProvider";
 import type { Tutor } from "./lib/tutors";
 import { useDialogFocus } from "./lib/useDialogFocus";
 
@@ -51,6 +52,7 @@ const popularSubjectRows = (["PSLE", "JCE", "BGCSE"] as const).map((exam) => ({
 
 export default function Home() {
   const { credits } = useLms();
+  const { ready: authReady, signedIn } = useAuth();
   const [modal, setModal] = useState<"search" | null>(null);
   const [examination, setExamination] = useState("PSLE");
   const [subject, setSubject] = useState("Mathematics");
@@ -122,35 +124,39 @@ export default function Home() {
           <Link href="/learn">My learning</Link>
         </nav>
         <div className="nav-actions">
-          <Link
-            className="message-nav"
-            href="/messages"
-            aria-label="Messages"
-            title="Messages"
-          >
-            <MessageIcon />
-          </Link>
-          <Link
-            className="referral-nav"
-            href="/referral"
-            aria-label="Refer a friend"
-            title="Refer a friend"
-          >
-            <ReferralIcon />
-            <strong>Refer</strong>
-          </Link>
-          <Link
-            className="currency wallet-nav"
-            href="/wallet"
-            aria-label={`Wallet balance: ${credits.toLocaleString()} credits`}
-            title="Wallet"
-          >
-            <WalletIcon />
-            <strong>{credits.toLocaleString()}</strong>
-          </Link>
-          <Link className="help" href="/help" aria-label="Help">
-            ?
-          </Link>
+          {authReady && signedIn && (
+            <>
+              <Link
+                className="message-nav"
+                href="/messages"
+                aria-label="Messages"
+                title="Messages"
+              >
+                <MessageIcon />
+              </Link>
+              <Link
+                className="referral-nav"
+                href="/referral"
+                aria-label="Refer a friend"
+                title="Refer a friend"
+              >
+                <ReferralIcon />
+                <strong>Refer</strong>
+              </Link>
+              <Link
+                className="currency wallet-nav"
+                href="/wallet"
+                aria-label={`Wallet balance: ${credits.toLocaleString()} credits`}
+                title="Wallet"
+              >
+                <WalletIcon />
+                <strong>{credits.toLocaleString()}</strong>
+              </Link>
+              <Link className="help" href="/help" aria-label="Help">
+                ?
+              </Link>
+            </>
+          )}
           <AccountNav />
         </div>
       </header>
@@ -369,12 +375,14 @@ export default function Home() {
                   loading="lazy"
                   decoding="async"
                 />
-                <em className="featured-badge">Approved profile</em>
+                <em className="featured-badge">
+                  {tutor.demo ? "Demo profile" : "Approved profile"}
+                </em>
               </div>
               <div className="tutor-info">
                 <div>
                   <h3>
-                    {tutor.name} <i>✓</i>
+                    {tutor.name} <i>{tutor.demo ? "D" : "✓"}</i>
                   </h3>
                   <p>
                     {tutor.examination} {tutor.subject} tutor

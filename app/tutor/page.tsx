@@ -468,14 +468,14 @@ export default function TutorProfilePage({ slug }: { slug?: string }) {
                 height={900}
                 decoding="async"
               />
-              <span>Approved tutor</span>
+              <span>{tutor.demo ? "Demo tutor profile" : "Approved tutor"}</span>
             </div>
             <div className="profile-summary">
               <p className="eyebrow">
                 {tutor.examination} · {tutor.subject}
               </p>
               <h1>
-                {tutor.name} <i>✓</i>
+                {tutor.name} <i>{tutor.demo ? "D" : "✓"}</i>
               </h1>
               <p className="profile-headline">{tutor.headline}</p>
               <div className="profile-facts">

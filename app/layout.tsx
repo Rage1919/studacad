@@ -4,6 +4,7 @@ import "./lms.css";
 import { LmsProvider } from "./components/LmsProvider";
 import { StudacadFooter } from "./components/StudacadFooter";
 import { StructuredData } from "./components/StructuredData";
+import { AuthProvider } from "./components/AuthProvider";
 import { productionOrigin, publicMetadata } from "./lib/seo";
 
 const homeMetadata = publicMetadata({
@@ -56,12 +57,14 @@ export default function RootLayout({
         </a>
         <StructuredData data={organization} />
         <StructuredData data={website} />
-        <LmsProvider>
-          <div id="main-content" tabIndex={-1}>
-            {children}
-          </div>
-          <StudacadFooter />
-        </LmsProvider>
+        <AuthProvider>
+          <LmsProvider>
+            <div id="main-content" tabIndex={-1}>
+              {children}
+            </div>
+            <StudacadFooter />
+          </LmsProvider>
+        </AuthProvider>
       </body>
     </html>
   );

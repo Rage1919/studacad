@@ -295,11 +295,12 @@ export default function TutorsPage() {
                 <div className="search-tutor-name">
                   <div>
                     <h3>
-                      {tutor.name} <i>✓</i>
+                      {tutor.name} <i>{tutor.demo ? "D" : "✓"}</i>
                     </h3>
                     <p>
                       {tutor.examination} · {tutor.subject}
                     </p>
+                    {tutor.demo && <small>Demo profile</small>}
                   </div>
                   <span>
                     <b>★ {tutor.rating}</b>

@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import { readMigrationFiles } from "../scripts/database/migration-files.mjs";
+import { ensureSupabaseTestRoles } from "../scripts/database/test-roles.mjs";
 
 test("LMS purchases, scoring, progress, and referrals are authoritative and idempotent", async () => {
   const db = new PGlite();
   try {
+    await ensureSupabaseTestRoles(db);
     for (const migration of await readMigrationFiles()) await db.exec(migration.sql);
     await db.exec(`
       insert into public.user_accounts (id, auth_subject, email, display_name, status, email_verified_at)

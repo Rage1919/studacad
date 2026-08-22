@@ -5,6 +5,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { PGlite } from "@electric-sql/pglite";
 import { readMigrationFiles } from "../scripts/database/migration-files.mjs";
+import { ensureSupabaseTestRoles } from "../scripts/database/test-roles.mjs";
 import { operationsHealthAuthorized } from "../server/operations/internal-auth.mjs";
 import {
   createOperationalLogRecord,
@@ -49,6 +50,7 @@ test("operations authentication and structured logs fail closed without exposing
 test("operational database snapshot detects queue and financial health without user content", async () => {
   const db = new PGlite();
   try {
+    await ensureSupabaseTestRoles(db);
     for (const migration of await readMigrationFiles())
       await db.exec(migration.sql);
     const initial = (

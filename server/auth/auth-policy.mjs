@@ -6,6 +6,13 @@ export function normalizeEmail(value) {
   return email.length <= 254 && EMAIL_PATTERN.test(email) ? email : null;
 }
 
+export function normalizeDisplayName(value) {
+  const name = typeof value === "string" ? value.trim().replace(/\s+/g, " ") : "";
+  return name.length >= 2 && name.length <= 80 && !/[\u0000-\u001f\u007f]/.test(name)
+    ? name
+    : null;
+}
+
 export function safeReturnPath(value, fallback = "/account") {
   if (typeof value !== "string") return fallback;
   const path = value.trim();
@@ -37,5 +44,9 @@ export function accountAllowsSession(account) {
 }
 
 export const EMAIL_LINK_RESPONSE = Object.freeze({
-  message: "If that email can be used, Studacad has sent a secure sign-in link. Check your inbox and spam folder."
+  message: "If that email belongs to a Studacad account, we have sent a secure sign-in link. Check your inbox and spam folder."
+});
+
+export const REGISTRATION_LINK_RESPONSE = Object.freeze({
+  message: "If that email can be registered, we have sent a secure confirmation link. Check your inbox and spam folder."
 });

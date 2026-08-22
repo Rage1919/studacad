@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import { readMigrationFiles } from "../scripts/database/migration-files.mjs";
+import { ensureSupabaseTestRoles } from "../scripts/database/test-roles.mjs";
 
 const admin = "10000000-0000-4000-8000-000000000131";
 const learner = "10000000-0000-4000-8000-000000000132";
@@ -10,6 +11,7 @@ const tutor = "10000000-0000-4000-8000-000000000134";
 
 async function setup() {
   const db = new PGlite();
+  await ensureSupabaseTestRoles(db);
   for (const migration of await readMigrationFiles())
     await db.exec(migration.sql);
   await db.exec(`

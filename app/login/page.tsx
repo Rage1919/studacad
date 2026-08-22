@@ -9,7 +9,6 @@ export default function LoginPage() {
   const [next, setNext] = useState("/account");
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
-  const [acceptPolicies, setAcceptPolicies] = useState(false);
   const staticPreview =
     process.env.NEXT_PUBLIC_STUDACAD_STATIC_PREVIEW === "true";
 
@@ -32,7 +31,7 @@ export default function LoginPage() {
       const response = await fetch("/api/auth/email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, next, acceptPolicies }),
+        body: JSON.stringify({ email, next, mode: "login" }),
       });
       const result = (await response.json()) as {
         message?: string;
@@ -57,8 +56,7 @@ export default function LoginPage() {
         <p className="eyebrow">One secure account</p>
         <h1>Sign in to Studacad</h1>
         <p>
-          Enter your email and we&apos;ll send a one-time secure link. The same
-          flow creates a new learner account after email verification.
+          Enter your email and we&apos;ll send a one-time secure sign-in link.
         </p>
         <form onSubmit={submit}>
           <label htmlFor="auth-email">Email address</label>
@@ -71,31 +69,12 @@ export default function LoginPage() {
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
           />
-          <label className="policy-accept">
-            <input
-              type="checkbox"
-              checked={acceptPolicies}
-              onChange={(event) => setAcceptPolicies(event.target.checked)}
-              required
-            />
-            <span>
-              I accept the current{" "}
-              <Link href="/terms" target="_blank">
-                Terms
-              </Link>{" "}
-              and acknowledge the{" "}
-              <Link href="/privacy" target="_blank">
-                Privacy Notice
-              </Link>
-              . A guardian should supervise an account where required.
-            </span>
-          </label>
           <button
             className="primary"
             type="submit"
             disabled={pending || staticPreview}
           >
-            {pending ? "Sending…" : "Email me a secure link"}
+            {pending ? "Sending…" : "Email me a secure sign-in link"}
           </button>
         </form>
         {staticPreview && (
@@ -110,8 +89,8 @@ export default function LoginPage() {
           </p>
         )}
         <small>
-          No password to remember. Links are single-use and expire according to
-          the authentication policy.
+          New to Studacad? <Link href="/register">Create an account</Link>.
+          Secure links are single-use and expire according to the authentication policy.
         </small>
       </section>
     </main>
