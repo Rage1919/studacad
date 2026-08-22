@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "./SiteLink";
 import { useLms } from "./LmsProvider";
 import { TutorMenu } from "./TutorMenu";
 import { WalletIcon } from "./WalletIcon";

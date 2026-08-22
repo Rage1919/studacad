@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import Link from "../components/SiteLink";
 import { LmsHeader } from "../components/LmsHeader";
 import type { Course, ExamLevel, QuizQuestion } from "../lib/lms";
 

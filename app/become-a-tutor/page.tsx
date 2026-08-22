@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../components/SiteLink";
 import { LmsHeader } from "../components/LmsHeader";
 import { publicMetadata } from "../lib/seo";
 import { TutorApplicationForm } from "./TutorApplicationForm";

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../../components/SiteLink";
 import { LmsHeader } from "../../components/LmsHeader";
 import { ReviewQueue } from "./ReviewQueue";
 import "./review.css";

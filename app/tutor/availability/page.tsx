@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../../components/SiteLink";
 import { requirePageViewer } from "../../../server/auth/viewer";
 import { LmsHeader } from "../../components/LmsHeader";
 import { AvailabilityEditor } from "./AvailabilityEditor";

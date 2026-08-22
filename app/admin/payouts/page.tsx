@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../../components/SiteLink";
 import { requirePageViewer } from "../../../server/auth/viewer";
 import { getAdminPayouts } from "../../../server/earnings/repository";
 import { PayoutOperations } from "./PayoutOperations";

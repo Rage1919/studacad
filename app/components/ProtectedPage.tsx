@@ -1,6 +1,6 @@
 import type { AppRole } from "../../server/db/models";
 import { requirePageViewer } from "../../server/auth/viewer";
-import Link from "next/link";
+import Link from "./SiteLink";
 
 export async function ProtectedPage({
   children,

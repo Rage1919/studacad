@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import Link from "./components/SiteLink";
 import { useLms } from "./components/LmsProvider";
 import { TutorMenu } from "./components/TutorMenu";
 import { WalletIcon } from "./components/WalletIcon";

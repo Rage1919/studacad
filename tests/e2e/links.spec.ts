@@ -91,6 +91,18 @@ test("authentication and primary navigation links work as real clicks", async ({
 
   await page.getByRole("link", { name: "Log in" }).click();
   await expect(page).toHaveURL(/\/login$/);
+
+  await page.goto("/");
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "How it works", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/how-it-works$/);
+  await expect(
+    page.getByRole("heading", {
+      name: "From finding help to mastering the lesson",
+    }),
+  ).toBeVisible();
   expect(missingAssets).toEqual([]);
 });
 

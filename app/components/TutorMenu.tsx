@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "./SiteLink";
 import type { MouseEvent } from "react";
 
 function followRenderedHref(event: MouseEvent<HTMLAnchorElement>) {

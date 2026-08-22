@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../components/SiteLink";
 import { StudacadFooter } from "../components/StudacadFooter";
 import "./legal.css";
 export type Policy = {

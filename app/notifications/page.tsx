@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../components/SiteLink";
 import { requirePageViewer } from "../../server/auth/viewer";
 import { getNotificationCenter } from "../../server/notifications/repository";
 import { NotificationCenter } from "./NotificationCenter";

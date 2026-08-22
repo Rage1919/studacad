@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "../components/SiteLink";
 import { useState } from "react";
 import { LmsHeader } from "../components/LmsHeader";
 import { useLms } from "../components/LmsProvider";
