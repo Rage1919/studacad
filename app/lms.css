@@ -19,8 +19,7 @@
   gap: 10px;
   font-size: 13px;
 }
-.lms-header nav > a,
-.lms-header nav > .tutor-menu > a {
+.lms-header nav > a {
   min-height: 40px;
   padding: 0 14px;
   display: inline-flex;
@@ -31,8 +30,7 @@
   color: var(--ink);
 }
 .lms-header nav > a:hover,
-.lms-header nav > a.active,
-.lms-header nav > .tutor-menu > a:hover {
+.lms-header nav > a.active {
   background: var(--pink-soft);
   color: var(--ink);
 }
@@ -94,7 +92,7 @@
   font-family: "Manrope", sans-serif;
   font-size: clamp(52px, 6vw, 82px);
   line-height: 0.98;
-  letter-spacing: -4px;
+  letter-spacing: var(--tracking-heading);
 }
 .lms-hero > div:first-child > p:last-child,
 .admin-hero > div:first-child > p:last-child {
@@ -132,7 +130,7 @@
   color: #666;
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: var(--tracking-label);
 }
 .lms-section {
   padding: 85px clamp(25px, 7vw, 110px);
@@ -147,7 +145,7 @@
 .lms-section-heading h2 {
   margin: 0;
   font-size: clamp(38px, 4vw, 56px);
-  letter-spacing: -2.5px;
+  letter-spacing: var(--tracking-heading);
 }
 .lms-section-heading > p {
   max-width: 480px;
@@ -196,7 +194,7 @@
 .course-author {
   margin: 0 0 8px !important;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
   font-size: 11px !important;
   font-weight: 800;
 }
@@ -204,7 +202,7 @@
   margin: 0;
   font-family: "Manrope";
   font-size: 27px;
-  letter-spacing: -1px;
+  letter-spacing: var(--tracking-heading);
 }
 .course-body > p {
   margin: 10px 0 20px;
@@ -324,7 +322,7 @@
 }
 .wallet-hero h1 span {
   font-size: 0.45em;
-  letter-spacing: -1px;
+  letter-spacing: var(--tracking-heading);
 }
 .wallet-hero > div:first-child > p:last-child {
   max-width: 560px;
@@ -381,7 +379,7 @@
 .wallet-card small {
   color: #d7d0ff;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
 }
 .wallet-card strong {
   margin-top: 5px;
@@ -392,7 +390,7 @@
   right: 30px;
   bottom: 32px;
   font-weight: 500;
-  letter-spacing: 2px;
+  letter-spacing: var(--tracking-label);
 }
 .topup-section {
   background: var(--cream);
@@ -431,7 +429,7 @@
   color: white;
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
 }
 .credit-packages strong {
   margin-top: 26px;
@@ -538,7 +536,7 @@
 .lesson-sidebar h2 {
   margin: 0 0 25px;
   font-size: 27px;
-  letter-spacing: -1px;
+  letter-spacing: var(--tracking-heading);
 }
 .side-lessons {
   margin: 0 -25px;
@@ -607,7 +605,7 @@
   font-family: "Manrope";
   font-size: clamp(43px, 5vw, 69px);
   line-height: 1;
-  letter-spacing: -3px;
+  letter-spacing: var(--tracking-heading);
 }
 .lesson-title > div > p:last-child {
   max-width: 740px;
@@ -624,13 +622,13 @@
   text-align: center;
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
 }
 .best-score strong {
   display: block;
   margin-top: 4px;
   font-size: 24px;
-  letter-spacing: 0;
+  letter-spacing: var(--tracking-normal);
 }
 .video-frame {
   width: 100%;
@@ -698,7 +696,7 @@
 .revision-card h2 {
   margin: 0;
   font-size: 22px;
-  letter-spacing: -0.5px;
+  letter-spacing: var(--tracking-heading);
 }
 .revision-card p:not(.eyebrow) {
   margin: 4px 0 0;
@@ -721,13 +719,13 @@
 .quiz-intro > div > span {
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
   font-weight: 800;
 }
 .quiz-intro h2 {
   margin: 8px 0;
   font-size: 37px;
-  letter-spacing: -1.5px;
+  letter-spacing: var(--tracking-heading);
 }
 .quiz-intro p {
   margin: 0;
@@ -745,7 +743,7 @@
 .quiz-card > h2 {
   margin: 0 0 35px;
   font-size: 45px;
-  letter-spacing: -2px;
+  letter-spacing: var(--tracking-heading);
 }
 .quiz-card fieldset {
   margin: 0 0 35px;
@@ -916,7 +914,7 @@
   color: #666;
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
 }
 .admin-tabs {
   padding: 22px clamp(25px, 7vw, 110px);
@@ -979,7 +977,7 @@
   margin: 15px 0;
   font-size: 42px;
   line-height: 1;
-  letter-spacing: -2px;
+  letter-spacing: var(--tracking-heading);
 }
 .form-intro > div > p:last-child {
   color: #5c5c5c;
@@ -1090,7 +1088,7 @@
   color: #666;
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: var(--tracking-label);
 }
 .option-grid label input:not([type="radio"]) {
   margin-top: 7px;
@@ -1194,7 +1192,7 @@
   font-family: "Manrope";
   font-size: clamp(52px, 7vw, 88px);
   line-height: 0.96;
-  letter-spacing: -5px;
+  letter-spacing: var(--tracking-heading);
 }
 .tutor-search-hero > div:first-child > p:last-child {
   max-width: 680px;
@@ -1241,7 +1239,7 @@
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.7px;
+  letter-spacing: var(--tracking-label);
 }
 .tutor-filter-shell input,
 .tutor-filter-shell select,
@@ -1256,7 +1254,7 @@
   font-size: 13px;
   font-weight: 700;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: var(--tracking-normal);
 }
 .filter-search input {
   background: var(--cream);
@@ -1274,7 +1272,7 @@
 .results-toolbar h2 {
   margin: 0;
   font-size: 38px;
-  letter-spacing: -2px;
+  letter-spacing: var(--tracking-heading);
 }
 .results-toolbar > div:last-child {
   display: flex;
@@ -1512,7 +1510,7 @@
   font-family: "Manrope";
   font-size: clamp(50px, 6vw, 76px);
   line-height: 1;
-  letter-spacing: -4px;
+  letter-spacing: var(--tracking-heading);
 }
 .profile-summary h1 i {
   width: 27px;
@@ -1629,7 +1627,7 @@
 .profile-section h2 {
   margin: 0 0 18px;
   font-size: 40px;
-  letter-spacing: -2px;
+  letter-spacing: var(--tracking-heading);
 }
 .profile-section > p:last-of-type {
   max-width: 780px;
@@ -1697,7 +1695,7 @@
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: var(--tracking-label);
 }
 .resume-grid {
   display: grid;
@@ -1942,7 +1940,7 @@
   font-size: 7px;
   font-style: normal;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: var(--tracking-label);
 }
 .time-slot-fieldset span {
   font-size: 10px;
@@ -2185,7 +2183,7 @@
 .favourites-hero h1 {
   margin: 0;
   font-size: clamp(48px, 6vw, 76px);
-  letter-spacing: -4px;
+  letter-spacing: var(--tracking-heading);
 }
 .favourites-hero > p:last-child {
   margin: 18px 0 0;
@@ -2245,7 +2243,7 @@
   margin: 0;
   font-size: clamp(58px, 6.6vw, 91px);
   line-height: 0.95;
-  letter-spacing: -5px;
+  letter-spacing: var(--tracking-heading);
 }
 .how-hero-copy > p:last-of-type {
   max-width: 690px;
@@ -2335,7 +2333,7 @@
 .how-visual-wallet small {
   font-size: 8px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
 }
 .how-visual-wallet strong {
   margin-top: 2px;
@@ -2482,7 +2480,7 @@
   margin: 0;
   font-size: clamp(42px, 5vw, 67px);
   line-height: 1.02;
-  letter-spacing: -3px;
+  letter-spacing: var(--tracking-heading);
 }
 .how-section-heading > p:last-child {
   max-width: 760px;
@@ -2521,7 +2519,7 @@
 .how-journey-grid span {
   font-size: 11px;
   font-weight: 900;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
 }
 .how-journey-grid h3 {
   margin: 47px 0 10px;
@@ -2858,7 +2856,7 @@
   left: 24px;
   font-size: 9px;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
 }
 .how-wallet-card strong {
   font-size: 64px;
@@ -2975,7 +2973,7 @@
   bottom: 12px;
   font-size: 8px;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
 }
 .how-resource-row {
   margin-top: 12px;
@@ -3069,7 +3067,7 @@
   margin-bottom: 24px;
   font-size: 9px;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
 }
 .how-admin-form > span {
   margin-top: 14px;
@@ -3156,7 +3154,7 @@
 .how-final-cta h2 {
   margin: 0;
   font-size: clamp(42px, 5vw, 67px);
-  letter-spacing: -3px;
+  letter-spacing: var(--tracking-heading);
 }
 .how-final-cta > div:last-child {
   display: flex;
@@ -3279,7 +3277,7 @@
   .wallet-hero h1,
   .admin-hero h1 {
     font-size: 50px;
-    letter-spacing: -3px;
+    letter-spacing: var(--tracking-heading);
   }
   .learning-stats {
     grid-template-columns: 1fr;
@@ -3446,7 +3444,7 @@
   }
   .tutor-search-hero h1 {
     font-size: 52px;
-    letter-spacing: -3px;
+    letter-spacing: var(--tracking-heading);
   }
   .tutor-search-hero > div:first-child > p:last-child {
     font-size: 16px;
@@ -3490,7 +3488,7 @@
   }
   .profile-summary h1 {
     font-size: 53px;
-    letter-spacing: -3px;
+    letter-spacing: var(--tracking-heading);
   }
   .profile-headline {
     font-size: 17px;
@@ -3536,7 +3534,7 @@
   }
   .favourites-hero h1 {
     font-size: 49px;
-    letter-spacing: -3px;
+    letter-spacing: var(--tracking-heading);
   }
   .favourites-section {
     padding: 45px 20px 75px;
@@ -3548,7 +3546,7 @@
   }
   .how-hero h1 {
     font-size: 54px;
-    letter-spacing: -3px;
+    letter-spacing: var(--tracking-heading);
   }
   .how-hero-copy > p:last-of-type {
     font-size: 16px;
@@ -3588,7 +3586,7 @@
   .how-section-heading h2,
   .how-copy-block h2 {
     font-size: 41px;
-    letter-spacing: -2px;
+    letter-spacing: var(--tracking-heading);
   }
   .how-journey-grid,
   .how-directory-grid {
@@ -3663,15 +3661,15 @@
 .wallet-hero h1,
 .admin-hero h1 {
   font-size: clamp(33px, 3.8vw, 51px);
-  letter-spacing: -2.4px;
+  letter-spacing: var(--tracking-heading);
 }
 .lms-section-heading h2 {
   font-size: clamp(25px, 2.6vw, 35px);
-  letter-spacing: -1.5px;
+  letter-spacing: var(--tracking-heading);
 }
 .lesson-title h1 {
   font-size: clamp(28px, 3.2vw, 43px);
-  letter-spacing: -1.8px;
+  letter-spacing: var(--tracking-heading);
 }
 .quiz-intro h2 {
   font-size: 24px;
@@ -3687,43 +3685,43 @@
 }
 .form-intro h2 {
   font-size: 27px;
-  letter-spacing: -1.2px;
+  letter-spacing: var(--tracking-heading);
 }
 .tutor-search-hero h1 {
   font-size: clamp(33px, 4.4vw, 55px);
-  letter-spacing: -3px;
+  letter-spacing: var(--tracking-heading);
 }
 .results-toolbar h2 {
   font-size: 24px;
-  letter-spacing: -1.1px;
+  letter-spacing: var(--tracking-heading);
 }
 .profile-summary h1 {
   font-size: clamp(32px, 3.8vw, 48px);
-  letter-spacing: -2.4px;
+  letter-spacing: var(--tracking-heading);
 }
 .profile-section h2 {
   font-size: 25px;
-  letter-spacing: -1.2px;
+  letter-spacing: var(--tracking-heading);
 }
 .favourites-hero h1 {
   font-size: clamp(31px, 3.8vw, 48px);
-  letter-spacing: -2.4px;
+  letter-spacing: var(--tracking-heading);
 }
 .empty-favourites h2 {
   font-size: 23px;
 }
 .how-hero h1 {
   font-size: clamp(36px, 4.1vw, 56px);
-  letter-spacing: -3px;
+  letter-spacing: var(--tracking-heading);
 }
 .how-section-heading h2,
 .how-copy-block h2 {
   font-size: clamp(27px, 3.2vw, 41px);
-  letter-spacing: -1.8px;
+  letter-spacing: var(--tracking-heading);
 }
 .how-final-cta h2 {
   font-size: clamp(27px, 3.2vw, 41px);
-  letter-spacing: -1.8px;
+  letter-spacing: var(--tracking-heading);
 }
 
 @media (max-width: 760px) {
@@ -3731,7 +3729,7 @@
   .wallet-hero h1,
   .admin-hero h1 {
     font-size: 32px;
-    letter-spacing: -1.8px;
+    letter-spacing: var(--tracking-heading);
   }
   .lms-section-heading h2 {
     font-size: 25px;
@@ -3747,11 +3745,11 @@
   }
   .tutor-search-hero h1 {
     font-size: 32px;
-    letter-spacing: -1.8px;
+    letter-spacing: var(--tracking-heading);
   }
   .profile-summary h1 {
     font-size: 33px;
-    letter-spacing: -1.8px;
+    letter-spacing: var(--tracking-heading);
   }
   .profile-section h2 {
     font-size: 22px;
@@ -3761,16 +3759,16 @@
   }
   .favourites-hero h1 {
     font-size: 30px;
-    letter-spacing: -1.8px;
+    letter-spacing: var(--tracking-heading);
   }
   .how-hero h1 {
     font-size: 34px;
-    letter-spacing: -1.8px;
+    letter-spacing: var(--tracking-heading);
   }
   .how-section-heading h2,
   .how-copy-block h2 {
     font-size: 26px;
-    letter-spacing: -1.2px;
+    letter-spacing: var(--tracking-heading);
   }
 }
 
@@ -3860,7 +3858,7 @@
   margin: 0;
   max-width: 730px;
   font-size: clamp(33px, 3.8vw, 51px);
-  letter-spacing: -2.4px;
+  letter-spacing: var(--tracking-heading);
 }
 .messages-hero p:last-child {
   max-width: 720px;
@@ -3898,7 +3896,7 @@
 }
 .inbox-thread > header h2 {
   font-size: 22px;
-  letter-spacing: -0.8px;
+  letter-spacing: var(--tracking-heading);
 }
 .inbox-thread > header p {
   margin-top: 3px;
@@ -3953,7 +3951,7 @@
   }
   .messages-hero h1 {
     font-size: 32px;
-    letter-spacing: -1.8px;
+    letter-spacing: var(--tracking-heading);
   }
   .messages-hero .outline {
     margin-top: 24px;
@@ -4051,7 +4049,7 @@
   margin: 0;
   font-size: clamp(36px, 4vw, 52px);
   line-height: 0.98;
-  letter-spacing: -2.5px;
+  letter-spacing: var(--tracking-heading);
 }
 .referral-link-box {
   max-width: 690px;
@@ -4063,7 +4061,7 @@
   font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
 }
 .referral-link-box > div {
   display: grid;
@@ -4255,12 +4253,12 @@
   margin-top: 8px;
   text-align: center;
   font-weight: 900;
-  letter-spacing: 1px;
+  letter-spacing: var(--tracking-label);
 }
 .referral-steps h3 {
   margin: 18px 0 7px;
   font-size: 20px;
-  letter-spacing: -0.8px;
+  letter-spacing: var(--tracking-heading);
 }
 .referral-steps p {
   margin: 0;
@@ -4375,7 +4373,7 @@
   }
   .referral-hero h1 {
     font-size: 34px;
-    letter-spacing: -1.8px;
+    letter-spacing: var(--tracking-heading);
   }
   .referral-hero-copy > p:not(.eyebrow) {
     font-size: 15px;
@@ -4505,7 +4503,7 @@
 .resume-simple h3 {
   margin: 0;
   font-size: 13px;
-  letter-spacing: 0.2px;
+  letter-spacing: var(--tracking-heading);
 }
 .resume-simple p {
   margin: 0 0 8px;
@@ -4594,7 +4592,7 @@
   font-size: 9px;
   font-style: normal;
   font-weight: 900;
-  letter-spacing: 0.4px;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -4629,7 +4627,7 @@
   font-size: 9px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.7px;
+  letter-spacing: var(--tracking-label);
 }
 .schedule-picker-summary > div:first-child > strong {
   margin-top: 4px;

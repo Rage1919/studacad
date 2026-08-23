@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "./components/SiteLink";
 import { useLms } from "./components/LmsProvider";
 import { TutorMenu } from "./components/TutorMenu";
@@ -10,7 +10,6 @@ import { AccountNav } from "./components/AccountNav";
 import { useAuth } from "./components/AuthProvider";
 import { StudacadLogo } from "./components/StudacadLogo";
 import type { Tutor } from "./lib/tutors";
-import { useDialogFocus } from "./lib/useDialogFocus";
 
 const Arrow = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -54,25 +53,9 @@ const popularSubjectRows = (["PSLE", "JCE", "BGCSE"] as const).map((exam) => ({
 export default function Home() {
   const { credits } = useLms();
   const { ready: authReady, signedIn } = useAuth();
-  const [modal, setModal] = useState<"search" | null>(null);
-  const [examination, setExamination] = useState("PSLE");
-  const [subject, setSubject] = useState("Mathematics");
   const [featuredTutors, setFeaturedTutors] = useState<Tutor[]>([]);
   const [featuredLoading, setFeaturedLoading] = useState(true);
   const [featuredError, setFeaturedError] = useState("");
-  const closeSearch = useCallback(() => setModal(null), []);
-  const searchDialogRef = useDialogFocus(modal === "search", closeSearch);
-  const examSubjects = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          subjects
-            .filter((item) => item.exam === examination)
-            .map((item) => item.name),
-        ),
-      ),
-    [examination],
-  );
 
   useEffect(() => {
     void fetch("/api/tutors", { cache: "no-store" })
@@ -93,11 +76,6 @@ export default function Home() {
       )
       .finally(() => setFeaturedLoading(false));
   }, []);
-
-  const beginSearch = () => {
-    closeSearch();
-    window.location.href = `/tutors?exam=${encodeURIComponent(examination)}&subject=${encodeURIComponent(subject)}`;
-  };
 
   return (
     <main>
@@ -170,12 +148,9 @@ export default function Home() {
             support
           </h1>
           <div className="button-row hero-actions">
-            <button
-              className="primary hero-cta"
-              onClick={() => setModal("search")}
-            >
+            <Link className="primary hero-cta" href="/tutors">
               Find a subject tutor <Arrow />
-            </button>
+            </Link>
             <Link className="outline" href="/courses">
               Browse courses
             </Link>
@@ -505,9 +480,9 @@ export default function Home() {
             Every booking shows its live price and time. Cancel any time before
             the lesson starts for a full credit refund.
           </p>
-          <button className="primary" onClick={() => setModal("search")}>
+          <Link className="primary" href="/tutors">
             Find a tutor <Arrow />
-          </button>
+          </Link>
         </div>
         <div className="quote-card">
           <h3>Account-backed from start to finish</h3>
@@ -591,71 +566,10 @@ export default function Home() {
           <p className="eyebrow">Your next result starts with one topic</p>
           <h2>Ready to prepare with confidence?</h2>
         </div>
-        <button className="primary light" onClick={() => setModal("search")}>
+        <Link className="primary light" href="/tutors">
           Find subject support <Arrow />
-        </button>
+        </Link>
       </section>
-
-      {modal && (
-        <div className="modal-backdrop" onMouseDown={closeSearch}>
-          <section
-            ref={searchDialogRef}
-            className="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="home-search-heading"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <button
-              className="modal-close"
-              type="button"
-              aria-label="Close tutor search"
-              onClick={closeSearch}
-            >
-              ×
-            </button>
-            <>
-              <p className="eyebrow">Find your Studacad match</p>
-              <h2 id="home-search-heading">Which subject needs support?</h2>
-              <label>
-                Examination
-                <select
-                  value={examination}
-                  onChange={(event) => {
-                    const exam = event.target.value;
-                    setExamination(exam);
-                    setSubject(
-                      subjects.find((item) => item.exam === exam)?.name ??
-                        "Mathematics",
-                    );
-                  }}
-                >
-                  <option>PSLE</option>
-                  <option>JCE</option>
-                  <option>BGCSE</option>
-                </select>
-              </label>
-              <label>
-                Subject
-                <select
-                  value={subject}
-                  onChange={(event) => setSubject(event.target.value)}
-                >
-                  {examSubjects.map((name) => (
-                    <option key={name}>{name}</option>
-                  ))}
-                </select>
-              </label>
-              <button className="primary modal-primary" onClick={beginSearch}>
-                See matching tutors <Arrow />
-              </button>
-              <small className="fine-print">
-                No payment required · Change your subject anytime
-              </small>
-            </>
-          </section>
-        </div>
-      )}
     </main>
   );
 }

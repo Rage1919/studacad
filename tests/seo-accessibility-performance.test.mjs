@@ -1,11 +1,23 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const read = (relative) => readFile(path.join(root, relative), "utf8");
+
+async function listCssFiles(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = await Promise.all(
+    entries.map((entry) => {
+      const entryPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) return listCssFiles(entryPath);
+      return entry.name.endsWith(".css") ? [entryPath] : [];
+    }),
+  );
+  return files.flat();
+}
 
 const publicMetadataFiles = [
   "app/layout.tsx",
@@ -112,4 +124,37 @@ test("analytics is absent and the build enforces public asset budgets", async ()
   assert.match(packageJson, /check-budgets\.mjs/);
   assert.match(budget, /totalJavaScript:\s*800_000/);
   assert.match(operations, /never account IDs/);
+});
+
+test("platform typography uses the shared tracking scale", async () => {
+  const cssFiles = await listCssFiles(path.join(root, "app"));
+  const rawDeclarations = [];
+
+  for (const cssFile of cssFiles) {
+    const source = await readFile(cssFile, "utf8");
+    for (const match of source.matchAll(/letter-spacing:\s*([^;]+);/g)) {
+      const value = match[1].trim();
+      if (!value.startsWith("var(")) {
+        rawDeclarations.push(
+          `${path.relative(root, cssFile).replaceAll("\\", "/")}:${value}`,
+        );
+      }
+    }
+  }
+
+  assert.deepEqual(rawDeclarations.sort(), [
+    "app/globals.css:3px",
+    "app/globals.css:5px",
+    "app/lms.css:4px",
+  ]);
+
+  const globalCss = await read("app/globals.css");
+  for (const token of [
+    "--tracking-normal",
+    "--tracking-heading",
+    "--tracking-label",
+    "--tracking-eyebrow",
+  ]) {
+    assert.match(globalCss, new RegExp(`${token}:`));
+  }
 });

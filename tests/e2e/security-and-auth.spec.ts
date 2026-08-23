@@ -54,7 +54,7 @@ test("a fresh marketplace shows an honest empty state", async ({ page }) => {
   await expect(page.getByText("Demo learner", { exact: false })).toHaveCount(0);
 });
 
-test("keyboard navigation reaches content and the tutor-search dialog restores focus", async ({
+test("keyboard navigation reaches content and tutor search opens the filtered marketplace", async ({
   page,
 }) => {
   await page.route("**/api/tutors", (route) =>
@@ -71,18 +71,17 @@ test("keyboard navigation reaches content and the tutor-search dialog restores f
   await skip.press("Enter");
   await expect(page.locator("#main-content")).toBeFocused();
 
-  const opener = page.getByRole("button", { name: "Find a subject tutor" });
-  await opener.click();
-  const dialog = page.getByRole("dialog", {
-    name: "Which subject needs support?",
+  const opener = page.getByRole("link", {
+    name: "Find a subject tutor",
+    exact: true,
   });
-  await expect(dialog).toBeVisible();
+  await expect(opener).toHaveAttribute("href", "/tutors");
+  await opener.click();
+  await expect(page).toHaveURL(/\/tutors$/);
   await expect(
-    page.getByRole("button", { name: "Close tutor search" }),
-  ).toBeFocused();
-  await page.keyboard.press("Escape");
-  await expect(dialog).toBeHidden();
-  await expect(opener).toBeFocused();
+    page.getByRole("region", { name: "Tutor filters" }),
+  ).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 
 test("public homepage stays within local layout-shift and load guardrails", async ({
@@ -153,9 +152,8 @@ test("oversized API requests fail before route execution", async ({
 
 test("sensitive sign-in requests are rate limited", async ({ request }) => {
   const headers = {
-    Origin: new URL(
-      process.env.STUDACAD_APP_URL ?? "http://127.0.0.1:3000",
-    ).origin,
+    Origin: new URL(process.env.STUDACAD_APP_URL ?? "http://127.0.0.1:3000")
+      .origin,
     "Content-Type": "application/json",
     "X-Forwarded-For": "198.51.100.22",
   };

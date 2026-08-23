@@ -14,7 +14,7 @@
 .bookings-hero h1 {
   margin: 5px 0 10px;
   font-size: clamp(42px, 6vw, 74px);
-  letter-spacing: -4px;
+  letter-spacing: var(--tracking-heading);
 }
 .bookings-hero p:last-child {
   max-width: 680px;
@@ -170,7 +170,7 @@
     flex-direction: column;
   }
   .bookings-hero h1 {
-    letter-spacing: -2px;
+    letter-spacing: var(--tracking-heading);
   }
   .booking-dashboard-list article {
     grid-template-columns: 70px 1fr;

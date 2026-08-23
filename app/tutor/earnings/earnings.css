@@ -13,7 +13,7 @@
 }
 .eyebrow {
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: var(--tracking-eyebrow);
   color: #20645c;
   font-weight: 800;
 }

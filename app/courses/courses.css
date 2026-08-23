@@ -10,7 +10,7 @@
 .course-catalog-page h1 {
   margin: 8px 0 16px;
   font-size: clamp(42px, 7vw, 82px);
-  letter-spacing: -0.05em;
+  letter-spacing: var(--tracking-heading);
   line-height: 0.95;
 }
 .public-course-grid {

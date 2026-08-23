@@ -176,8 +176,9 @@ export default function HowItWorksPage() {
           <p className="eyebrow">Tutor marketplace</p>
           <h2>Find the right subject specialist</h2>
           <p>
-            The Find tutors menu opens PSLE, JCE, and BGCSE pathways. Selecting
-            a subject opens a dedicated tutor grid instead of a generic list.
+            The Find tutors link opens the marketplace directly. Use its PSLE,
+            JCE, BGCSE, subject, availability, rating, and price filters to
+            narrow the tutor grid.
           </p>
           <ul>
             <li>Search by tutor name or subject.</li>

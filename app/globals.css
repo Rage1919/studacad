@@ -13,6 +13,10 @@
   --line: #d6dfeb;
   --white: #ffffff;
   --shadow: none;
+  --tracking-normal: 0;
+  --tracking-heading: -0.012em;
+  --tracking-label: 0.08em;
+  --tracking-eyebrow: 0.14em;
 }
 
 *,
@@ -241,13 +245,11 @@ button:not(.onboarding-progress-card button) :is(span, small, strong),
   font-size: 13px;
   font-weight: 600;
 }
-.nav nav > a,
-.nav nav > .tutor-menu > a {
+.nav nav > a {
   padding: 10px 0;
   position: relative;
 }
-.nav nav > a:after,
-.nav nav > .tutor-menu > a:after {
+.nav nav > a:after {
   content: "";
   position: absolute;
   left: 0;
@@ -257,64 +259,8 @@ button:not(.onboarding-progress-card button) :is(span, small, strong),
   background: var(--ink);
   transition: right 0.2s ease;
 }
-.nav nav > a:hover:after,
-.nav nav > .tutor-menu > a:hover:after {
+.nav nav > a:hover:after {
   right: 0;
-}
-.tutor-menu {
-  position: relative;
-}
-.tutor-menu > a {
-  color: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-.tutor-menu-panel {
-  width: 245px;
-  position: absolute;
-  left: -16px;
-  top: calc(100% + 8px);
-  z-index: 60;
-  padding: 9px;
-  display: grid;
-  gap: 4px;
-  border: 2px solid var(--ink);
-  border-radius: 8px;
-  background: white;
-  box-shadow: 6px 6px 0 var(--ink);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-7px);
-  transition:
-    opacity 0.18s,
-    transform 0.18s,
-    visibility 0.18s;
-}
-.tutor-menu:hover .tutor-menu-panel,
-.tutor-menu:focus-within .tutor-menu-panel {
-  opacity: 1;
-  visibility: visible;
-  transform: none;
-}
-.tutor-menu-panel a {
-  padding: 11px 12px !important;
-  display: grid;
-  grid-template-columns: 1fr;
-  align-items: center;
-  border-radius: 5px;
-  color: var(--ink) !important;
-}
-.tutor-menu-panel a:hover {
-  background: var(--cream);
-}
-.tutor-menu-panel a:after {
-  display: none !important;
-}
-.tutor-menu-panel span {
-  display: none;
-}
-.tutor-menu-panel b {
-  font-size: 13px;
 }
 .nav-actions {
   margin-left: auto;
@@ -443,7 +389,7 @@ button:not(.onboarding-progress-card button) :is(span, small, strong),
   margin: 0 0 15px;
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: 1.8px;
+  letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
 }
 .hero-copy {
@@ -456,7 +402,7 @@ h3,
 h4 {
   font-family: "Manrope", sans-serif;
   font-weight: 800;
-  letter-spacing: -1.7px;
+  letter-spacing: var(--tracking-heading);
   text-transform: uppercase;
 }
 .hero h1 {
@@ -650,7 +596,7 @@ h4 {
   font-family: "Manrope";
   font-size: 28px;
   font-weight: 800;
-  letter-spacing: -1px;
+  letter-spacing: var(--tracking-heading);
 }
 .metrics span {
   color: #565656;
@@ -701,7 +647,7 @@ h4 {
 .popular-subject-label span {
   font-size: 13px;
   font-weight: 900;
-  letter-spacing: 1.15px;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 .language-grid {
@@ -947,7 +893,7 @@ h4 {
   font-size: 10px;
   font-style: normal;
   font-weight: 900;
-  letter-spacing: 0.7px;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 .tutor-photo > span {
@@ -1085,7 +1031,7 @@ h4 {
   font-family: "Manrope";
   margin: 24px 0 8px;
   font-size: 27px;
-  letter-spacing: -1px;
+  letter-spacing: var(--tracking-heading);
 }
 .steps article > p {
   margin: 0;
@@ -1245,7 +1191,7 @@ h4 {
   font-size: 30px;
   line-height: 1.25;
   font-weight: 700;
-  letter-spacing: -1px;
+  letter-spacing: var(--tracking-heading);
 }
 .quote-person {
   display: flex;
@@ -1466,7 +1412,7 @@ footer {
   margin: 0 0 20px;
   text-transform: uppercase;
   font-size: 12px;
-  letter-spacing: 1.3px;
+  letter-spacing: var(--tracking-heading);
 }
 .footer-links a {
   display: block;
@@ -1490,67 +1436,6 @@ footer {
   gap: 22px;
 }
 
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  padding: 20px;
-  display: grid;
-  place-items: center;
-  background: rgba(20, 20, 20, 0.58);
-  backdrop-filter: blur(6px);
-}
-.modal {
-  width: min(500px, 100%);
-  position: relative;
-  padding: 40px;
-  border: 2px solid var(--ink);
-  border-radius: 10px;
-  background: var(--cream);
-  box-shadow: 10px 10px 0 var(--ink);
-  animation: modal-in 0.2s ease-out;
-}
-.modal h2 {
-  margin: 0 0 28px;
-  font-size: 27px;
-  line-height: 1.05;
-  letter-spacing: -1.4px;
-}
-.modal-close {
-  position: absolute;
-  right: 14px;
-  top: 12px;
-  border: 0;
-  background: transparent;
-  font-size: 30px;
-  cursor: pointer;
-}
-.modal label {
-  display: block;
-  margin: 16px 0;
-  font-size: 13px;
-  font-weight: 800;
-}
-.modal select,
-.modal input {
-  width: 100%;
-  height: 52px;
-  margin-top: 8px;
-  padding: 0 13px;
-  border: 2px solid var(--ink);
-  border-radius: 6px;
-  background: white;
-}
-.modal-primary {
-  width: 100%;
-  margin-top: 10px;
-}
-.fine-print {
-  display: block;
-  margin-top: 13px;
-  text-align: center;
-  color: #666;
-}
 .social-login {
   width: 100%;
   height: 51px;
@@ -1731,7 +1616,7 @@ footer {
   .section-heading h2,
   .how h2 {
     font-size: 27px;
-    letter-spacing: -1.2px;
+    letter-spacing: var(--tracking-heading);
   }
   .section-heading.compact .outline {
     margin-top: 24px;
@@ -1837,12 +1722,6 @@ footer {
   .footer-bottom div {
     margin-top: 15px;
     flex-wrap: wrap;
-  }
-  .modal {
-    padding: 34px 22px 25px;
-  }
-  .modal h2 {
-    font-size: 24px;
   }
 }
 
